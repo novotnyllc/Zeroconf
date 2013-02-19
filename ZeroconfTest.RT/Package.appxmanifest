@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="5903b029-9745-49d7-85ed-e746d37d4309" Publisher="CN=saldoukhov" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>ZeroconfTest.RT</DisplayName>
+    <PublisherDisplayName>saldoukhov</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2.1</OSMinVersion>
+    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="ZeroconfTest.RT.App">
+      <VisualElements DisplayName="ZeroconfTest.RT" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="ZeroconfTest.RT" ForegroundText="light" BackgroundColor="#464646">
+        <DefaultTile ShowName="allLogos" />
+        <SplashScreen Image="Assets\SplashScreen.png" />
+      </VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="privateNetworkClientServer" />
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

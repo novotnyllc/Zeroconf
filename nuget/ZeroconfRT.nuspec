@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>ZeroconfRT</id>
+        <version>0.5.1</version>
+        <title />
+        <authors>Sergey Aldoukhov</authors>
+        <owners />
+        <licenseUrl>http://opensource.org/licenses/ms-pl</licenseUrl>
+        <projectUrl>https://github.com/saldoukhov/ZeroconfRT</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Bonjour support for WinRT applications - Windows 8 and Windows Phone 8</description>
+        <copyright>© Sergey Aldoukhov 2013</copyright>
+        <language>en-US</language>
+        <tags>zeroconf bonjour mdns</tags>
+        <dependencies>
+            <dependency id="Rx-Main" version="2.1.30214.0" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.dll" target="lib\netcore45\ZeroconfRT.dll" />
+        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfRT.dll" target="lib\wp8\ZeroconfRT.dll" />
+    </files>
+</package>
