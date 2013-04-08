@@ -15,26 +15,24 @@ namespace Zeroconf
     {
         public static IObservable<ZeroconfRecord> Resolve(string protocol)
         {
-            return Observable.Defer(async () =>
+            return Observable.Create<ZeroconfRecord>(async observer =>
                 {
                     var socket = new DatagramSocket();
-                    var o = Observable
+                    var s = Observable
                         .FromEventPattern
                         <TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs>,
                             DatagramSocketMessageReceivedEventArgs>(
                                 x => socket.MessageReceived += x, _ => socket.Dispose())
-                        .Replay();
-                    var d = o.Connect();
+                        .Select(ProcessMessage)
+                        .Where(x => x != null)
+                        .Subscribe(observer);
                     await socket.BindServiceNameAsync("5353");
                     socket.JoinMulticastGroup(new HostName("224.0.0.251"));
                     var os = await socket.GetOutputStreamAsync(new HostName("224.0.0.251"), "5353");
                     var writer = new DataWriter(os);
                     WriteQueryMessage(protocol, writer);
                     writer.StoreAsync();
-                    return o
-                        .Select(ProcessMessage)
-                        .Where(x => x != null)
-                        .Finally(d.Dispose);
+                    return s;
                 });
         }
 
