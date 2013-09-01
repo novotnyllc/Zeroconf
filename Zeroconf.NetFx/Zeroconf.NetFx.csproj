@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Zeroconf.NetFx</RootNamespace>
-    <AssemblyName>Zeroconf.NetFx</AssemblyName>
+    <AssemblyName>ZeroconfRT</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetPlatformVersion>8.0</TargetPlatformVersion>
     <FileAlignment>512</FileAlignment>
