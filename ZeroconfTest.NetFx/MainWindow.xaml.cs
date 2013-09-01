@@ -37,7 +37,7 @@ namespace ZeroconfTest.NetFx
             
             _d = ZeroconfResolver
                 .Resolve("_p2pchat._udp.local.")
-                .Timeout(TimeSpan.FromSeconds(5))
+                .Timeout(TimeSpan.FromSeconds(5), Observable.Empty<ZeroconfRecord>())
                 .Subscribe(x => Debug.WriteLine(x));
         }
     }

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>ZeroconfRT</id>
-        <version>0.5.2</version>
+        <version>0.5.3</version>
         <title />
         <authors>Sergey Aldoukhov</authors>
         <owners />
@@ -19,7 +19,11 @@
     </metadata>
     <files>
         <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.dll" target="lib\netcore45\ZeroconfRT.dll" />
+        <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.pdb" target="lib\netcore45\ZeroconfRT.pdb" />
+        <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.pri" target="lib\netcore45\ZeroconfRT.pri" />
         <file src="..\Zeroconf.WP\Bin\Release\ZeroconfRT.dll" target="lib\wp8\ZeroconfRT.dll" />
+        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfRT.pdb" target="lib\wp8\ZeroconfRT.pdb" />
         <file src="..\Zeroconf.NetFX\Bin\Release\ZeroconfRT.dll" target="lib\net45\ZeroconfRT.dll" />
+        <file src="..\Zeroconf.NetFX\Bin\Release\ZeroconfRT.pdb" target="lib\net45\ZeroconfRT.pdb" />
     </files>
 </package>
