@@ -41,6 +41,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\Release\ZeroconfRT.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -85,6 +86,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Zeroconf.RT\AsyncLock.cs">
+      <Link>AsyncLock.cs</Link>
+    </Compile>
     <Compile Include="..\Zeroconf.RT\Dns\Header.cs">
       <Link>Dns\Header.cs</Link>
     </Compile>

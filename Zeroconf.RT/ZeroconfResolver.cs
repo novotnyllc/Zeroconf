@@ -16,9 +16,12 @@ using DnsType = Heijden.DNS.Type;
 
 namespace Zeroconf
 {
+    /// <summary>
+    /// Looks for ZeroConf devices
+    /// </summary>
     public static class ZeroconfResolver
     {
-        
+        private static readonly AsyncLock ResolverLock = new AsyncLock();
         /// <summary>
         /// Resolves available ZeroConf services
         /// </summary>
@@ -30,80 +33,83 @@ namespace Zeroconf
         /// <returns></returns>
         public static async Task<IReadOnlyList<ZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default (TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, CancellationToken cancellationToken = default (CancellationToken))
         {
-            if(string.IsNullOrWhiteSpace(protocol))
+            if (string.IsNullOrWhiteSpace(protocol))
                 throw new ArgumentNullException("protocol");
 
             if (scanTime == default(TimeSpan))
                 scanTime = TimeSpan.FromSeconds(2);
 
-            Debug.WriteLine("Looking for {0} with scantime {1}", protocol, scanTime);
-
-            using (var socket = new DatagramSocket())
+            using (await ResolverLock.LockAsync())
             {
-                var list = new List<ZeroconfRecord>();
+                Debug.WriteLine("Looking for {0} with scantime {1}", protocol, scanTime);
 
-                // setup delegate to detach from later
-                TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs> handler = (sock, args) =>
+                using (var socket = new DatagramSocket())
                 {
-                    var dr = args.GetDataReader();
-                    var byteCount = dr.UnconsumedBufferLength;
-                    var resp = new Response(dr.ReadBuffer(dr.UnconsumedBufferLength).ToArray());
+                    var list = new List<ZeroconfRecord>();
 
-                    Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}", args.RemoteAddress.DisplayName, byteCount, resp.header.QR);
-
-                    if (resp.header.QR)
+                    // setup delegate to detach from later
+                    TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs> handler = (sock, args) =>
                     {
-                        var item = ResponseToZeroconf(resp);
+                        var dr = args.GetDataReader();
+                        var byteCount = dr.UnconsumedBufferLength;
+                        var resp = new Response(dr.ReadBuffer(dr.UnconsumedBufferLength).ToArray());
 
-                        lock (list)
+                        Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}", args.RemoteAddress.DisplayName, byteCount, resp.header.QR);
+
+                        if (resp.header.QR)
                         {
-                            list.Add(item);
+                            var item = ResponseToZeroconf(resp);
+
+                            lock (list)
+                            {
+                                list.Add(item);
+                            }
                         }
-                    }
-                };
+                    };
 
-                socket.MessageReceived += handler;
-                var socketBound = false;
+                    socket.MessageReceived += handler;
+                    var socketBound = false;
 
-                for (var i = 0; i < retries; i++)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    try
+                    for (var i = 0; i < retries; i++)
                     {
-                        await BindToSocketAndWriteQuery(socket, protocol, cancellationToken).ConfigureAwait(false);
-                        socketBound = true;
-                    }
-                    catch (Exception e)
-                    {
-                        
-                        socketBound = false;
-                        Debug.WriteLine("Exception trying to Bind:\n{0}", e);
+                        cancellationToken.ThrowIfCancellationRequested();
+                        try
+                        {
+                            await BindToSocketAndWriteQuery(socket, protocol, cancellationToken).ConfigureAwait(false);
+                            socketBound = true;
+                        }
+                        catch (Exception e)
+                        {
 
-                        // Most likely a fatal error
-                        if (SocketError.GetStatus(e.HResult) == SocketErrorStatus.Unknown)
-                            throw;
+                            socketBound = false;
+                            Debug.WriteLine("Exception trying to Bind:\n{0}", e);
 
-                        // If we're not connected on the last retry, rethrow the underlying exception
-                        if (i + 1 >= retries)
-                            throw;
+                            // Most likely a fatal error
+                            if (SocketError.GetStatus(e.HResult) == SocketErrorStatus.Unknown)
+                                throw;
+
+                            // If we're not connected on the last retry, rethrow the underlying exception
+                            if (i + 1 >= retries)
+                                throw;
+                        }
+
+                        if (socketBound)
+                            break;
+
+                        Debug.WriteLine("Retrying in {0} ms", retryDelayMilliseconds);
+                        // Not found, wait to try again
+                        await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
                     }
 
                     if (socketBound)
-                        break;
+                    {
+                        // wait for responses
+                        await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
+                        Debug.WriteLine("Done Scanning");
+                    }
 
-                    Debug.WriteLine("Retrying in {0} ms", retryDelayMilliseconds);
-                    // Not found, wait to try again
-                    await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
+                    return list;
                 }
-
-                if (socketBound)
-                {
-                    // wait for responses
-                    await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
-                    Debug.WriteLine("Done Scanning");
-                }
-
-                return list;
             }
         }
 

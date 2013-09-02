@@ -15,9 +15,12 @@ using DnsType = Heijden.DNS.Type;
 
 namespace Zeroconf
 {
+    /// <summary>
+    /// Looks for ZeroConf devices
+    /// </summary>
     public static class ZeroconfResolver
     {
-
+        private static readonly AsyncLock ResolverLock = new AsyncLock();
         /// <summary>
         /// Resolves available ZeroConf services
         /// </summary>
@@ -35,86 +38,89 @@ namespace Zeroconf
             if (scanTime == default(TimeSpan))
                 scanTime = TimeSpan.FromSeconds(2);
 
-            Debug.WriteLine("Looking for {0} with scantime {1}", protocol, scanTime);
-
-
-            using (var client = new UdpClient())
+            using (await ResolverLock.LockAsync())
             {
-                for (var i = 0; i < retries; retries++)
+                Debug.WriteLine("Looking for {0} with scantime {1}", protocol, scanTime);
+
+                using (var client = new UdpClient())
                 {
-                    try
+                    for (var i = 0; i < retries; retries++)
                     {
-                        var list = new List<ZeroconfRecord>();
-
-                        var localEp = new IPEndPoint(IPAddress.Any, 5353);
-                        client.ExclusiveAddressUse = false;
-                        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, scanTime.Milliseconds);
-                        client.ExclusiveAddressUse = false;
-
-                        client.Client.Bind(localEp);
-
-
-                        var multicastAddress = IPAddress.Parse("224.0.0.251");
-                        client.JoinMulticastGroup(multicastAddress);
-                        Debug.WriteLine("Bound to multicast address");
-
-                        // Start a receive loop
-                        var shouldCancel = false;
-                        var recTask = Task.Run(async () =>
+                        try
                         {
-                            try
-                            {
-                                while (!shouldCancel)
-                                {
-                                    var res = await client.ReceiveAsync().ConfigureAwait(false);
-                                    var byteCount = res.Buffer.Length;
-                                    var resp = new Response(res.Buffer);
-                                    Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}", res.RemoteEndPoint.Address, byteCount, resp.header.QR);
+                            var list = new List<ZeroconfRecord>();
 
-                                    var zr = ResponseToZeroconf(resp);
-                                    if (!string.IsNullOrWhiteSpace(zr.IPAddress))
+                            var localEp = new IPEndPoint(IPAddress.Any, 5353);
+                            client.ExclusiveAddressUse = false;
+                            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, scanTime.Milliseconds);
+                            client.ExclusiveAddressUse = false;
+
+                            client.Client.Bind(localEp);
+
+
+                            var multicastAddress = IPAddress.Parse("224.0.0.251");
+                            client.JoinMulticastGroup(multicastAddress);
+                            Debug.WriteLine("Bound to multicast address");
+
+                            // Start a receive loop
+                            var shouldCancel = false;
+                            var recTask = Task.Run(async () =>
+                            {
+                                try
+                                {
+                                    while (!shouldCancel)
                                     {
-                                        lock (list)
+                                        var res = await client.ReceiveAsync().ConfigureAwait(false);
+                                        var byteCount = res.Buffer.Length;
+                                        var resp = new Response(res.Buffer);
+                                        Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}", res.RemoteEndPoint.Address, byteCount, resp.header.QR);
+
+                                        var zr = ResponseToZeroconf(resp);
+                                        if (!string.IsNullOrWhiteSpace(zr.IPAddress))
                                         {
-                                            list.Add(zr);
+                                            lock (list)
+                                            {
+                                                list.Add(zr);
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            catch (ObjectDisposedException)
-                            {
-                            }
+                                catch (ObjectDisposedException)
+                                {
+                                }
 
-                        }, cancellationToken);
+                            }, cancellationToken);
 
-                        var broadcastEp = new IPEndPoint(IPAddress.Parse("224.0.0.251"), 5353);
-                        var buffer = GetRequestBytes(protocol);
-                        await client.SendAsync(buffer, buffer.Length, broadcastEp).ConfigureAwait(false);
-                        Debug.WriteLine("Sent mDNS query");
-
-
-                        // wait for responses
-                        await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
-                        shouldCancel = true;
-                        client.Close();
-                        Debug.WriteLine("Done Scanning");
+                            var broadcastEp = new IPEndPoint(IPAddress.Parse("224.0.0.251"), 5353);
+                            var buffer = GetRequestBytes(protocol);
+                            await client.SendAsync(buffer, buffer.Length, broadcastEp).ConfigureAwait(false);
+                            Debug.WriteLine("Sent mDNS query");
 
 
-                        await recTask.ConfigureAwait(false);
+                            // wait for responses
+                            await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
+                            shouldCancel = true;
+                            client.Close();
+                            Debug.WriteLine("Done Scanning");
 
-                        return list;
+
+                            await recTask.ConfigureAwait(false);
+
+                            return list;
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine("Execption: ", e);
+                            if (i + 1 >= retries) // last one, pass underlying out
+                                throw;
+                        }
+
+                        await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
                     }
-                    catch (Exception e)
-                    {
-                        if (i + 1 >= retries) // last one, pass underlying out
-                            throw;
-                    }
 
-                    await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
+                    return new List<ZeroconfRecord>();
                 }
-
-                return new List<ZeroconfRecord>();
             }
         }
 

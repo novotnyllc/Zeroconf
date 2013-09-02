@@ -31,6 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\Zeroconf.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -43,6 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Zeroconf.RT\AsyncLock.cs">
+      <Link>AsyncLock.cs</Link>
+    </Compile>
     <Compile Include="..\Zeroconf.RT\Dns\Header.cs">
       <Link>Dns\Header.cs</Link>
     </Compile>

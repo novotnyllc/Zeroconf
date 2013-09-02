@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Zeroconf
 {
+    /// <summary>
+    /// A ZeroConf record response
+    /// </summary>
     public class ZeroconfRecord
     {
         internal void AddProperty(string key, string value)
@@ -14,11 +17,30 @@ namespace Zeroconf
 
         private readonly Dictionary<string, string> _properties = new Dictionary<string, string>();
 
+        /// <summary>
+        /// Name of the record
+        /// </summary>
         public string Name { get; set; }
+        
+        /// <summary>
+        /// IP Address
+        /// </summary>
         public string IPAddress { get; set; }
+        
+        /// <summary>
+        /// Host name
+        /// </summary>
         public string Host { get; set; }
+        
+        /// <summary>
+        /// Port
+        /// </summary>
         public string Port { get; set; }
         
+        /// <summary>
+        /// Diagnostic
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -37,6 +59,9 @@ namespace Zeroconf
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Properties of the object
+        /// </summary>
         public IReadOnlyDictionary<string, string> Properties
         {
             get

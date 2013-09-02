@@ -12,8 +12,6 @@ namespace ZeroconfTest.WP
 {
     public partial class MainPage : INotifyPropertyChanged
     {
-        private IDisposable _d;
-
         public MainPage()
         {
             InitializeComponent();
