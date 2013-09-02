@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using System.Text;
 
 namespace Zeroconf
@@ -8,7 +9,44 @@ namespace Zeroconf
     /// <summary>
     /// A ZeroConf record response
     /// </summary>
-    public class ZeroconfRecord
+    public interface IZeroconfRecord
+    {
+        /// <summary>
+        /// Name of the record
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// IP Address
+        /// </summary>
+#if NETFX_CORE
+        Windows.Networking.HostName
+#else
+        System.Net.IPAddress 
+#endif
+            
+            IPAddress { get; }
+
+        /// <summary>
+        /// Host name
+        /// </summary>
+        string Host { get; }
+
+        /// <summary>
+        /// Port
+        /// </summary>
+        int Port { get; }
+
+        /// <summary>
+        /// Properties of the object
+        /// </summary>
+        IReadOnlyDictionary<string, string> Properties { get; }
+    }
+
+    /// <summary>
+    /// A ZeroConf record response
+    /// </summary>
+    internal class ZeroconfRecord : IZeroconfRecord
     {
         internal void AddProperty(string key, string value)
         {
@@ -25,7 +63,14 @@ namespace Zeroconf
         /// <summary>
         /// IP Address
         /// </summary>
-        public string IPAddress { get; set; }
+        public
+#if NETFX_CORE
+ Windows.Networking.HostName
+#else
+        System.Net.IPAddress 
+#endif
+            IPAddress { get; set; }
+        
         
         /// <summary>
         /// Host name
@@ -35,7 +80,7 @@ namespace Zeroconf
         /// <summary>
         /// Port
         /// </summary>
-        public string Port { get; set; }
+        public int Port { get; set; }
         
         /// <summary>
         /// Diagnostic

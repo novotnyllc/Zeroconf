@@ -14,27 +14,33 @@ Hosts that have multiple Internet addresses will have multiple A
 records.
  * 
  */
+
 namespace Heijden.DNS
 {
     internal class RecordA : Record
 	{
-		//public System.Net.IPAddress Address;
-        public string Address;
+        public
+#if NETFX_CORE
+ Windows.Networking.HostName
+#else
+        System.Net.IPAddress 
+#endif
+            Address;
 
 		public RecordA(RecordReader rr)
 		{
-			//Address = new System.Net.IPAddress(rr.ReadBytes(4));
-			//System.Net.IPAddress.TryParse(string.Format("{0}.{1}.{2}.{3}",
-			//	rr.ReadByte(),
-			//	rr.ReadByte(),
-			//	rr.ReadByte(),
-			//	rr.ReadByte()), out this.Address);
-
-            Address = string.Format("{0}.{1}.{2}.{3}",
+            //Address = new System.Net.IPAddress(rr.ReadBytes(4));
+            var str = string.Format("{0}.{1}.{2}.{3}",
                 rr.ReadByte(),
                 rr.ReadByte(),
                 rr.ReadByte(),
                 rr.ReadByte());
+
+#if NETFX_CORE
+            Address = new Windows.Networking.HostName(str);
+#else
+            System.Net.IPAddress.TryParse(str, out this.Address);
+#endif
 		}
 
 		public override string ToString()

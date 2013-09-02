@@ -168,13 +168,13 @@ namespace ZeroconfTest.WP
                                 "_xsync._tcp",
                                 "_xtshapro._tcp",
                             };
-            Servers = new ObservableCollection<ZeroconfRecord>();
+            Servers = new ObservableCollection<IZeroconfRecord>();
             DataContext = this;
         }
 
         public List<string> Protocols { get; set; }
         public string Protocol { get; set; }
-        public ObservableCollection<ZeroconfRecord> Servers { get; set; }
+        public ObservableCollection<IZeroconfRecord> Servers { get; set; }
         private void ProtocolSelected(object sender, SelectionChangedEventArgs e)
         {
             Protocol = e.AddedItems.Count > 0 ? (string) e.AddedItems[0] : "";

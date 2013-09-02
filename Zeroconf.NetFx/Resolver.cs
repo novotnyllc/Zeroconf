@@ -30,7 +30,7 @@ namespace Zeroconf
         /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
         /// <param name="retryDelayMilliseconds">The delay time between retries</param>
         /// <returns></returns>
-        public static async Task<IReadOnlyList<ZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default (TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, CancellationToken cancellationToken = default (CancellationToken))
+        public static async Task<IReadOnlyList<IZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default (TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, CancellationToken cancellationToken = default (CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(protocol))
                 throw new ArgumentNullException("protocol");
@@ -77,7 +77,7 @@ namespace Zeroconf
                                         Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}", res.RemoteEndPoint.Address, byteCount, resp.header.QR);
 
                                         var zr = ResponseToZeroconf(resp);
-                                        if (!string.IsNullOrWhiteSpace(zr.IPAddress))
+                                        if (zr.IPAddress != null)
                                         {
                                             lock (list)
                                             {
@@ -159,7 +159,7 @@ namespace Zeroconf
             if (records.Contains(DnsType.SRV))
             {
                 var srv = (RecordSRV)records[DnsType.SRV].First().RECORD;
-                z.Port = srv.PORT.ToString(CultureInfo.InvariantCulture);
+                z.Port = srv.PORT;
             }
 
             if (records.Contains(DnsType.TXT))
