@@ -23,22 +23,22 @@ namespace ZeroconfTest.NetFx
     /// </summary>
     public partial class MainWindow : Window
     {
-        private IDisposable _d;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (_d != null)
-                _d.Dispose();
-            
-            _d = ZeroconfResolver
-                .Resolve("_p2pchat._udp.local.")
-                .Timeout(TimeSpan.FromSeconds(5), Observable.Empty<ZeroconfRecord>())
-                .Subscribe(x => Debug.WriteLine(x));
+
+            using (var _d = ZeroconfResolver
+                .Resolve("_presence._tcp.local.")
+                .Subscribe(x => Debug.WriteLine(x)))
+            {
+                // Allow to run for 10 sec
+                await Task.Delay(TimeSpan.FromSeconds(10));
+            }
         }
     }
 }

@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
+using System.Text.RegularExpressions;
 using Windows.Foundation;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
+using Heijden.DNS;
+using Type = Heijden.DNS.Type;
 
 namespace Zeroconf
 {
@@ -60,177 +67,118 @@ namespace Zeroconf
             dataWriter.WriteByte(0);
         }
 
-        private static DnsMessage ReadDnsMessage(IDataReader dataReader)
+        private static Response ReadDnsResponse(IDataReader dataReader)
         {
-            var stringReader = new DnsStringReader(dataReader, dataReader.UnconsumedBufferLength);
-            var msg = new DnsMessage
-                {
-                    QueryIdentifier = dataReader.ReadUInt16(),
-                    Flags = dataReader.ReadUInt16(),
-                };
 
-            var qCount = dataReader.ReadUInt16();
-            var aCount = dataReader.ReadUInt16();
-            var nsCount = dataReader.ReadUInt16();
-            var arCount = dataReader.ReadUInt16();
-            var nonQuestions = aCount + nsCount + arCount;
+            var resp = new Response(dataReader.ReadBuffer(dataReader.UnconsumedBufferLength).ToArray());
 
-            for (var i = 0; i < qCount; i++)
-                msg.Records.Add(new QuestionRecord
-                              {
-                                  ResourceName = stringReader.ReadString(),
-                                  QuestionType = dataReader.ReadUInt16(),
-                                  Class = dataReader.ReadUInt16()
-                              });
-
-            for (var i = 0; i < nonQuestions; i++)
-            {
-                var resName = stringReader.ReadString();
-                var resType = dataReader.ReadUInt16();
-                var resClass = dataReader.ReadUInt16();
-                var ttl = dataReader.ReadUInt32();
-                var resLength = dataReader.ReadUInt16();
-                var remaining = dataReader.UnconsumedBufferLength;
-                ResourceRecord rec;
-                switch (resType)
-                {
-                    case 1:  // A,
-                        rec = new HostAddressRecord
-                        {
-                            IPAddress = string.Format("{0}.{1}.{2}.{3}",
-                                                                dataReader.ReadByte(), dataReader.ReadByte(),
-                                                                dataReader.ReadByte(), dataReader.ReadByte())
-                        };
-                        break;
-                    case 12:  // PTR
-                        rec = new PtrRecord
-                        {
-                            DomainNamePointer = stringReader.ReadString(resLength)
-                        };
-                        break;
-                    case 16:  // TXT
-                        rec = new TxtRecord
-                        {
-                            TextRData = stringReader.ReadString(resLength)
-                        };
-                        break;
-                    case 33:  // SRV
-                        rec = new SrvRecord
-                        {
-                            Priority = dataReader.ReadUInt16(),
-                            Weight = dataReader.ReadUInt16(),
-                            Port = dataReader.ReadUInt16(),
-                            Target = stringReader.ReadString(resLength)
-                        };
-                        break;
-                    default:
-                        rec = new UnknownDnsRecord
-                        {
-                            ResourceType = resType
-                        };
-                        break;
-                }
-                rec.ResourceName = resName;
-                rec.Class = resClass;
-                rec.Ttl = ttl;
-                msg.Records.Add(rec);
-                var remainingResourceBytes = (int)(resLength - (remaining - dataReader.UnconsumedBufferLength));
-                if (remainingResourceBytes < 0)
-                {
-                    Debug.WriteLine("error reading resource - reached into next record");
-                    return msg;
-                }
-                if (remainingResourceBytes > 0)
-                    dataReader.ReadBuffer((uint)remainingResourceBytes);
-            }
-
-            return msg;
+            return resp;
         }
 
-        private static ZeroconfRecord DnsToZeroconf(DnsMessage message)
-        {
-            if (!message.IsResponse)
-                return null;
-            var zr = new ZeroconfRecord();
-            var ptr = message.Records.OfType<PtrRecord>().FirstOrDefault();
-            if (ptr != null)
-                zr.Name = ptr.DomainNamePointer.Split('.')[0];
-            var hst = message.Records.OfType<HostAddressRecord>().FirstOrDefault();
-            if (hst != null)
-            {
-                zr.Host = hst.ResourceName.Split('.')[0];
-                zr.IPAddress = hst.IPAddress;
-            }
-            var srv = message.Records.OfType<SrvRecord>().FirstOrDefault();
-            if (srv != null)
-                zr.Port = srv.Port.ToString();
-            return zr;
-        }
+        
 
         private static ZeroconfRecord ProcessMessage(EventPattern<DatagramSocketMessageReceivedEventArgs> eventPattern)
         {
             var dr = eventPattern.EventArgs.GetDataReader();
             var byteCount = dr.UnconsumedBufferLength;
             Debug.WriteLine("IP: {0} Bytes:{1}", eventPattern.EventArgs.RemoteAddress.DisplayName, byteCount);
-            var msg = ReadDnsMessage(dr);
-            return DnsToZeroconf(msg);
+
+            var r = ReadDnsResponse(dr);
+            
+           if(!r.header.QR)
+               return null;
+            
+            
+            return ResponseToZeroconf(r);}
+
+        private static ZeroconfRecord ResponseToZeroconf(Response response)
+        {
+            // records by type
+            var records = response.RecordsRR.ToLookup(record => record.Type);
+
+            
+            var z = new ZeroconfRecord();
+
+            if (records.Contains(Type.PTR))
+            {
+                var ptr = (RecordPTR) records[Type.PTR].First().RECORD;
+                z.Name = ptr.PTRDNAME.Split('.')[0];
+            }
+
+            if (records.Contains(Type.A))
+            {
+                var rr = records[Type.A].First();
+                z.Host = rr.NAME.Split('.')[0];
+                z.IPAddress = ((RecordA)rr.RECORD).Address;
+            }
+
+            if (records.Contains(Type.SRV))
+            {
+                var srv = (RecordSRV)records[Type.SRV].First().RECORD;
+                z.Port = srv.PORT.ToString(CultureInfo.InvariantCulture);
+            }
+
+            if (records.Contains(Type.TXT))
+            {
+                foreach (var rr in records[Type.TXT])
+                {
+                    var txtRecord = (RecordTXT)rr.RECORD;
+                    foreach (var txt in txtRecord.TXT)
+                    {
+                        var split = txt.Split(new[] { '=' }, 2);
+                        if (split.Length == 1)
+                        {
+                            z.AddProperty(split[0], null);
+                        }
+                        else
+                        {
+                            z.AddProperty(split[0], split[1]);
+                        }
+                    }
+                }
+            }
+
+            return z;
         }
     }
 
     public class ZeroconfRecord
     {
+        internal void AddProperty(string key, string value)
+        {
+            _properties[key] = value;
+        }
+
+        private readonly Dictionary<string, string> _properties = new Dictionary<string, string>();
+
         public string Name { get; set; }
         public string IPAddress { get; set; }
         public string Host { get; set; }
         public string Port { get; set; }
+        
         public override string ToString()
         {
-            return string.Format("Name:{0} IP:{1} Host:{2} Port:{3}", Name, IPAddress, Host, Port);
-        }
-    }
+            var sb = new StringBuilder();
+            sb.AppendFormat("Name:{0} IP:{1} Host:{2} Port:{3}", Name, IPAddress, Host, Port);
 
-    internal class DnsStringReader
-    {
-        private readonly Dictionary<uint, string> _map = new Dictionary<uint, string>();
-        private readonly IDataReader _dataReader;
-        private readonly uint _totalBytes;
-
-        internal DnsStringReader(IDataReader dataReader, uint totalBytes)
-        {
-            _dataReader = dataReader;
-            _totalBytes = totalBytes;
-        }
-
-        public string ReadString(ushort resLength = 0)
-        {
-            var substringPositions = new List<uint>();
-            var startingPosition = _totalBytes - _dataReader.UnconsumedBufferLength;
-            Func<string> retVal = () => substringPositions.Count == 0 ? "" : _map[substringPositions[0]];
-            Action<string, uint> appendToPositions = (str, position) =>
+            if (_properties.Any())
             {
-                foreach (var pos in substringPositions)
-                    _map[pos] = _map[pos] + '.' + str;
-                _map[position] = str;
-                substringPositions.Add(position);
-            };
-            while (true)
-            {
-                var position = _totalBytes - _dataReader.UnconsumedBufferLength;
-                if (resLength > 0 && position - startingPosition >= resLength)
-                    return retVal();
-                var strLen = _dataReader.ReadByte();
-                if (strLen == 0)
-                    return retVal();
-                string str;
-                if (DnsMath.IsPointer(strLen))
+                sb.AppendLine();
+                foreach (var kvp in _properties)
                 {
-                    var ptr = DnsMath.TwoBytesToPointer(strLen, _dataReader.ReadByte());
-                    if (_map.TryGetValue(ptr, out str))
-                        appendToPositions(str, position);
-                    return retVal();
+                    sb.AppendFormat("{0} = {1}", kvp.Key, kvp.Value);
+                    sb.AppendLine();
                 }
-                str = _dataReader.ReadString(strLen);
-                appendToPositions(str, position);
+            }
+
+            return sb.ToString();
+        }
+
+        public IReadOnlyDictionary<string, string> Properties
+        {
+            get
+            {
+                return _properties;
             }
         }
     }

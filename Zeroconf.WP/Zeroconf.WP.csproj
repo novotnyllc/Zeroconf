@@ -85,8 +85,44 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Zeroconf.RT\DnsMessage.cs">
-      <Link>DnsMessage.cs</Link>
+    <Compile Include="..\Zeroconf.RT\Dns\Header.cs">
+      <Link>Dns\Header.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\Question.cs">
+      <Link>Dns\Question.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\Record.cs">
+      <Link>Dns\Record.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\RecordA.cs">
+      <Link>Dns\RecordA.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\RecordAAAA.cs">
+      <Link>Dns\RecordAAAA.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\RecordPTR.cs">
+      <Link>Dns\RecordPTR.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\RecordReader.cs">
+      <Link>Dns\RecordReader.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\RecordSRV.cs">
+      <Link>Dns\RecordSRV.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\RecordTXT.cs">
+      <Link>Dns\RecordTXT.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\RecordUnknown.cs">
+      <Link>Dns\RecordUnknown.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\Response.cs">
+      <Link>Dns\Response.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\RR.cs">
+      <Link>Dns\RR.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\Structs.cs">
+      <Link>Dns\Structs.cs</Link>
     </Compile>
     <Compile Include="..\Zeroconf.RT\ZeroconfResolver.cs">
       <Link>ZeroconfResolver.cs</Link>
