@@ -91,6 +91,7 @@ namespace Zeroconf
                     if (socketBound)
                         break;
 
+                    Debug.WriteLine("Retrying in {0} ms", retryDelayMilliseconds);
                     // Not found, wait to try again
                     await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
                 }
@@ -115,6 +116,7 @@ namespace Zeroconf
             {
                 WriteQueryMessage(protocol, writer);
                 await writer.StoreAsync().AsTask(cancellationToken).ConfigureAwait(false);
+                Debug.WriteLine("Send mDNS query");
 
                 writer.DetachStream();
             }
