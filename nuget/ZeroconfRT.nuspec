@@ -18,9 +18,12 @@
         <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.dll" target="lib\netcore45\ZeroconfRT.dll" />
         <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.pdb" target="lib\netcore45\ZeroconfRT.pdb" />
         <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.pri" target="lib\netcore45\ZeroconfRT.pri" />
+        <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.xml" target="lib\netcore45\ZeroconfRT.xml" />
         <file src="..\Zeroconf.WP\Bin\Release\ZeroconfRT.dll" target="lib\wp8\ZeroconfRT.dll" />
         <file src="..\Zeroconf.WP\Bin\Release\ZeroconfRT.pdb" target="lib\wp8\ZeroconfRT.pdb" />
+        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfRT.xml" target="lib\wp8\ZeroconfRT.xml" />
         <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
         <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.pdb" target="lib\net45\Zeroconf.pdb" />
+        <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.xml" target="lib\net45\Zeroconf.xml" />        
     </files>
 </package>
