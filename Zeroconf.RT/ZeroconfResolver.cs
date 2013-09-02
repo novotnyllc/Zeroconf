@@ -3,45 +3,123 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using Heijden.DNS;
-using Type = Heijden.DNS.Type;
+using DnsType = Heijden.DNS.Type;
 
 namespace Zeroconf
 {
     public static class ZeroconfResolver
     {
-        public static IObservable<ZeroconfRecord> Resolve(string protocol)
+        
+        /// <summary>
+        /// Resolves available ZeroConf services
+        /// </summary>
+        /// <param name="scanTime">Default is 2 seconds</param>
+        /// <param name="cancellationToken"></param>
+        /// <param name="protocol"></param>
+        /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
+        /// <param name="retryDelayMilliseconds">The delay time between retries</param>
+        /// <returns></returns>
+        public static async Task<IReadOnlyList<ZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default (TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, CancellationToken cancellationToken = default (CancellationToken))
         {
-            return Observable.Create<ZeroconfRecord>(async observer =>
+            if(string.IsNullOrWhiteSpace(protocol))
+                throw new ArgumentNullException("protocol");
+
+            if (scanTime == default(TimeSpan))
+                scanTime = TimeSpan.FromSeconds(2);
+
+            Debug.WriteLine("Looking for {0} with scantime {1}", protocol, scanTime);
+
+            using (var socket = new DatagramSocket())
+            {
+                var list = new List<ZeroconfRecord>();
+
+                // setup delegate to detach from later
+                TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs> handler = (sock, args) =>
                 {
-                    var socket = new DatagramSocket();
-                    var s = Observable
-                        .FromEventPattern
-                        <TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs>,
-                            DatagramSocketMessageReceivedEventArgs>(
-                                x => socket.MessageReceived += x, _ => socket.Dispose())
-                        .Select(ProcessMessage)
-                        .Where(x => x != null)
-                        .Subscribe(observer);
-                    await socket.BindServiceNameAsync("5353");
-                    socket.JoinMulticastGroup(new HostName("224.0.0.251"));
-                    var os = await socket.GetOutputStreamAsync(new HostName("224.0.0.251"), "5353");
-                    var writer = new DataWriter(os);
-                    WriteQueryMessage(protocol, writer);
-                    writer.StoreAsync();
-                    return s;
-                });
+                    var dr = args.GetDataReader();
+                    var byteCount = dr.UnconsumedBufferLength;
+                    var resp = new Response(dr.ReadBuffer(dr.UnconsumedBufferLength).ToArray());
+
+                    Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}", args.RemoteAddress.DisplayName, byteCount, resp.header.QR);
+
+                    if (resp.header.QR)
+                    {
+                        var item = ResponseToZeroconf(resp);
+
+                        lock (list)
+                        {
+                            list.Add(item);
+                        }
+                    }
+                };
+
+                socket.MessageReceived += handler;
+                var socketBound = false;
+
+                for (var i = 0; i < retries; i++)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    try
+                    {
+                        await BindToSocketAndWriteQuery(socket, protocol, cancellationToken).ConfigureAwait(false);
+                        socketBound = true;
+                    }
+                    catch (Exception e)
+                    {
+                        
+                        socketBound = false;
+                        Debug.WriteLine("Exception trying to Bind:\n{0}", e);
+
+                        // Most likely a fatal error
+                        if (SocketError.GetStatus(e.HResult) == SocketErrorStatus.Unknown)
+                            throw;
+
+                        // If we're not connected on the last retry, rethrow the underlying exception
+                        if (i + 1 >= retries)
+                            throw;
+                    }
+
+                    if (socketBound)
+                        break;
+
+                    // Not found, wait to try again
+                    await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
+                }
+
+                if (socketBound)
+                {
+                    // wait for responses
+                    await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
+                    Debug.WriteLine("Done Scanning");
+                }
+
+                return list;
+            }
         }
+
+        private async static Task BindToSocketAndWriteQuery(DatagramSocket socket, string protocol, CancellationToken cancellationToken)
+        {
+            await socket.BindServiceNameAsync("5353").AsTask(cancellationToken).ConfigureAwait(false);
+            socket.JoinMulticastGroup(new HostName("224.0.0.251"));
+            var os = await socket.GetOutputStreamAsync(new HostName("224.0.0.251"), "5353").AsTask(cancellationToken).ConfigureAwait(false);
+            using (var writer = new DataWriter(os))
+            {
+                WriteQueryMessage(protocol, writer);
+                await writer.StoreAsync().AsTask(cancellationToken).ConfigureAwait(false);
+
+                writer.DetachStream();
+            }
+        }
+      
 
         private static void WriteQueryMessage(string protocol, IDataWriter dataWriter)
         {
@@ -67,30 +145,6 @@ namespace Zeroconf
             dataWriter.WriteByte(0);
         }
 
-        private static Response ReadDnsResponse(IDataReader dataReader)
-        {
-
-            var resp = new Response(dataReader.ReadBuffer(dataReader.UnconsumedBufferLength).ToArray());
-
-            return resp;
-        }
-
-        
-
-        private static ZeroconfRecord ProcessMessage(EventPattern<DatagramSocketMessageReceivedEventArgs> eventPattern)
-        {
-            var dr = eventPattern.EventArgs.GetDataReader();
-            var byteCount = dr.UnconsumedBufferLength;
-            Debug.WriteLine("IP: {0} Bytes:{1}", eventPattern.EventArgs.RemoteAddress.DisplayName, byteCount);
-
-            var r = ReadDnsResponse(dr);
-            
-           if(!r.header.QR)
-               return null;
-            
-            
-            return ResponseToZeroconf(r);}
-
         private static ZeroconfRecord ResponseToZeroconf(Response response)
         {
             // records by type
@@ -99,28 +153,28 @@ namespace Zeroconf
             
             var z = new ZeroconfRecord();
 
-            if (records.Contains(Type.PTR))
+            if (records.Contains(DnsType.PTR))
             {
-                var ptr = (RecordPTR) records[Type.PTR].First().RECORD;
+                var ptr = (RecordPTR)records[DnsType.PTR].First().RECORD;
                 z.Name = ptr.PTRDNAME.Split('.')[0];
             }
 
-            if (records.Contains(Type.A))
+            if (records.Contains(DnsType.A))
             {
-                var rr = records[Type.A].First();
+                var rr = records[DnsType.A].First();
                 z.Host = rr.NAME.Split('.')[0];
                 z.IPAddress = ((RecordA)rr.RECORD).Address;
             }
 
-            if (records.Contains(Type.SRV))
+            if (records.Contains(DnsType.SRV))
             {
-                var srv = (RecordSRV)records[Type.SRV].First().RECORD;
+                var srv = (RecordSRV)records[DnsType.SRV].First().RECORD;
                 z.Port = srv.PORT.ToString(CultureInfo.InvariantCulture);
             }
 
-            if (records.Contains(Type.TXT))
+            if (records.Contains(DnsType.TXT))
             {
-                foreach (var rr in records[Type.TXT])
+                foreach (var rr in records[DnsType.TXT])
                 {
                     var txtRecord = (RecordTXT)rr.RECORD;
                     foreach (var txt in txtRecord.TXT)
@@ -139,47 +193,6 @@ namespace Zeroconf
             }
 
             return z;
-        }
-    }
-
-    public class ZeroconfRecord
-    {
-        internal void AddProperty(string key, string value)
-        {
-            _properties[key] = value;
-        }
-
-        private readonly Dictionary<string, string> _properties = new Dictionary<string, string>();
-
-        public string Name { get; set; }
-        public string IPAddress { get; set; }
-        public string Host { get; set; }
-        public string Port { get; set; }
-        
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.AppendFormat("Name:{0} IP:{1} Host:{2} Port:{3}", Name, IPAddress, Host, Port);
-
-            if (_properties.Any())
-            {
-                sb.AppendLine();
-                foreach (var kvp in _properties)
-                {
-                    sb.AppendFormat("{0} = {1}", kvp.Key, kvp.Value);
-                    sb.AppendLine();
-                }
-            }
-
-            return sb.ToString();
-        }
-
-        public IReadOnlyDictionary<string, string> Properties
-        {
-            get
-            {
-                return _properties;
-            }
         }
     }
 }

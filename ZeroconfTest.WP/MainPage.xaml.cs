@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -184,21 +183,18 @@ namespace ZeroconfTest.WP
             OnPropertyChanged("Protocol");
         }
 
-        private void BrowseClick(object sender, RoutedEventArgs e)
+        private async void BrowseClick(object sender, RoutedEventArgs e)
         {
-            if (_d != null)
-                _d.Dispose();
 
             var protocol = string.IsNullOrEmpty(Protocol) ? ProtocolPicker.SelectedItem : Protocol;
-            _d = ZeroconfResolver
-                .Resolve(protocol + ".local.")
-                .Timeout(TimeSpan.FromSeconds(5), Observable.Empty<ZeroconfRecord>())
-                .ObserveOnDispatcher()
-                .Subscribe(x =>
-                               {
-                                   Servers.Add(x);
-                                   Debug.WriteLine(x);
-                               });
+
+            var responses = await ZeroconfResolver.ResolveAsync(protocol + ".local.", TimeSpan.FromSeconds(5));
+
+            foreach (var resp in responses)
+            {
+                Servers.Add(resp);
+                Debug.WriteLine(resp);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,13 +31,10 @@ namespace ZeroconfTest.NetFx
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
 
-            using (var _d = ZeroconfResolver
-                .Resolve("_presence._tcp.local.")
-                .Subscribe(x => Debug.WriteLine(x)))
-            {
-                // Allow to run for 10 sec
-                await Task.Delay(TimeSpan.FromSeconds(10));
-            }
+            var responses = await ZeroconfResolver.ResolveAsync("_pdl-datastream._tcp.local.");
+
+            foreach (var resp in responses)
+                Console.WriteLine(resp);
         }
     }
 }

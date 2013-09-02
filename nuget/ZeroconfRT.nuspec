@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>ZeroconfRT</id>
-        <version>0.6</version>
+        <version>0.7</version>
         <title />
         <authors>Sergey Aldoukhov</authors>
         <owners />
@@ -13,9 +13,6 @@
         <copyright>© Sergey Aldoukhov 2013</copyright>
         <language>en-US</language>
         <tags>zeroconf bonjour mdns</tags>
-        <dependencies>
-            <dependency id="Rx-Main" version="2.1.30214.0" />
-        </dependencies>
     </metadata>
     <files>
         <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.dll" target="lib\netcore45\ZeroconfRT.dll" />
