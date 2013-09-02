@@ -115,6 +115,9 @@
     <Compile Include="..\Zeroconf.RT\Dns\RecordUnknown.cs">
       <Link>Dns\RecordUnknown.cs</Link>
     </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\Request.cs">
+      <Link>Dns\Request.cs</Link>
+    </Compile>
     <Compile Include="..\Zeroconf.RT\Dns\Response.cs">
       <Link>Dns\Response.cs</Link>
     </Compile>

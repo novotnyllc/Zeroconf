@@ -16,7 +16,7 @@ records.
  */
 namespace Heijden.DNS
 {
-	public class RecordA : Record
+    internal class RecordA : Record
 	{
 		//public System.Net.IPAddress Address;
         public string Address;

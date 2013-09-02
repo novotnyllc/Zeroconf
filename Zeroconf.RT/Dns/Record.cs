@@ -2,7 +2,7 @@
 
 namespace Heijden.DNS
 {
-	public abstract class Record
+    internal abstract class Record
 	{
 		/// <summary>
 		/// The Resource Record this RDATA record belongs to

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Heijden.DNS
 {
-	public class Response
+    internal class Response
 	{
 		/// <summary>
 		/// List of Question records

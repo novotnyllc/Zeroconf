@@ -20,7 +20,7 @@ description of the IN-ADDR.ARPA domain for an example.
 
 namespace Heijden.DNS
 {
-	public class RecordPTR : Record
+    internal class RecordPTR : Record
 	{
 		public string PTRDNAME;
 

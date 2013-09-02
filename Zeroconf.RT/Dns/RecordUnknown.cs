@@ -2,7 +2,7 @@ using System;
 
 namespace Heijden.DNS
 {
-	public class RecordUnknown : Record
+    internal class RecordUnknown : Record
 	{
 		public byte[] RDATA;
 		public RecordUnknown(RecordReader rr)

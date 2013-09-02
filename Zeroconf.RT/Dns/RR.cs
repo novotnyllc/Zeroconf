@@ -62,7 +62,7 @@ namespace Heijden.DNS
 	/// <summary>
 	/// Resource Record (rfc1034 3.6.)
 	/// </summary>
-	public class RR
+    internal class RR
 	{
 		/// <summary>
 		/// The name of the node to which this resource record pertains
@@ -130,7 +130,7 @@ namespace Heijden.DNS
 		}
 	}
 
-	public class AnswerRR : RR
+    internal class AnswerRR : RR
 	{
 		public AnswerRR(RecordReader br)
 			: base(br)
@@ -138,7 +138,7 @@ namespace Heijden.DNS
 		}
 	}
 
-	public class AuthorityRR : RR
+    internal class AuthorityRR : RR
 	{
 		public AuthorityRR(RecordReader br)
 			: base(br)
@@ -146,7 +146,7 @@ namespace Heijden.DNS
 		}
 	}
 
-	public class AdditionalRR : RR
+    internal class AdditionalRR : RR
 	{
 		public AdditionalRR(RecordReader br)
 			: base(br)

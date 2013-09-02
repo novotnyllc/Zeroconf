@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Heijden.DNS
 {
-	public class RecordReader
+	internal class RecordReader
 	{
 		private byte[] m_Data;
 		private int m_Position;

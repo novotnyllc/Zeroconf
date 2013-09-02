@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Networking;
-using Windows.Networking.Sockets;
-using Windows.Storage.Streams;
+
 using Heijden.DNS;
 using DnsType = Heijden.DNS.Type;
+
 
 namespace Zeroconf
 {
     public static class ZeroconfResolver
     {
-        
+
         /// <summary>
         /// Resolves available ZeroConf services
         /// </summary>
@@ -30,7 +29,7 @@ namespace Zeroconf
         /// <returns></returns>
         public static async Task<IReadOnlyList<ZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default (TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, CancellationToken cancellationToken = default (CancellationToken))
         {
-            if(string.IsNullOrWhiteSpace(protocol))
+            if (string.IsNullOrWhiteSpace(protocol))
                 throw new ArgumentNullException("protocol");
 
             if (scanTime == default(TimeSpan))
@@ -38,72 +37,84 @@ namespace Zeroconf
 
             Debug.WriteLine("Looking for {0} with scantime {1}", protocol, scanTime);
 
-            using (var socket = new DatagramSocket())
+
+            using (var client = new UdpClient())
             {
-                var list = new List<ZeroconfRecord>();
-
-                // setup delegate to detach from later
-                TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs> handler = (sock, args) =>
+                for (var i = 0; i < retries; retries++)
                 {
-                    var dr = args.GetDataReader();
-                    var byteCount = dr.UnconsumedBufferLength;
-                    var resp = new Response(dr.ReadBuffer(dr.UnconsumedBufferLength).ToArray());
-
-                    Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}", args.RemoteAddress.DisplayName, byteCount, resp.header.QR);
-
-                    if (resp.header.QR)
-                    {
-                        var item = ResponseToZeroconf(resp);
-
-                        lock (list)
-                        {
-                            list.Add(item);
-                        }
-                    }
-                };
-
-                socket.MessageReceived += handler;
-                var socketBound = false;
-
-                for (var i = 0; i < retries; i++)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
                     try
                     {
-                        await BindToSocketAndWriteQuery(socket, protocol, cancellationToken).ConfigureAwait(false);
-                        socketBound = true;
+                        var list = new List<ZeroconfRecord>();
+
+                        var localEp = new IPEndPoint(IPAddress.Any, 5353);
+                        client.ExclusiveAddressUse = false;
+                        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, scanTime.Milliseconds);
+                        client.ExclusiveAddressUse = false;
+
+                        client.Client.Bind(localEp);
+
+
+                        var multicastAddress = IPAddress.Parse("224.0.0.251");
+                        client.JoinMulticastGroup(multicastAddress);
+                        Debug.WriteLine("Bound to multicast address");
+
+                        // Start a receive loop
+                        var shouldCancel = false;
+                        var recTask = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                while (!shouldCancel)
+                                {
+                                    var res = await client.ReceiveAsync().ConfigureAwait(false);
+                                    var byteCount = res.Buffer.Length;
+                                    var resp = new Response(res.Buffer);
+                                    Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}", res.RemoteEndPoint.Address, byteCount, resp.header.QR);
+
+                                    var zr = ResponseToZeroconf(resp);
+                                    if (!string.IsNullOrWhiteSpace(zr.IPAddress))
+                                    {
+                                        lock (list)
+                                        {
+                                            list.Add(zr);
+                                        }
+                                    }
+                                }
+                            }
+                            catch (ObjectDisposedException)
+                            {
+                            }
+
+                        }, cancellationToken);
+
+                        var broadcastEp = new IPEndPoint(IPAddress.Parse("224.0.0.251"), 5353);
+                        var buffer = GetRequestBytes(protocol);
+                        await client.SendAsync(buffer, buffer.Length, broadcastEp).ConfigureAwait(false);
+                        Debug.WriteLine("Sent mDNS query");
+
+
+                        // wait for responses
+                        await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
+                        shouldCancel = true;
+                        client.Close();
+                        Debug.WriteLine("Done Scanning");
+
+
+                        await recTask.ConfigureAwait(false);
+
+                        return list;
                     }
                     catch (Exception e)
                     {
-                        
-                        socketBound = false;
-                        Debug.WriteLine("Exception trying to Bind:\n{0}", e);
-
-                        // Most likely a fatal error
-                        if (SocketError.GetStatus(e.HResult) == SocketErrorStatus.Unknown)
-                            throw;
-
-                        // If we're not connected on the last retry, rethrow the underlying exception
-                        if (i + 1 >= retries)
+                        if (i + 1 >= retries) // last one, pass underlying out
                             throw;
                     }
 
-                    if (socketBound)
-                        break;
-
-                    Debug.WriteLine("Retrying in {0} ms", retryDelayMilliseconds);
-                    // Not found, wait to try again
                     await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
                 }
 
-                if (socketBound)
-                {
-                    // wait for responses
-                    await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
-                    Debug.WriteLine("Done Scanning");
-                }
-
-                return list;
+                return new List<ZeroconfRecord>();
             }
         }
 
@@ -118,29 +129,12 @@ namespace Zeroconf
             return req.Data;
         }
 
-        private async static Task BindToSocketAndWriteQuery(DatagramSocket socket, string protocol, CancellationToken cancellationToken)
-        {
-            await socket.BindServiceNameAsync("5353").AsTask(cancellationToken).ConfigureAwait(false);
-            socket.JoinMulticastGroup(new HostName("224.0.0.251"));
-            var os = await socket.GetOutputStreamAsync(new HostName("224.0.0.251"), "5353").AsTask(cancellationToken).ConfigureAwait(false);
-            using (var writer = new DataWriter(os))
-            {
-                var bytes = GetRequestBytes(protocol);
-                writer.WriteBytes(bytes);
-
-                await writer.StoreAsync().AsTask(cancellationToken).ConfigureAwait(false);
-                Debug.WriteLine("Sent mDNS query");
-
-                writer.DetachStream();
-            }
-        }
-
         private static ZeroconfRecord ResponseToZeroconf(Response response)
         {
             // records by type
             var records = response.RecordsRR.ToLookup(record => record.Type);
 
-            
+
             var z = new ZeroconfRecord();
 
             if (records.Contains(DnsType.PTR))

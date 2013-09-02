@@ -7,11 +7,11 @@
     <ProjectGuid>{23079F74-51A5-4441-AF92-559780095AA4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Zeroconf.NetFx</RootNamespace>
-    <AssemblyName>ZeroconfRT</AssemblyName>
+    <RootNamespace>Zeroconf</RootNamespace>
+    <AssemblyName>Zeroconf</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetPlatformVersion>8.0</TargetPlatformVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,22 +30,17 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO" />
-    <Reference Include="System.Linq" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Runtime.WindowsRuntime" />
-    <Reference Include="System.Runtime.InteropServices.WindowsRuntime" />
-    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Windows" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Zeroconf.RT\Dns\Header.cs">
@@ -77,6 +73,9 @@
     <Compile Include="..\Zeroconf.RT\Dns\RecordUnknown.cs">
       <Link>Dns\RecordUnknown.cs</Link>
     </Compile>
+    <Compile Include="..\Zeroconf.RT\Dns\Request.cs">
+      <Link>Dns\Request.cs</Link>
+    </Compile>
     <Compile Include="..\Zeroconf.RT\Dns\Response.cs">
       <Link>Dns\Response.cs</Link>
     </Compile>
@@ -89,10 +88,8 @@
     <Compile Include="..\Zeroconf.RT\ZeroconfRecord.cs">
       <Link>ZeroconfRecord.cs</Link>
     </Compile>
-    <Compile Include="..\Zeroconf.RT\ZeroconfResolver.cs">
-      <Link>ZeroconfResolver.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
