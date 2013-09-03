@@ -45,7 +45,7 @@ The method signature is as follows:
 		<td>Service to query. Almost always must end with <em>.local.</em></td>
 	</tr>
 	<tr>
-		<td>scanTime<td>
+		<td>scanTime</td>
 		<td>2 seconds</td>
 		<td>Amount of time to listen for responses</td>
 	</tr>
