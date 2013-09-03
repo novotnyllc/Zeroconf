@@ -40,31 +40,29 @@ The method signature is as follows:
 		<th>Notes</th>
 	</tr>
 	<tr>
-		<td>
-		<pre>protocol</pre>
-		</td>
+		<td>protocol</td>
 		<td></td>
 		<td>Service to query. Almost always must end with <em>.local.</em></td>
 	</tr>
 	<tr>
-		<td><pre>scanTime</pre></td>
-		<td><pre>2 seconds</pre></td>
+		<td>scanTime<td>
+		<td>2 seconds</td>
 		<td>Amount of time to listen for responses</td>
 	</tr>
 	<tr>
-		<td><pre>retries</pre></td>
-		<td><pre>2</pre></td>
+		<td>retries</td>
+		<td>2</td>
 		<td>Number of times to attempt to bind to the socket. Binding may fail if 
 		another app is currently using it.</td>
 	</tr>
 	<tr>
-		<td><pre>retryDelayMilliseconds</pre></td>
-		<td><pre>2000</pre></td>
+		<td>retryDelayMilliseconds</td>
+		<td>2000</td>
 		<td>Delay between retries</td>
 	</tr>
 	<tr>
-		<td><pre>cancellationToken</pre></td>
-		<td><pre>CancellationToken.None</pre></td>
+		<td>cancellationToken</td>
+		<td>CancellationToken.None</td>
 		<td>Optional use of task cancellation</td>
 	</tr>
 </table>
