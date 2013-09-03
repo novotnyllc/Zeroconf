@@ -12,7 +12,7 @@
         <description>Bonjour support for .NET 4.5, Windows Phone 8 and Windows Store apps</description>
         <copyright>© Oren Novotny &amp; Sergey Aldoukhov 2013</copyright>
         <language>en-US</language>
-        <tags>zeroconf bonjour mdns</tags>
+        <tags>zeroconf bonjour mdns service discovery</tags>
     </metadata>
     <files>
         <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.dll" target="lib\netcore45\ZeroconfRT.dll" />
