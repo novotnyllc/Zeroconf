@@ -118,6 +118,7 @@
     <Compile Include="Dns\Response.cs" />
     <Compile Include="Dns\RR.cs" />
     <Compile Include="Dns\Structs.cs" />
+    <Compile Include="Properties\SharedAssemblyInfo.cs" />
     <Compile Include="ZeroconfRecord.cs" />
     <Compile Include="ZeroconfResolver.cs" />
   </ItemGroup>

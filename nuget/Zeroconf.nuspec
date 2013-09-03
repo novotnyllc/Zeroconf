@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <id>ZeroconfRT</id>
-        <version>0.7</version>
+        <id>Zeroconf</id>
+        <version>1.0</version>
         <title />
         <authors>Sergey Aldoukhov, Oren Novotny</authors>
         <owners />
         <licenseUrl>http://opensource.org/licenses/ms-pl</licenseUrl>
-        <projectUrl>https://github.com/saldoukhov/ZeroconfRT</projectUrl>
+        <projectUrl>https://github.com/onovotny/Zeroconf</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Bonjour support for WinRT, WinPhone and .NET applications - Windows 8, Windows Phone 8, .NET 4.5</description>
-        <copyright>© Sergey Aldoukhov 2013</copyright>
+        <description>Bonjour support for .NET 4.5, Windows Phone 8 and Windows Store apps</description>
+        <copyright>© Oren Novotny &amp; Sergey Aldoukhov 2013</copyright>
         <language>en-US</language>
         <tags>zeroconf bonjour mdns</tags>
     </metadata>
@@ -19,11 +19,12 @@
         <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.pdb" target="lib\netcore45\ZeroconfRT.pdb" />
         <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.pri" target="lib\netcore45\ZeroconfRT.pri" />
         <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.xml" target="lib\netcore45\ZeroconfRT.xml" />
-        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfRT.dll" target="lib\wp8\ZeroconfRT.dll" />
-        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfRT.pdb" target="lib\wp8\ZeroconfRT.pdb" />
-        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfRT.xml" target="lib\wp8\ZeroconfRT.xml" />
+        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfWP.dll" target="lib\wp8\ZeroconfWP.dll" />
+        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfWP.pdb" target="lib\wp8\ZeroconfWP.pdb" />
+        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfWP.xml" target="lib\wp8\ZeroconfWP.xml" />
         <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
         <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.pdb" target="lib\net45\Zeroconf.pdb" />
-        <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.xml" target="lib\net45\Zeroconf.xml" />        
+        <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.xml" target="lib\net45\Zeroconf.xml" /> 
+        <file src="..\**\*.cs" target="src" exclude="..\_ReSharper.*\**\*.*;..\packages\**\*.*;..\**\Debug\**\*.*"/>       
     </files>
 </package>

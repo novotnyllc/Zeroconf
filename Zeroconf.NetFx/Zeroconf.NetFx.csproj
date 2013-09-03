@@ -89,6 +89,9 @@
     <Compile Include="..\Zeroconf.RT\Dns\Structs.cs">
       <Link>Dns\Structs.cs</Link>
     </Compile>
+    <Compile Include="..\Zeroconf.RT\Properties\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="..\Zeroconf.RT\ZeroconfRecord.cs">
       <Link>ZeroconfRecord.cs</Link>
     </Compile>

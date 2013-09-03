@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Zeroconf</RootNamespace>
-    <AssemblyName>ZeroconfRT</AssemblyName>
+    <AssemblyName>ZeroconfWP</AssemblyName>
     <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
@@ -41,7 +41,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\ZeroconfRT.XML</DocumentationFile>
+    <DocumentationFile>Bin\Release\ZeroconfWP.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -130,6 +130,9 @@
     </Compile>
     <Compile Include="..\Zeroconf.RT\Dns\Structs.cs">
       <Link>Dns\Structs.cs</Link>
+    </Compile>
+    <Compile Include="..\Zeroconf.RT\Properties\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="..\Zeroconf.RT\ZeroconfRecord.cs">
       <Link>ZeroconfRecord.cs</Link>
