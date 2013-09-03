@@ -28,7 +28,7 @@ There's a single method with a few optional parameters:
 The _ResolveAsync_ method has one required and several optional parameters. 
 The method signature is as follows:
     
-	Task<IReadOnlyList<IZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, CancellationToken cancellationToken = default(CancellationToken));
+	Task<IReadOnlyList<IZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfRecord> callback = null, CancellationToken cancellationToken = default(CancellationToken));
 
 
 ### Parameters
@@ -59,6 +59,12 @@ The method signature is as follows:
 		<td>retryDelayMilliseconds</td>
 		<td>2000</td>
 		<td>Delay between retries</td>
+	</tr>
+	<tr>
+		<td>callback</td>
+		<td>null</td>
+		<td>If provided, called per IZeroconfigRecord as they are processed. This can be used to stream
+			data back prior to call completion.</td>
 	</tr>
 	<tr>
 		<td>cancellationToken</td>
