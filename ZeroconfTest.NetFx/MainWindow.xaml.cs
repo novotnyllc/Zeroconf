@@ -31,7 +31,10 @@ namespace ZeroconfTest.NetFx
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
 
-            var responses = await ZeroconfResolver.ResolveAsync("_pdl-datastream._tcp.local.");
+            Action<IZeroconfRecord> onMessage = record => Console.WriteLine("On Message: {0}", record);
+
+            var responses = await ZeroconfResolver.ResolveAsync("_printer._tcp.local.", callback:onMessage);
+
 
             foreach (var resp in responses)
                 Console.WriteLine(resp);

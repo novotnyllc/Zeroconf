@@ -30,8 +30,9 @@ namespace Zeroconf
         /// <param name="protocol"></param>
         /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
         /// <param name="retryDelayMilliseconds">The delay time between retries</param>
+        /// <param name="callback">Called per record returned as they come in.</param>
         /// <returns></returns>
-        public static async Task<IReadOnlyList<IZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default (TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, CancellationToken cancellationToken = default (CancellationToken))
+        public static async Task<IReadOnlyList<IZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default (TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfRecord> callback = null, CancellationToken cancellationToken = default (CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(protocol))
                 throw new ArgumentNullException("protocol");
@@ -41,6 +42,8 @@ namespace Zeroconf
 
             using (await ResolverLock.LockAsync())
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 Debug.WriteLine("Looking for {0} with scantime {1}", protocol, scanTime);
 
                 using (var socket = new DatagramSocket())
@@ -64,6 +67,9 @@ namespace Zeroconf
                             {
                                 list.Add(item);
                             }
+                            
+                            if (callback != null)
+                                callback(item);
                         }
                     };
 

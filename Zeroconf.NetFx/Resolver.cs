@@ -29,8 +29,9 @@ namespace Zeroconf
         /// <param name="protocol"></param>
         /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
         /// <param name="retryDelayMilliseconds">The delay time between retries</param>
+        /// <param name="callback">Called per record returned as they come in.</param>
         /// <returns></returns>
-        public static async Task<IReadOnlyList<IZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default (TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, CancellationToken cancellationToken = default (CancellationToken))
+        public static async Task<IReadOnlyList<IZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default (TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfRecord> callback = null, CancellationToken cancellationToken = default (CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(protocol))
                 throw new ArgumentNullException("protocol");
@@ -40,6 +41,8 @@ namespace Zeroconf
 
             using (await ResolverLock.LockAsync())
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 Debug.WriteLine("Looking for {0} with scantime {1}", protocol, scanTime);
 
                 using (var client = new UdpClient())
@@ -75,14 +78,17 @@ namespace Zeroconf
                                         var byteCount = res.Buffer.Length;
                                         var resp = new Response(res.Buffer);
                                         Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}", res.RemoteEndPoint.Address, byteCount, resp.header.QR);
-
-                                        var zr = ResponseToZeroconf(resp);
-                                        if (zr.IPAddress != null)
+                                        
+                                        if (resp.header.QR)
                                         {
+                                            var zr = ResponseToZeroconf(resp);
                                             lock (list)
                                             {
                                                 list.Add(zr);
                                             }
+
+                                            if (callback != null)
+                                                callback(zr);
                                         }
                                     }
                                 }
