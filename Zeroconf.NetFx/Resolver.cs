@@ -54,7 +54,7 @@ namespace Zeroconf
                     {
                         try
                         {
-                            var list = new List<ZeroconfRecord>();
+                            var list = new HashSet<ZeroconfRecord>(new ZeroConfRecordComparer());
 
                             var localEp = new IPEndPoint(IPAddress.Any, 5353);
 
@@ -125,7 +125,7 @@ namespace Zeroconf
 
                             await recTask.ConfigureAwait(false);
 
-                            return list;
+                            return list.ToList();
                         }
                         catch (Exception e)
                         {
@@ -204,6 +204,34 @@ namespace Zeroconf
             }
 
             return z;
+        }
+    }
+
+    internal class ZeroConfRecordComparer : IEqualityComparer<ZeroconfRecord>
+    {
+        public bool Equals(ZeroconfRecord x, ZeroconfRecord y)
+        {
+            if (ReferenceEquals(x, y))
+                return true;
+
+            if(ReferenceEquals(x, null))
+                return false;
+
+            if (ReferenceEquals(y, null))
+                return false;
+
+            return Equals(x.IPAddress, y.IPAddress);
+        }
+
+        public int GetHashCode(ZeroconfRecord obj)
+        {
+            if (obj == null)
+                return 0;
+
+            if (obj.IPAddress != null)
+                return obj.IPAddress.GetHashCode();
+
+            return 0;
         }
     }
 }
