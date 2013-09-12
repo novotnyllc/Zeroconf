@@ -89,7 +89,11 @@ namespace Zeroconf
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("Name:{0} IP:{1} Host:{2} Port:{3}", Name, IPAddress, Host, Port);
+            sb.AppendFormat("Name:{0} IP:{1} Host:{2} Port:{3}", Name, IPAddress
+#if NETFX_CORE
+ .CanonicalName
+#endif
+                , Host, Port);
 
             if (_properties.Any())
             {

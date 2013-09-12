@@ -15,7 +15,7 @@ namespace ZeroconfTest.RT
 
         private async void ResolveClick(object sender, RoutedEventArgs e)
         {
-            var responses = await ZeroconfResolver.ResolveAsync("_pdl-datastream._tcp.local.", TimeSpan.FromSeconds(5));
+            var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.", TimeSpan.FromSeconds(5));
 
             foreach (var resp in responses)
                 Debug.WriteLine(resp);

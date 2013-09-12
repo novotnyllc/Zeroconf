@@ -33,7 +33,7 @@ namespace ZeroconfTest.NetFx
 
             Action<IZeroconfRecord> onMessage = record => Console.WriteLine("On Message: {0}", record);
 
-            var responses = await ZeroconfResolver.ResolveAsync("_printer._tcp.local.", callback:onMessage);
+            var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.", callback:onMessage);
 
 
             foreach (var resp in responses)

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Management;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,13 +50,21 @@ namespace Zeroconf
 
                 using (var client = new UdpClient())
                 {
-                    for (var i = 0; i < retries; retries++)
+                    for (var i = 0; i < retries; i++)
                     {
                         try
                         {
                             var list = new List<ZeroconfRecord>();
 
                             var localEp = new IPEndPoint(IPAddress.Any, 5353);
+
+                            // There could be multiple adapters, get the default one
+                            uint index = 0;
+                            GetBestInterface(0, out index);
+                            var ifaceIndex = (int)index;
+                            
+                            client.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, (int)IPAddress.HostToNetworkOrder(ifaceIndex));
+
                             client.ExclusiveAddressUse = false;
                             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, scanTime.Milliseconds);
@@ -61,9 +72,10 @@ namespace Zeroconf
 
                             client.Client.Bind(localEp);
 
-
                             var multicastAddress = IPAddress.Parse("224.0.0.251");
-                            client.JoinMulticastGroup(multicastAddress);
+                            var multOpt = new MulticastOption(multicastAddress, ifaceIndex);
+                            client.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
+
                             Debug.WriteLine("Bound to multicast address");
 
                             // Start a receive loop
@@ -129,6 +141,9 @@ namespace Zeroconf
                 }
             }
         }
+
+        [DllImport("iphlpapi.dll", CharSet = CharSet.Auto)]
+        private static extern int GetBestInterface(UInt32 DestAddr, out UInt32 BestIfIndex);
 
         private static byte[] GetRequestBytes(string protocol)
         {
