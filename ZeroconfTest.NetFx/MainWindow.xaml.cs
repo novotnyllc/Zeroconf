@@ -33,11 +33,27 @@ namespace ZeroconfTest.NetFx
 
             Action<IZeroconfRecord> onMessage = record => Console.WriteLine("On Message: {0}", record);
 
-            var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.", callback:onMessage);
+            //_services._dns-sd._udp.local.
+            //var responses = await ZeroconfResolver.ResolveAsync("_services._dns-sd._udp.local.", callback: onMessage);
+           var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.", callback: onMessage);
 
 
             foreach (var resp in responses)
                 Console.WriteLine(resp);
+        }
+
+        private async void Browse_Click(object sender, RoutedEventArgs e)
+        {
+            var responses = await ZeroconfResolver.BrowseDomainsAsync();
+            
+            foreach (var service in responses)
+            {
+                Console.WriteLine(service.Key);
+
+                foreach (var host in service)
+                    Console.WriteLine("\tIP: " + host);
+
+            }
         }
     }
 }

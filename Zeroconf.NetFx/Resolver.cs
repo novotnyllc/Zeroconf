@@ -7,6 +7,7 @@ using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -39,6 +40,56 @@ namespace Zeroconf
             if (string.IsNullOrWhiteSpace(protocol))
                 throw new ArgumentNullException("protocol");
 
+            Action<IPAddress, Response> wrappedAction = null;
+            if (callback != null)
+            {
+                wrappedAction = (address, resp) =>
+                {
+                    var zc = ResponseToZeroconf(resp, address);
+                    callback(zc);
+                };
+            }
+
+            var dict = await ResolveInternal(protocol, scanTime, retries, retryDelayMilliseconds, wrappedAction, cancellationToken).ConfigureAwait(false);
+
+            return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key)).ToList();
+        }
+
+        public static async Task<ILookup<string, IPAddress>> BrowseDomainsAsync(TimeSpan scanTime = default (TimeSpan), int retries = 2,
+            int retryDelayMilliseconds = 2000, Action<string, IPAddress> callback = null, CancellationToken cancellationToken = default (CancellationToken))
+        {
+            const string protocol = "_services._dns-sd._udp.local.";
+
+            Action<IPAddress, Response> wrappedAction = null;
+            if (callback != null)
+            {
+                wrappedAction = (address, response) =>
+                {
+                    foreach (var service in BrowseResponseParser(response))
+                    {
+                        callback(service, address);
+                    }
+                };
+            }
+
+            var dict = await ResolveInternal(protocol, scanTime, retries, retryDelayMilliseconds, wrappedAction, cancellationToken).ConfigureAwait(false);
+
+            var r = from kvp in dict
+                    from service in BrowseResponseParser(kvp.Value)
+                    select new { Service = service, Address = kvp.Key };
+
+            return r.ToLookup(k => k.Service, k => k.Address);
+        }
+
+        private static IEnumerable<string> BrowseResponseParser(Response response)
+        {
+            return response.RecordsRR.Select(record => record.RECORD)
+                                     .OfType<RecordPTR>()
+                                     .Select(ptr => ptr.PTRDNAME);
+        }
+
+        private static async Task<IDictionary<IPAddress, Response>> ResolveInternal(string protocol, TimeSpan scanTime = default (TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IPAddress, Response> callback = null, CancellationToken cancellationToken = default (CancellationToken))
+        {
             if (scanTime == default(TimeSpan))
                 scanTime = TimeSpan.FromSeconds(2);
 
@@ -54,15 +105,13 @@ namespace Zeroconf
                     {
                         try
                         {
-                            var list = new HashSet<ZeroconfRecord>(new ZeroConfRecordComparer());
-
                             var localEp = new IPEndPoint(IPAddress.Any, 5353);
 
                             // There could be multiple adapters, get the default one
                             uint index = 0;
                             GetBestInterface(0, out index);
                             var ifaceIndex = (int)index;
-                            
+
                             client.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastInterface, (int)IPAddress.HostToNetworkOrder(ifaceIndex));
 
                             client.ExclusiveAddressUse = false;
@@ -78,6 +127,8 @@ namespace Zeroconf
 
                             Debug.WriteLine("Bound to multicast address");
 
+                            var list = new Dictionary<IPAddress, Response>();
+
                             // Start a receive loop
                             var shouldCancel = false;
                             var recTask = Task.Run(async () =>
@@ -90,17 +141,17 @@ namespace Zeroconf
                                         var byteCount = res.Buffer.Length;
                                         var resp = new Response(res.Buffer);
                                         Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}", res.RemoteEndPoint.Address, byteCount, resp.header.QR);
-                                        
+
                                         if (resp.header.QR)
                                         {
-                                            var zr = ResponseToZeroconf(resp);
+                                            var zr = ResponseToZeroconf(resp, res.RemoteEndPoint.Address);
                                             lock (list)
                                             {
-                                                list.Add(zr);
+                                                list[res.RemoteEndPoint.Address] = resp;
                                             }
 
                                             if (callback != null)
-                                                callback(zr);
+                                                callback(res.RemoteEndPoint.Address, resp);
                                         }
                                     }
                                 }
@@ -125,7 +176,7 @@ namespace Zeroconf
 
                             await recTask.ConfigureAwait(false);
 
-                            return list.ToList();
+                            return list;
                         }
                         catch (Exception e)
                         {
@@ -137,11 +188,12 @@ namespace Zeroconf
                         await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
                     }
 
-                    return new List<ZeroconfRecord>();
+                    return new Dictionary<IPAddress, Response>();
                 }
             }
         }
-
+            
+            
         [DllImport("iphlpapi.dll", CharSet = CharSet.Auto)]
         private static extern int GetBestInterface(UInt32 DestAddr, out UInt32 BestIfIndex);
 
@@ -156,7 +208,7 @@ namespace Zeroconf
             return req.Data;
         }
 
-        private static ZeroconfRecord ResponseToZeroconf(Response response)
+        private static ZeroconfRecord ResponseToZeroconf(Response response, IPAddress remoteAddress)
         {
             // records by type
             var records = response.RecordsRR.ToLookup(record => record.Type);
@@ -175,6 +227,10 @@ namespace Zeroconf
                 var rr = records[DnsType.A].First();
                 z.Host = rr.NAME.Split('.')[0];
                 z.IPAddress = ((RecordA)rr.RECORD).Address;
+            }
+            else
+            {
+                z.IPAddress = remoteAddress;
             }
 
             if (records.Contains(DnsType.SRV))
@@ -207,31 +263,4 @@ namespace Zeroconf
         }
     }
 
-    internal class ZeroConfRecordComparer : IEqualityComparer<ZeroconfRecord>
-    {
-        public bool Equals(ZeroconfRecord x, ZeroconfRecord y)
-        {
-            if (ReferenceEquals(x, y))
-                return true;
-
-            if(ReferenceEquals(x, null))
-                return false;
-
-            if (ReferenceEquals(y, null))
-                return false;
-
-            return Equals(x.IPAddress, y.IPAddress);
-        }
-
-        public int GetHashCode(ZeroconfRecord obj)
-        {
-            if (obj == null)
-                return 0;
-
-            if (obj.IPAddress != null)
-                return obj.IPAddress.GetHashCode();
-
-            return 0;
-        }
-    }
 }
