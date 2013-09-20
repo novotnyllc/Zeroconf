@@ -35,7 +35,7 @@ There's are two methods with a few optional parameters:
 The `ResolveAsync` method has one required and several optional parameters. 
 The method signature is as follows:
 
-    Task<IReadOnlyList<IZeroconfHost>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfRecord> callback = null, CancellationToken cancellationToken = default(CancellationToken));
+    Task<IReadOnlyList<IZeroconfHost>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfHost> callback = null, CancellationToken cancellationToken = default(CancellationToken));
 
 The `BrowseDomainsAsync` method has the same set of optional parameters.
 The method signature is:
