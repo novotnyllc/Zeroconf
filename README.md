@@ -1,35 +1,51 @@
 Zeroconf
 ==========
 
-Bonjour/mDNS support for .NET 4.5, Windows Phone 8 and Windows Store apps
+Bonjour/mDNS support for .NET 4.5, Windows Phone 8, Windows Store apps and Portable Class Libraries
 -
-Due to networking APIs being platform-specific, Zeroconf is implemented 
-a platform-specific library for each of the supported platforms. That said, 
-The implementation between Win8 and WP8 are identical. The external API is
-same for all platforms.
+The core logic is implemented as a PCL, but due to networking APIs being 
+platform-specific, a platform-specific helper library is required. Just make
+sure that you also install the NuGet to your main app and you'll be all set.
 
 Installation
 -
 The easiest way to get started is to use the NuGet package.
 
-Install-Package [Zeroconf](http://www.nuget.org/packages/Zeroconf)
+> Install-Package [Zeroconf](http://www.nuget.org/packages/Zeroconf)
 
 Usage
 -
-There's a single method with a few optional parameters:
+There's are two methods with a few optional parameters:
 
     using Zeroconf;
     public async Task ProbeForNetworkPrinters()
     {
-        IReadOnlyList<IZeroconfRecord> results = await
+        IReadOnlyList<IZeroconfHost> results = await
             ZeroconfResolver.ResolveAsync("_printer._tcp.local.");
     }
 
-The _ResolveAsync_ method has one required and several optional parameters. 
-The method signature is as follows:
-    
-	Task<IReadOnlyList<IZeroconfRecord>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfRecord> callback = null, CancellationToken cancellationToken = default(CancellationToken));
+    public async Task EnumerateAllServicesFromAllHosts()
+    {
+        ILookup<string, string> domains = await ZeroconfResolver.BrowseDomainsAsync();            
+        var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));            
+        foreach (var resp in responses)
+            Console.WriteLine(resp);
+    }
 
+The `ResolveAsync` method has one required and several optional parameters. 
+The method signature is as follows:
+
+`Task<IReadOnlyList<IZeroconfHost>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfRecord> callback = null, CancellationToken cancellationToken = default(CancellationToken));`
+
+The `BrowseDomainsAsync` method has the same set of optional parameters.
+The method signature is:
+   
+`Task<ILookup<string, string>> BrowseDomainsAsync(TimeSpan scanTime = default (TimeSpan), int retryDelayMilliseconds = 2000, Action<string, string> callback = null, CancellationToken cancellationToken = default (CancellationToken))`
+
+What you get back from the Browse is a lookup, by service name, of a group that contains every host
+offering that service. Thst most common use would be in the example above, passing in
+all keys (services) to the Resolve method. Otherwise, you can also see what hosts are
+offering which services as well.
 
 ### Parameters
 
@@ -63,7 +79,7 @@ The method signature is as follows:
 	<tr>
 		<td>callback</td>
 		<td>null</td>
-		<td>If provided, called per IZeroconfigRecord as they are processed. This can be used to stream
+		<td>If provided, called per IZeroconfigHost as they are processed. This can be used to stream
 			data back prior to call completion.</td>
 	</tr>
 	<tr>
@@ -75,7 +91,7 @@ The method signature is as follows:
 
 ### Notes
 
-The _ResolveAsync_ method is thread-safe, however all calls to it are serialized as only
+The `ResolveAsync` method is thread-safe, however all calls to it are serialized as only
 one can be in-progress at a time.
 
 ### Credits
