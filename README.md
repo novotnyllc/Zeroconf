@@ -35,12 +35,12 @@ There's are two methods with a few optional parameters:
 The `ResolveAsync` method has one required and several optional parameters. 
 The method signature is as follows:
 
-`Task<IReadOnlyList<IZeroconfHost>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfRecord> callback = null, CancellationToken cancellationToken = default(CancellationToken));`
+    Task<IReadOnlyList<IZeroconfHost>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfRecord> callback = null, CancellationToken cancellationToken = default(CancellationToken));
 
 The `BrowseDomainsAsync` method has the same set of optional parameters.
 The method signature is:
    
-`Task<ILookup<string, string>> BrowseDomainsAsync(TimeSpan scanTime = default (TimeSpan), int retryDelayMilliseconds = 2000, Action<string, string> callback = null, CancellationToken cancellationToken = default (CancellationToken))`
+    Task<ILookup<string, string>> BrowseDomainsAsync(TimeSpan scanTime = default (TimeSpan), int retryDelayMilliseconds = 2000, Action<string, string> callback = null, CancellationToken cancellationToken = default (CancellationToken))
 
 What you get back from the Browse is a lookup, by service name, of a group that contains every host
 offering that service. Thst most common use would be in the example above, passing in
