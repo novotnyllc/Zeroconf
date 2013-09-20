@@ -137,6 +137,8 @@ namespace Heijden.DNS
 					return new RecordAAAA(this);
 				case Type.SRV:
 					return new RecordSRV(this);
+                case Type.NSEC:
+                    return new RecordNSEC(this);
 				default:
 					return new RecordUnknown(this);
 			}

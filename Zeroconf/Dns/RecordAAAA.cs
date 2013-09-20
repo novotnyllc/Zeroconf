@@ -13,17 +13,11 @@ namespace Heijden.DNS
 {
     internal class RecordAAAA : Record
 	{
-        public
-#if NETFX_CORE
- Windows.Networking.HostName
-#else
-        System.Net.IPAddress 
-#endif
-              Address;
+        public string Address;
 
 		public RecordAAAA(RecordReader rr)
 		{
-            var str = string.Format("{0:x}:{1:x}:{2:x}:{3:x}:{4:x}:{5:x}:{6:x}:{7:x}",
+            Address = string.Format("{0:x}:{1:x}:{2:x}:{3:x}:{4:x}:{5:x}:{6:x}:{7:x}",
                 rr.ReadUInt16(),
                 rr.ReadUInt16(),
                 rr.ReadUInt16(),
@@ -32,13 +26,6 @@ namespace Heijden.DNS
                 rr.ReadUInt16(),
                 rr.ReadUInt16(),
                 rr.ReadUInt16());
-
-#if NETFX_CORE
-            Address = new Windows.Networking.HostName(str);
-#else
-            System.Net.IPAddress.TryParse(str, out this.Address);
-#endif
-            
 		}
 
 		public override string ToString()

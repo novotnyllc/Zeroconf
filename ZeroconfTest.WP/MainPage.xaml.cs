@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -168,13 +169,13 @@ namespace ZeroconfTest.WP
                                 "_xsync._tcp",
                                 "_xtshapro._tcp",
                             };
-            Servers = new ObservableCollection<IZeroconfRecord>();
+            Servers = new ObservableCollection<IZeroconfHost>();
             DataContext = this;
         }
 
         public List<string> Protocols { get; set; }
         public string Protocol { get; set; }
-        public ObservableCollection<IZeroconfRecord> Servers { get; set; }
+        public ObservableCollection<IZeroconfHost> Servers { get; set; }
         private void ProtocolSelected(object sender, SelectionChangedEventArgs e)
         {
             Protocol = e.AddedItems.Count > 0 ? (string) e.AddedItems[0] : "";
@@ -184,15 +185,27 @@ namespace ZeroconfTest.WP
         private async void BrowseClick(object sender, RoutedEventArgs e)
         {
 
-            var protocol = string.IsNullOrEmpty(Protocol) ? ProtocolPicker.SelectedItem : Protocol;
+            //var protocol = string.IsNullOrEmpty(Protocol) ? ProtocolPicker.SelectedItem : Protocol;
 
-            var responses = await ZeroconfResolver.ResolveAsync(protocol + ".local.", TimeSpan.FromSeconds(5));
+            //var responses = await ZeroconfResolver.ResolveAsync(protocol + ".local.", TimeSpan.FromSeconds(5));
+
+            //foreach (var resp in responses)
+            //{
+            //    Servers.Add(resp);
+            //    Debug.WriteLine(resp);
+            //}
+
+            var domains = await ZeroconfResolver.BrowseDomainsAsync();
+
+            var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));
+
 
             foreach (var resp in responses)
             {
                 Servers.Add(resp);
                 Debug.WriteLine(resp);
             }
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

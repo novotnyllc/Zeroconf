@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using Windows.UI.Xaml;
 using Zeroconf;
 
@@ -15,7 +16,13 @@ namespace ZeroconfTest.RT
 
         private async void ResolveClick(object sender, RoutedEventArgs e)
         {
-            var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.", TimeSpan.FromSeconds(5));
+            //var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.", TimeSpan.FromSeconds(5));
+
+            var domains = await ZeroconfResolver.BrowseDomainsAsync();
+
+            var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));
+            // var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.");
+
 
             foreach (var resp in responses)
                 Debug.WriteLine(resp);

@@ -31,13 +31,14 @@ namespace ZeroconfTest.NetFx
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
 
-            Action<IZeroconfRecord> onMessage = record => Console.WriteLine("On Message: {0}", record);
-
-            //_services._dns-sd._udp.local.
-            //var responses = await ZeroconfResolver.ResolveAsync("_services._dns-sd._udp.local.", callback: onMessage);
-           var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.", callback: onMessage);
+            //Action<IZeroconfRecord> onMessage = record => Console.WriteLine("On Message: {0}", record);
 
 
+            var domains = await ZeroconfResolver.BrowseDomainsAsync();
+            
+            var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));
+            // var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.");
+            
             foreach (var resp in responses)
                 Console.WriteLine(resp);
         }

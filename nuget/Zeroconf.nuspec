@@ -2,29 +2,51 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Zeroconf</id>
-        <version>1.2.1</version>
+        <version>2.0.0</version>
         <title />
         <authors>Oren Novotny</authors>
         <owners />
         <licenseUrl>http://opensource.org/licenses/ms-pl</licenseUrl>
         <projectUrl>https://github.com/onovotny/Zeroconf</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Bonjour support for .NET 4.5, Windows Phone 8 and Windows Store apps</description>
+        <description>Bonjour support for .NET 4.5, Windows Phone 8 and Windows Store apps with PCL support</description>
         <copyright>© Oren Novotny 2013</copyright>
         <language>en-US</language>
-        <tags>zeroconf bonjour mdns service discovery</tags>
+        <tags>zeroconf bonjour mdns service discovery pcl</tags>
     </metadata>
     <files>
-        <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.dll" target="lib\netcore45\ZeroconfRT.dll" />
-        <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.pdb" target="lib\netcore45\ZeroconfRT.pdb" />
-        <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.pri" target="lib\netcore45\ZeroconfRT.pri" />
-        <file src="..\Zeroconf.RT\bin\Release\ZeroconfRT.xml" target="lib\netcore45\ZeroconfRT.xml" />
-        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfWP.dll" target="lib\wp8\ZeroconfWP.dll" />
-        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfWP.pdb" target="lib\wp8\ZeroconfWP.pdb" />
-        <file src="..\Zeroconf.WP\Bin\Release\ZeroconfWP.xml" target="lib\wp8\ZeroconfWP.xml" />
-        <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
-        <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.pdb" target="lib\net45\Zeroconf.pdb" />
-        <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.xml" target="lib\net45\Zeroconf.xml" /> 
-        <file src="..\**\*.cs" target="src" exclude="..\_ReSharper.*\**\*.*;..\packages\**\*.*;..\**\Debug\**\*.*"/>       
+      <!-- Win8 -->
+      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.dll" target="lib\win8\Zeroconf.Platform.dll" />
+      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.pdb" target="lib\win8\Zeroconf.Platform.pdb" />
+      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.pri" target="lib\win8\Zeroconf.Platform.pri" />
+      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.xml" target="lib\win8\Zeroconf.Platform.xml" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\win8\Zeroconf.dll" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\win8\Zeroconf.pdb" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\win8\Zeroconf.xml" />
+        
+      <!-- WP8 -->
+      <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.Platform.dll" target="lib\wp8\Zeroconf.Platform.dll" />
+      <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.Platform.pdb" target="lib\wp8\Zeroconf.Platform.pdb" />
+      <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.Platform.xml" target="lib\wp8\Zeroconf.Platform.xml" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\wp8\Zeroconf.dll" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\wp8\Zeroconf.pdb" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\wp8\Zeroconf.xml" />
+      
+      <!-- Net45 -->  
+      <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.Platform.dll" target="lib\net45\Zeroconf.Platform.dll" />
+      <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.Platform.pdb" target="lib\net45\Zeroconf.Platform.pdb" />
+      <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.Platform.xml" target="lib\net45\Zeroconf.Platform.xml" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\net45\Zeroconf.pdb" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\net45\Zeroconf.xml" />
+      
+      <!-- PCL -->
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\portable-net45+wp8+win8\Zeroconf.dll" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\portable-net45+wp8+win8\Zeroconf.pdb" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\portable-net45+wp8+win8\Zeroconf.xml" />
+      
+      <!-- Source -->
+      <file src="..\**\*.cs" target="src" exclude="..\_ReSharper.*\**\*.*;..\packages\**\*.*;..\**\Debug\**\*.*"/>       
+      
     </files>
 </package>

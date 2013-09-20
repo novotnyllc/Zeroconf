@@ -167,6 +167,10 @@
       <Project>{71071865-9DCE-472E-A8B3-D9D44C5CF23F}</Project>
       <Name>Zeroconf.WP</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj">
+      <Project>{5EA8CE38-6134-4263-9292-8798C7585622}</Project>
+      <Name>Zeroconf</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

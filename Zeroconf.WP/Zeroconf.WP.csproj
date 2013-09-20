@@ -9,8 +9,8 @@
     <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Zeroconf</RootNamespace>
-    <AssemblyName>ZeroconfWP</AssemblyName>
+    <RootNamespace>Zeroconf.Platform</RootNamespace>
+    <AssemblyName>Zeroconf.Platform</AssemblyName>
     <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
@@ -41,7 +41,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\ZeroconfWP.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\Zeroconf.Platform.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -86,66 +86,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Zeroconf.RT\AsyncLock.cs">
-      <Link>AsyncLock.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\Header.cs">
-      <Link>Dns\Header.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\Question.cs">
-      <Link>Dns\Question.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\Record.cs">
-      <Link>Dns\Record.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\RecordA.cs">
-      <Link>Dns\RecordA.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\RecordAAAA.cs">
-      <Link>Dns\RecordAAAA.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\RecordPTR.cs">
-      <Link>Dns\RecordPTR.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\RecordReader.cs">
-      <Link>Dns\RecordReader.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\RecordSRV.cs">
-      <Link>Dns\RecordSRV.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\RecordTXT.cs">
-      <Link>Dns\RecordTXT.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\RecordUnknown.cs">
-      <Link>Dns\RecordUnknown.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\Request.cs">
-      <Link>Dns\Request.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\Response.cs">
-      <Link>Dns\Response.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\RR.cs">
-      <Link>Dns\RR.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\Dns\Structs.cs">
-      <Link>Dns\Structs.cs</Link>
+    <Compile Include="..\Zeroconf.RT\NetworkInterface.cs">
+      <Link>NetworkInterface.cs</Link>
     </Compile>
     <Compile Include="..\Zeroconf.RT\Properties\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\Zeroconf.RT\ZeroconfRecord.cs">
-      <Link>ZeroconfRecord.cs</Link>
-    </Compile>
-    <Compile Include="..\Zeroconf.RT\ZeroconfResolver.cs">
-      <Link>ZeroconfResolver.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj">
+      <Project>{5EA8CE38-6134-4263-9292-8798C7585622}</Project>
+      <Name>Zeroconf</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <ProjectExtensions />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

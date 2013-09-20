@@ -23,18 +23,18 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock>Name:</TextBlock>
-                    <TextBlock Text="{Binding Name}"/>
+                    <TextBlock>Display Name:</TextBlock>
+                    <TextBlock Text="{Binding DisplayName}"/>
                 </StackPanel>
                 <StackPanel Grid.Row="1" Orientation="Horizontal">
-                    <TextBlock>Host:</TextBlock>
-                    <TextBlock Text="{Binding Host}"/>
+                    <TextBlock>Id:</TextBlock>
+                    <TextBlock Text="{Binding Id}"/>
                 </StackPanel>
                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                     <TextBlock>Address:</TextBlock>
                     <TextBlock Text="{Binding IPAddress}"/>
-                    <TextBlock>:</TextBlock>                    
-                    <TextBlock Text="{Binding Port}"/>
+                    <!--<TextBlock>:</TextBlock>                    
+                    <TextBlock Text="{Binding Port}"/>-->
                 </StackPanel>
             </Grid>
         </DataTemplate>
