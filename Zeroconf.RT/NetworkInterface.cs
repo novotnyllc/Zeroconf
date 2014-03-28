@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Networking;
+using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 
@@ -81,7 +82,7 @@ namespace Zeroconf.Platform
 
         private static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, CancellationToken cancellationToken)
         {
-            await socket.BindServiceNameAsync("5353")
+            await socket.BindServiceNameAsync("", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
                         .AsTask(cancellationToken)
                         .ConfigureAwait(false);
 
