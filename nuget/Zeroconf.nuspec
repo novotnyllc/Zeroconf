@@ -9,7 +9,7 @@
         <licenseUrl>http://opensource.org/licenses/ms-pl</licenseUrl>
         <projectUrl>https://github.com/onovotny/Zeroconf</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Bonjour support for .NET 4.5, Windows Phone 8 and Windows Store apps with PCL support</description>
+        <description>Bonjour support for .NET 4.5, Windows Phone 8 and 8.1, and Windows Store apps with PCL support</description>
         <copyright>© Oren Novotny 2013</copyright>
         <language>en-US</language>
         <tags>zeroconf bonjour mdns service discovery pcl</tags>
@@ -31,6 +31,14 @@
       <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\wp8\Zeroconf.dll" />
       <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\wp8\Zeroconf.pdb" />
       <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\wp8\Zeroconf.xml" />
+	  
+	        <!-- WP8.1 -->
+      <file src="..\Zeroconf.WP8.1\Bin\Release\Zeroconf.Platform.dll" target="lib\wpa81\Zeroconf.Platform.dll" />
+      <file src="..\Zeroconf.WP8.1\Bin\Release\Zeroconf.Platform.pdb" target="lib\wpa81\Zeroconf.Platform.pdb" />
+      <file src="..\Zeroconf.WP8.1\Bin\Release\Zeroconf.Platform.xml" target="lib\wpa81\Zeroconf.Platform.xml" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\wpa81\Zeroconf.dll" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\wpa81\Zeroconf.pdb" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\wpa81\Zeroconf.xml" />
       
       <!-- Net45 -->  
       <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.Platform.dll" target="lib\net45\Zeroconf.Platform.dll" />
