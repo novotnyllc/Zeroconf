@@ -15,14 +15,14 @@
         <tags>zeroconf bonjour mdns service discovery pcl</tags>
     </metadata>
     <files>
-      <!-- Win8 -->
-      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.dll" target="lib\win8\Zeroconf.Platform.dll" />
-      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.pdb" target="lib\win8\Zeroconf.Platform.pdb" />
-      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.pri" target="lib\win8\Zeroconf.Platform.pri" />
-      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.xml" target="lib\win8\Zeroconf.Platform.xml" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\win8\Zeroconf.dll" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\win8\Zeroconf.pdb" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\win8\Zeroconf.xml" />
+      <!-- Win8 + Wpa81 -->
+      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.dll" target="lib\portable-win81+wpa81\Zeroconf.Platform.dll" />
+      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.pdb" target="lib\portable-win81+wpa81\Zeroconf.Platform.pdb" />
+      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.pri" target="lib\portable-win81+wpa81\Zeroconf.Platform.pri" />
+      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.Platform.xml" target="lib\portable-win81+wpa81\Zeroconf.Platform.xml" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\portable-win81+wpa81\Zeroconf.dll" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\portable-win81+wpa81\Zeroconf.pdb" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\portable-win81+wpa81\Zeroconf.xml" />
         
       <!-- WP8 -->
       <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.Platform.dll" target="lib\wp8\Zeroconf.Platform.dll" />
@@ -31,14 +31,7 @@
       <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\wp8\Zeroconf.dll" />
       <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\wp8\Zeroconf.pdb" />
       <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\wp8\Zeroconf.xml" />
-	  
-	        <!-- WP8.1 -->
-      <file src="..\Zeroconf.WP8.1\Bin\Release\Zeroconf.Platform.dll" target="lib\wpa81\Zeroconf.Platform.dll" />
-      <file src="..\Zeroconf.WP8.1\Bin\Release\Zeroconf.Platform.pdb" target="lib\wpa81\Zeroconf.Platform.pdb" />
-      <file src="..\Zeroconf.WP8.1\Bin\Release\Zeroconf.Platform.xml" target="lib\wpa81\Zeroconf.Platform.xml" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\wpa81\Zeroconf.dll" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\wpa81\Zeroconf.pdb" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\wpa81\Zeroconf.xml" />
+
       
       <!-- Net45 -->  
       <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.Platform.dll" target="lib\net45\Zeroconf.Platform.dll" />
