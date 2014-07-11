@@ -7,8 +7,8 @@
     <ProjectGuid>{23079F74-51A5-4441-AF92-559780095AA4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Zeroconf.Platform</RootNamespace>
-    <AssemblyName>Zeroconf.Platform</AssemblyName>
+    <RootNamespace>Zeroconf</RootNamespace>
+    <AssemblyName>Zeroconf</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -31,7 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Release\Zeroconf.Platform.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Zeroconf.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -50,12 +50,7 @@
     <Compile Include="NetworkInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj">
-      <Project>{5ea8ce38-6134-4263-9292-8798c7585622}</Project>
-      <Name>Zeroconf</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <Import Project="..\Zeroconf.Shared\Zeroconf.Shared.projitems" Label="Shared" Condition="Exists('..\Zeroconf.Shared\Zeroconf.Shared.projitems')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

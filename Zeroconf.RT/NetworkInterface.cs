@@ -12,7 +12,7 @@ using Windows.Networking.Connectivity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 
-namespace Zeroconf.Platform
+namespace Zeroconf
 {
 
     internal class NetworkInterface : INetworkInterface

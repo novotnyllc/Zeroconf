@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,28 +22,11 @@ namespace Zeroconf
 
         private static INetworkInterface LoadPlatformNetworkInterface()
         {
-            // get the plat lib
-            try
-            {
-                var assemblyName = new AssemblyName(typeof(ZeroconfResolver).GetTypeInfo().Assembly.FullName)
-                {
-                    Name = "Zeroconf.Platform"
-                };
-
-                var assm = Assembly.Load(assemblyName);
-
-                var type = assm.GetType("Zeroconf.Platform.NetworkInterface");
-
-                return (INetworkInterface)Activator.CreateInstance(type);
-            }
-            catch (Exception e)
-            {
-                throw new PlatformNotSupportedException(
-                    "Zeroconf.Platform.dll was not found. " +
-                    "Make sure the correct Zeroconf." +
-                    "Platform library is referenced by your main application",
-                    e);
-            }
+#if PCL
+            throw new NotSupportedException("This PCL assembly must not be used at runtime. Make sure to add the Zeroconf Nuget reference to your main project.");
+#else
+            return new NetworkInterface();
+#endif
         }
 
         /// <summary>

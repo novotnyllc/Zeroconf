@@ -31,7 +31,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeroconf", "Zeroconf\Zeroco
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Apps", "Test Apps", "{3E523ACF-A6BA-4087-A736-5120415898BA}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Zeroconf.Shared", "Zeroconf.Shared\Zeroconf.Shared.shproj", "{E3969C40-4EE6-4B48-B7C8-A84D937A0127}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Zeroconf.Shared\Zeroconf.Shared.projitems*{5ea8ce38-6134-4263-9292-8798c7585622}*SharedItemsImports = 4
+		Zeroconf.Shared\Zeroconf.Shared.projitems*{e3969c40-4ee6-4b48-b7c8-a84d937a0127}*SharedItemsImports = 13
+		Zeroconf.Shared\Zeroconf.Shared.projitems*{b3534f12-4701-4193-83ee-fad2c4f9a629}*SharedItemsImports = 4
+		Zeroconf.Shared\Zeroconf.Shared.projitems*{23079f74-51a5-4441-af92-559780095aa4}*SharedItemsImports = 4
+		Zeroconf.Shared\Zeroconf.Shared.projitems*{71071865-9dce-472e-a8b3-d9d44c5cf23f}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM

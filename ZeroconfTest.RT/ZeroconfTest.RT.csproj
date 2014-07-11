@@ -144,10 +144,6 @@
       <Project>{B3534F12-4701-4193-83EE-FAD2C4F9A629}</Project>
       <Name>Zeroconf.RT</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj">
-      <Project>{5ea8ce38-6134-4263-9292-8798c7585622}</Project>
-      <Name>Zeroconf</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

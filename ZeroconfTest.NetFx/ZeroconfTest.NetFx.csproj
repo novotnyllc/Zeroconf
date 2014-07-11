@@ -98,10 +98,6 @@
       <Project>{23079f74-51a5-4441-af92-559780095aa4}</Project>
       <Name>Zeroconf.NetFx</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj">
-      <Project>{5ea8ce38-6134-4263-9292-8798c7585622}</Project>
-      <Name>Zeroconf</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

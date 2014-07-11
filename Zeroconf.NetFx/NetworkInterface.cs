@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Zeroconf.Platform
+namespace Zeroconf
 {
     internal class NetworkInterface : INetworkInterface
     {
