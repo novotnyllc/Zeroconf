@@ -82,7 +82,12 @@ namespace Zeroconf.Platform
 
         private static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, CancellationToken cancellationToken)
         {
+#if !WINDOWS_PHONE
             await socket.BindServiceNameAsync("", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
+#else
+            await socket.BindServiceNameAsync("5353")
+
+#endif
                         .AsTask(cancellationToken)
                         .ConfigureAwait(false);
 
