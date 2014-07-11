@@ -9,10 +9,10 @@
         <licenseUrl>http://opensource.org/licenses/ms-pl</licenseUrl>
         <projectUrl>https://github.com/onovotny/Zeroconf</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Bonjour support for .NET 4.5, Windows Phone 8 and 8.1, and Windows Store apps with PCL support</description>
-        <copyright>© Oren Novotny 2013</copyright>
+        <description>Bonjour support for .NET 4.5, Windows Phone 8 and 8.1, Xamarin iOS and Android, and Windows Store apps with PCL support</description>
+        <copyright>© Oren Novotny 2014</copyright>
         <language>en-US</language>
-        <tags>zeroconf bonjour mdns service discovery pcl</tags>
+        <tags>zeroconf bonjour mdns service discovery pcl xamarin</tags>
     </metadata>
     <files>
       <!-- Win8 + Wpa81 -->
