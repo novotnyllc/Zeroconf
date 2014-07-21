@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhone\Debug</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;__IOS__;__MOBILE__;XAMARIN</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -34,6 +34,7 @@
     <CodesignKey>iPhone Developer</CodesignKey>
     <DocumentationFile>bin\iPhone\Release\Zeroconf.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>__IOS__;__MOBILE__;XAMARIN</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Zeroconf.NetFx\NetworkInterface.cs">
