@@ -6,6 +6,7 @@ using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
 using Xamarin.Forms;
+using ZeroconfTest.Xam;
 
 namespace ZeroconfTest.Xamarin.iOS
 {
