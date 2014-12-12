@@ -16,6 +16,8 @@ local.properties
 .settings/
 .loadpath
 
+*.sln.ide/
+
 # External tool builders
 .externalToolBuilders/
 

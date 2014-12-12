@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Zeroconf</id>
-        <version>2.1.1</version>
+        <version>2.2</version>
         <title />
         <authors>Oren Novotny</authors>
         <owners />
@@ -10,9 +10,10 @@
         <projectUrl>https://github.com/onovotny/Zeroconf</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Bonjour support for .NET 4.5, Windows Phone 8 and 8.1, Xamarin iOS and Android, and Windows Store apps with PCL support</description>
-        <copyright>© Oren Novotny 2014</copyright>
+      <releaseNotes>Adds support for the Xamarin.iOS Unified profile</releaseNotes>
+      <copyright>© Oren Novotny 2014</copyright>
         <language>en-US</language>
-        <tags>zeroconf bonjour mdns service discovery pcl xamarin</tags>
+        <tags>zeroconf bonjour mdns service discovery pcl xamarin monoandroid monotouch xamarin.ios wpa universal</tags>
     </metadata>
     <files>
       <!-- Win8 + Wpa81 -->
@@ -37,15 +38,20 @@
       <file src="..\Zeroconf.Android\Bin\Release\Zeroconf.pdb" target="lib\monoandroid\Zeroconf.pdb" />
       <file src="..\Zeroconf.Android\Bin\Release\Zeroconf.xml" target="lib\monoandroid\Zeroconf.xml" />
 
-      <!-- iOS -->
+      <!-- iOS Classic -->
       <file src="..\Zeroconf.iOS\Bin\iPhone\Release\Zeroconf.dll" target="lib\monotouch\Zeroconf.dll" />
       <file src="..\Zeroconf.iOS\Bin\iPhone\Release\Zeroconf.pdb" target="lib\monotouch\Zeroconf.pdb" />
       <file src="..\Zeroconf.iOS\Bin\iPhone\Release\Zeroconf.xml" target="lib\monotouch\Zeroconf.xml" />
+
+      <!-- iOS Unified -->
+      <file src="..\Zeroconf.iOS-Unified\Bin\iPhone\Release\Zeroconf.dll" target="lib\xamarin.ios\Zeroconf.dll" />
+      <file src="..\Zeroconf.iOS-Unified\Bin\iPhone\Release\Zeroconf.pdb" target="lib\xamarin.ios\Zeroconf.pdb" />
+      <file src="..\Zeroconf.iOS-Unified\Bin\iPhone\Release\Zeroconf.xml" target="lib\xamarin.ios\Zeroconf.xml" />
       
       <!-- PCL -->
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch\Zeroconf.dll" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch\Zeroconf.pdb" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch\Zeroconf.xml" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.dll" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.pdb" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.xml" />
       
       <!-- Source -->
       <file src="..\**\*.cs" target="src" exclude="..\_ReSharper.*\**\*.*;..\packages\**\*.*;..\**\Debug\**\*.*"/>       
