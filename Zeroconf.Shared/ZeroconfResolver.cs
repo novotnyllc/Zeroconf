@@ -145,9 +145,7 @@ namespace Zeroconf
 
         private static IEnumerable<string> BrowseResponseParser(Response response)
         {
-            return response.RecordsRR.Select(record => record.RECORD)
-                           .OfType<RecordPTR>()
-                           .Select(ptr => ptr.PTRDNAME);
+            return response.RecordsPTR.Select(ptr => ptr.PTRDNAME);
         }
 
 
@@ -207,7 +205,7 @@ namespace Zeroconf
 
             foreach (var protocol in protocols)
             {
-                var question = new Question(protocol, QType.ANY, QClass.ANY);
+                var question = new Question(protocol, QType.PTR, QClass.ANY);
 
                 req.AddQuestion(question);
             }
@@ -238,12 +236,8 @@ namespace Zeroconf
             }
 
             var dispNameSet = false;
-
-            var services = response.Answers
-                                   .Select(r => r.RECORD)
-                                   .OfType<RecordPTR>();
-
-            foreach (var ptrRec in services)
+           
+            foreach (var ptrRec in response.RecordsPTR)
             {
                 // set the display name if needed
                 if (!dispNameSet)
