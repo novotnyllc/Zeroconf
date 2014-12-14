@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Zeroconf</id>
-        <version>2.2</version>
+        <version>2.3</version>
         <title />
         <authors>Oren Novotny</authors>
         <owners />
@@ -10,7 +10,7 @@
         <projectUrl>https://github.com/onovotny/Zeroconf</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Bonjour support for .NET 4.5, Windows Phone 8 and 8.1, Xamarin iOS and Android, and Windows Store apps with PCL support</description>
-      <releaseNotes>Adds support for the Xamarin.iOS Unified profile</releaseNotes>
+      <releaseNotes>Send request for PTR records instead of ANY as some responders aren't correctly processing ANY</releaseNotes>
       <copyright>© Oren Novotny 2014</copyright>
         <language>en-US</language>
         <tags>zeroconf bonjour mdns service discovery pcl xamarin monoandroid monotouch xamarin.ios wpa universal</tags>
