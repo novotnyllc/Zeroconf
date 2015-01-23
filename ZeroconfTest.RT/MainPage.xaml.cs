@@ -18,11 +18,11 @@ namespace ZeroconfTest.RT
 
         private async void ResolveClick(object sender, RoutedEventArgs e)
         {
-            //var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.", TimeSpan.FromSeconds(5));
+            var responses = await ZeroconfResolver.ResolveAsync("_openhab-server._tcp.local.", TimeSpan.FromSeconds(5));
 
-            var domains = await ZeroconfResolver.BrowseDomainsAsync();
+            /*var domains = await ZeroconfResolver.BrowseDomainsAsync();
+            var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));*/
 
-            var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));
             // var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.");
 
 

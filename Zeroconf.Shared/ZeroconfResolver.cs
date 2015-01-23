@@ -218,7 +218,7 @@ namespace Zeroconf
             var z = new ZeroconfHost();
 
             // Get the Id and IP address from the A record
-            var aRecord = response.Additionals
+            var aRecord = response.Answers
                                   .Select(r => r.RECORD)
                                   .OfType<RecordA>()
                                   .FirstOrDefault();
@@ -247,7 +247,7 @@ namespace Zeroconf
                 }
 
                 // Get the matching service records
-                var serviceRecords = response.Additionals
+                var serviceRecords = response.Answers
                                              .Where(r => r.NAME == ptrRec.PTRDNAME)
                                              .Select(r => r.RECORD)
                                              .ToList();
@@ -258,7 +258,8 @@ namespace Zeroconf
 
                 var svc = new Service
                 {
-                    Name = ptrRec.RR.NAME,
+                    //Name = ptrRec.RR.NAME,
+                    Name = ptrRec.PTRDNAME,
                     Port = srvRec.PORT
                 };
 
