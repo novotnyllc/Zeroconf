@@ -83,14 +83,29 @@ namespace Zeroconf
         private static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, CancellationToken cancellationToken)
         {
 #if !WINDOWS_PHONE
-             await socket.BindServiceNameAsync("", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
-            //await socket.BindServiceNameAsync("5353")
+            try
+            {
+               // Try to bind using port 5353 first
+               await socket.BindServiceNameAsync("5353", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
+                           .AsTask(cancellationToken)
+                           .ConfigureAwait(false);
+
+            }
+            catch (Exception)
+            {
+                // If it fails, use the default
+                await socket.BindServiceNameAsync("", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
+                            .AsTask(cancellationToken)
+                            .ConfigureAwait(false);
+
+            }
 #else
             await socket.BindServiceNameAsync("5353")
-
-#endif
                         .AsTask(cancellationToken)
                         .ConfigureAwait(false);
+
+#endif
+                        
 
             socket.JoinMulticastGroup(new HostName("224.0.0.251"));
             var os = await socket.GetOutputStreamAsync(new HostName("224.0.0.251"), "5353")
