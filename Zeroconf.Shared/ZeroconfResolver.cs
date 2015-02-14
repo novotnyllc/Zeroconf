@@ -247,7 +247,7 @@ namespace Zeroconf
                 }
 
                 // Get the matching service records
-                var serviceRecords = response.Answers
+                var serviceRecords = response.Additionals
                                              .Where(r => r.NAME == ptrRec.PTRDNAME)
                                              .Select(r => r.RECORD)
                                              .ToList();
@@ -258,8 +258,7 @@ namespace Zeroconf
 
                 var svc = new Service
                 {
-                    //Name = ptrRec.RR.NAME,
-                    Name = ptrRec.PTRDNAME,
+                    Name = ptrRec.RR.NAME,
                     Port = srvRec.PORT
                 };
 
