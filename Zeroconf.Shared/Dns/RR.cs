@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Heijden.DNS
 {
@@ -62,6 +63,7 @@ namespace Heijden.DNS
 	/// <summary>
 	/// Resource Record (rfc1034 3.6.)
 	/// </summary>
+    [DebuggerDisplay("Name = {NAME} TTL={TTL} Class={Class} Type = {Type} Record={RECORD}")]
     internal class RR
 	{
 		/// <summary>

@@ -218,7 +218,7 @@ namespace Zeroconf
             var z = new ZeroconfHost();
 
             // Get the Id and IP address from the A record
-            var aRecord = response.Additionals
+            var aRecord = response.Answers
                                   .Select(r => r.RECORD)
                                   .OfType<RecordA>()
                                   .FirstOrDefault();
