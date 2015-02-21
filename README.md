@@ -94,6 +94,10 @@ offering which services as well.
 The `ResolveAsync` method is thread-safe, however all calls to it are serialized as only
 one can be in-progress at a time.
 
+#### Xamarin.Android 4.x Linker bug
+There is currently a [bug](https://bugzilla.xamarin.com/show_bug.cgi?id=21578) on Xamarin.Android 4.x that incorrectly strips out internal Socket methods. This has been [fixed](http://developer.xamarin.com/releases/android/xamarin.android_5/xamarin.android_5.0/) for the Xamarin.Android 5.0 series but that is still in preview and unsupported. As a workaround, entering `System;` in to the `Ignore Assemblies` field in the `Project Options->Build->Android Build` page will fix the problem.
+
+
 ### Credits
 
 This library was made possible through the efforts of the following projects:
