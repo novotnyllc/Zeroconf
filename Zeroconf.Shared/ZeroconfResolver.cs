@@ -247,12 +247,12 @@ namespace Zeroconf
                 }
 
                 // Get the matching service records
-                var serviceRecords = response.Additionals
+                var responseRecords = response.RecordsRR
                                              .Where(r => r.NAME == ptrRec.PTRDNAME)
                                              .Select(r => r.RECORD)
                                              .ToList();
 
-                var srvRec = serviceRecords.OfType<RecordSRV>().FirstOrDefault();
+                var srvRec = responseRecords.OfType<RecordSRV>().FirstOrDefault();
                 if (srvRec == null)
                     continue; // Missing the SRV record, not valid
 
@@ -263,7 +263,7 @@ namespace Zeroconf
                 };
 
                 // There may be 0 or more text records - property sets
-                foreach (var txtRec in serviceRecords.OfType<RecordTXT>())
+                foreach (var txtRec in responseRecords.OfType<RecordTXT>())
                 {
                     var set = new Dictionary<string, string>();
                     foreach (var txt in txtRec.TXT)
