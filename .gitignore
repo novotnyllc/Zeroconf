@@ -16,7 +16,10 @@ local.properties
 .settings/
 .loadpath
 
-*.sln.ide/
+.vs/
+*.nuget.props
+*.nuget.targets
+project.lock.json
 
 # External tool builders
 .externalToolBuilders/
