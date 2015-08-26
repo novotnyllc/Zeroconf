@@ -30,9 +30,14 @@ namespace Heijden.DNS
 		{
 			int pos = rr.Position;
 			TXT = new List<string>();
-			while ((rr.Position - pos) < Length)
-				TXT.Add(rr.ReadString());
-		}
+            while (
+                ((rr.Position - pos) < Length) &&
+                (rr.Position < rr.Length)
+                )
+            {
+                TXT.Add(rr.ReadString());
+            }
+        }
 
 		public override string ToString()
 		{
