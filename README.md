@@ -13,6 +13,9 @@ The easiest way to get started is to use the NuGet package.
 
 > Install-Package [Zeroconf](http://www.nuget.org/packages/Zeroconf)
 
+Current Build Status:
+[![Build status](https://ci.appveyor.com/api/projects/status/52nr1dgg9ftrxeh9/branch/master?svg=true)](https://ci.appveyor.com/project/onovotny/zeroconf/branch/master)
+
 Usage
 -
 There's are two methods with a few optional parameters:
