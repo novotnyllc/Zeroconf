@@ -22,6 +22,7 @@ namespace Zeroconf
                                               int retries,
                                               int retryDelayMilliseconds,
                                               Action<string, byte[]> onResponse,
+                                              bool bestInterface,
                                               CancellationToken cancellationToken)
         {
             using (var socket = new DatagramSocket())
@@ -46,6 +47,7 @@ namespace Zeroconf
                     {
                         await BindToSocketAndWriteQuery(socket,
                                                         requestBytes,
+                                                        bestInterface,
                                                         cancellationToken).ConfigureAwait(false);
                         socketBound = true;
                     }
@@ -80,16 +82,24 @@ namespace Zeroconf
             }
         }
 
-        private static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, CancellationToken cancellationToken)
+        private static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, bool bestInterface, CancellationToken cancellationToken)
         {
 #if !WINDOWS_PHONE
             try
             {
                // Try to bind using port 5353 first
-               await socket.BindServiceNameAsync("5353", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
+               if (bestInterface)
+               {
+                    await socket.BindServiceNameAsync("5353", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
                            .AsTask(cancellationToken)
                            .ConfigureAwait(false);
-
+               }
+               else
+               {
+                    await socket.BindServiceNameAsync("5353")
+                                .AsTask(cancellationToken)
+                                .ConfigureAwait(false);
+               }
             }
             catch (Exception)
             {
