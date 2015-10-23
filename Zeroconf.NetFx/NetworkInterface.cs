@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -34,8 +35,65 @@ namespace Zeroconf
                                               int retries,
                                               int retryDelayMilliseconds,
                                               Action<string, byte[]> onResponse,
+                                              bool bestInterface,
                                               CancellationToken cancellationToken)
         {
+            if (bestInterface)
+            {
+                await NetworkRequestAsync(requestBytes, scanTime, retries, retryDelayMilliseconds, onResponse, null, cancellationToken);
+            }
+            else
+            {
+                var tasks = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
+                    .Select(inter =>
+                        NetworkRequestAsync(requestBytes, scanTime, retries, retryDelayMilliseconds, onResponse, inter, cancellationToken))
+                        .ToList();
+
+                await Task.WhenAll(tasks);
+            }
+        }
+
+
+        private async Task NetworkRequestAsync(byte[] requestBytes,
+                                              TimeSpan scanTime,
+                                              int retries,
+                                              int retryDelayMilliseconds,
+                                              Action<string, byte[]> onResponse,
+                                              System.Net.NetworkInformation.NetworkInterface adapter,
+                                              CancellationToken cancellationToken)
+        {
+            int ifaceIndex = 0;
+
+#if XAMARIN
+            ifaceIndex = 0;
+#else
+            if (adapter != null)
+            {
+                // http://stackoverflow.com/questions/2192548/specifying-what-network-interface-an-udp-multicast-should-go-to-in-net
+                if (!adapter.GetIPProperties().MulticastAddresses.Any())
+                    return; // most of VPN adapters will be skipped
+
+                if (!adapter.SupportsMulticast)
+                    return; // multicast is meaningless for this type of connection
+
+                if (OperationalStatus.Up != adapter.OperationalStatus)
+                    return; // this adapter is off or not connected
+
+                var p = adapter.GetIPProperties().GetIPv4Properties();
+                if (null == p)
+                    return; // IPv4 is not configured on this adapter
+
+                ifaceIndex = p.Index;
+            }
+            else
+            {
+                // There could be multiple adapters, get the default one
+                uint index = 0;
+                GetBestInterface(0, out index);
+                ifaceIndex = (int)index;
+            }
+#endif
+
             using (var client = new UdpClient())
             {
                 for (var i = 0; i < retries; i++)
@@ -51,21 +109,9 @@ namespace Zeroconf
 
                         var localEp = new IPEndPoint(IPAddress.Any, 5353);
 
-                        // There could be multiple adapters, get the default one
-                        uint index = 0;
-#if XAMARIN
-                        const int ifaceIndex = 0;
-
-                
-
-#else
-                        GetBestInterface(0, out index);
-                        var ifaceIndex = (int)index;
-#endif
-
                         client.Client.SetSocketOption(SocketOptionLevel.IP,
                                                       SocketOptionName.MulticastInterface,
-                                                      (int)IPAddress.HostToNetworkOrder(ifaceIndex));
+                                                      IPAddress.HostToNetworkOrder(ifaceIndex));
 
 
 

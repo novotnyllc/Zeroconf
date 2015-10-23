@@ -44,6 +44,7 @@ namespace Zeroconf
                                                                       int retries = 2,
                                                                       int retryDelayMilliseconds = 2000,
                                                                       Action<IZeroconfHost> callback = null,
+                                                                      bool bestInterface = false,
                                                                       CancellationToken cancellationToken = default (CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(protocol))
@@ -52,7 +53,7 @@ namespace Zeroconf
             return ResolveAsync(new[] {protocol},
                                 scanTime,
                                 retries,
-                                retryDelayMilliseconds, callback, cancellationToken);
+                                retryDelayMilliseconds, callback, bestInterface, cancellationToken);
         }
 
         /// <summary>
@@ -70,6 +71,7 @@ namespace Zeroconf
                                                                             int retries = 2,
                                                                             int retryDelayMilliseconds = 2000,
                                                                             Action<IZeroconfHost> callback = null,
+                                                                            bool bestInterface = false,
                                                                             CancellationToken cancellationToken = default (CancellationToken))
         {
             Action<string, Response> wrappedAction = null;
@@ -90,6 +92,7 @@ namespace Zeroconf
                                              retries,
                                              retryDelayMilliseconds,
                                              wrappedAction,
+                                             bestInterface,
                                              cancellationToken)
                                  .ConfigureAwait(false);
 
@@ -109,6 +112,7 @@ namespace Zeroconf
                                                                              int retries = 2,
                                                                              int retryDelayMilliseconds = 2000,
                                                                              Action<string, string> callback = null,
+                                                                             bool bestInterface = false,
                                                                              CancellationToken cancellationToken = default (CancellationToken))
         {
             const string protocol = "_services._dns-sd._udp.local.";
@@ -133,6 +137,7 @@ namespace Zeroconf
                                              retries,
                                              retryDelayMilliseconds,
                                              wrappedAction,
+                                             bestInterface,
                                              cancellationToken)
                                  .ConfigureAwait(false);
 
@@ -155,6 +160,7 @@ namespace Zeroconf
                                                                                  int retries,
                                                                                  int retryDelayMilliseconds,
                                                                                  Action<string, Response> callback,
+                                                                                 bool bestInterface,
                                                                                  CancellationToken cancellationToken)
         {
             using (await ResolverLock.LockAsync())
@@ -192,6 +198,7 @@ namespace Zeroconf
                                                            retries,
                                                            retryDelayMilliseconds,
                                                            converter,
+                                                           bestInterface,
                                                            cancellationToken)
                                       .ConfigureAwait(false);
 
