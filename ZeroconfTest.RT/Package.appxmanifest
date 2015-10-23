@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="5903b029-9745-49d7-85ed-e746d37d4309" Publisher="CN=saldoukhov" Version="1.1.0.0" />
+  <Identity Name="5903b029-9745-49d7-85ed-e746d37d4309" Publisher="CN=oren" Version="1.1.0.0" />
   <Properties>
     <DisplayName>ZeroconfTest.RT</DisplayName>
     <PublisherDisplayName>saldoukhov</PublisherDisplayName>
