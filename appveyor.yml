@@ -18,7 +18,7 @@ build:
   project: Zeroconf.sln
   
 after_build:
-  - ps: '.\packages\gitlink\lib\net45\GitLink.exe . -f Zeroconf.sln -u https://github.com/onovotny/Zeroconf -s $env:APPVEYOR_REPO_COMMIT;if($lastexitcode -ne 0){$lastexitcode = 0}'
+  - cmd: '.\packages\gitlink\lib\net45\GitLink.exe . -f Zeroconf.sln -u https://github.com/onovotny/Zeroconf -s %APPVEYOR_REPO_COMMIT% -errorsaswarnings'
   - cmd: nuget pack nuget\Zeroconf.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%" -NoPackageAnalysis
   - cmd: appveyor PushArtifact "Zeroconf.%GitVersion_NuGetVersion%.nupkg"  
   
