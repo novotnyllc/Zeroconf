@@ -33,6 +33,7 @@ namespace Zeroconf
         ///     Resolves available ZeroConf services
         /// </summary>
         /// <param name="scanTime">Default is 2 seconds</param>
+        /// <param name="bestInterface">Use only the best interface or all interfaces</param>
         /// <param name="cancellationToken"></param>
         /// <param name="protocol"></param>
         /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
@@ -60,6 +61,7 @@ namespace Zeroconf
         ///     Resolves available ZeroConf services
         /// </summary>
         /// <param name="scanTime">Default is 2 seconds</param>
+        /// <param name="bestInterface">Use only the best interface or all interfaces</param>
         /// <param name="cancellationToken"></param>
         /// <param name="protocols"></param>
         /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>

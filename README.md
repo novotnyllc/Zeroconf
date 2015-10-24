@@ -53,43 +53,55 @@ offering which services as well.
 ### Parameters
 
 <table>
-	<tr>
-		<th>Parameter Name</th>
-		<th>Default Value</th>
-		<th>Notes</th>
-	</tr>
-	<tr>
-		<td>protocol</td>
-		<td></td>
-		<td>Service to query. Almost always must end with <em>.local.</em></td>
-	</tr>
-	<tr>
-		<td>scanTime</td>
-		<td>2 seconds</td>
-		<td>Amount of time to listen for responses</td>
-	</tr>
-	<tr>
-		<td>retries</td>
-		<td>2</td>
-		<td>Number of times to attempt to bind to the socket. Binding may fail if 
-		another app is currently using it.</td>
-	</tr>
-	<tr>
-		<td>retryDelayMilliseconds</td>
-		<td>2000</td>
-		<td>Delay between retries</td>
-	</tr>
-	<tr>
-		<td>callback</td>
-		<td>null</td>
-		<td>If provided, called per IZeroconfigHost as they are processed. This can be used to stream
-			data back prior to call completion.</td>
-	</tr>
-	<tr>
-		<td>cancellationToken</td>
-		<td>CancellationToken.None</td>
-		<td>Optional use of task cancellation</td>
-	</tr>
+    <tr>
+        <th>Parameter Name</th>
+        <th>Default Value</th>
+        <th>Notes</th>
+    </tr>
+    <tr>
+        <td>protocol</td>
+        <td></td>
+        <td>Service to query. Almost always must end with <em>.local.</em></td>
+    </tr>
+    <tr>
+        <td>scanTime</td>
+        <td>2 seconds</td>
+        <td>Amount of time to listen for responses</td>
+    </tr>
+    <tr>
+        <td>retries</td>
+        <td>2</td>
+        <td>
+            Number of times to attempt to bind to the socket. Binding may fail if
+            another app is currently using it.
+        </td>
+    </tr>
+    <tr>
+        <td>retryDelayMilliseconds</td>
+        <td>2000</td>
+        <td>Delay between retries</td>
+    </tr>
+    <tr>
+        <td>callback</td>
+        <td>null</td>
+        <td>
+            If provided, called per IZeroconfigHost as they are processed. This can be used to stream
+            data back prior to call completion.
+        </td>
+    </tr>
+    <tr>
+        <td>bestInterface</td>
+        <td>false</td>
+        <td>
+            Use only the best interface to search for devices. Default's to false to search all
+            connected interfaces that support multicast.
+        </td>
+    </tr>
+    <tr>
+        <td>cancellationToken</td>
+        <td>CancellationToken.None</td>
+        <td>Optional use of task cancellation</td>
+    </tr>
 </table>
 
 ### Notes

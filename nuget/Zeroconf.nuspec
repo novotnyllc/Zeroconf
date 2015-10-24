@@ -53,8 +53,5 @@
       <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.pdb" />
       <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.xml" />
       
-      <!-- Source -->
-      <file src="..\**\*.cs" target="src" exclude="..\_ReSharper.*\**\*.*;..\packages\**\*.*;..\**\Debug\**\*.*"/>       
-      
     </files>
 </package>
