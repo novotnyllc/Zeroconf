@@ -1,17 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22310.1
+VisualStudioVersion = 14.0.24622.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeroconf.RT", "Zeroconf.RT\Zeroconf.RT.csproj", "{B3534F12-4701-4193-83EE-FAD2C4F9A629}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroconfTest.RT", "ZeroconfTest.RT\ZeroconfTest.RT.csproj", "{98FDD85C-97C5-4C49-9CFD-E17498F194DB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A8E1DD88-2E2C-4B7E-98C0-0428CD06697C}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeroconf.WP", "Zeroconf.WP\Zeroconf.WP.csproj", "{71071865-9DCE-472E-A8B3-D9D44C5CF23F}"
 EndProject
