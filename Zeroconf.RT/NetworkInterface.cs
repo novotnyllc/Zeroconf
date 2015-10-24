@@ -104,9 +104,19 @@ namespace Zeroconf
             catch (Exception)
             {
                 // If it fails, use the default
-                await socket.BindServiceNameAsync("", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
-                            .AsTask(cancellationToken)
-                            .ConfigureAwait(false);
+
+                if (bestInterface)
+                {
+                    await socket.BindServiceNameAsync("", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
+                                .AsTask(cancellationToken)
+                                .ConfigureAwait(false);
+                }
+                else
+                {
+                    await socket.BindServiceNameAsync("")
+                                .AsTask(cancellationToken)
+                                .ConfigureAwait(false);
+                }
 
             }
 #else
