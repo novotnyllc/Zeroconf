@@ -49,9 +49,9 @@
       <file src="..\Zeroconf.iOS-Unified\Bin\iPhone\Release\Zeroconf.xml" target="lib\xamarin.ios\Zeroconf.xml" />
       
       <!-- PCL -->
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.dll" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.pdb" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\portable-net45+wp8+win81+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.xml" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\portable-net45+wp8+win8+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.dll" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\portable-net45+wp8+win8+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.pdb" />
+      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\portable-net45+wp8+win8+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.xml" />
       
     </files>
 </package>
