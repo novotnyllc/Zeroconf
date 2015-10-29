@@ -87,10 +87,11 @@ namespace Zeroconf
 #if !WINDOWS_PHONE
             try
             {
-               // Try to bind using port 5353 first
-               if (bestInterface)
+                // Try to bind using port 5353 first
+                var adapter = NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter;
+                if (bestInterface && adapter != null)
                {
-                    await socket.BindServiceNameAsync("5353", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
+                    await socket.BindServiceNameAsync("5353", adapter)
                            .AsTask(cancellationToken)
                            .ConfigureAwait(false);
                }
@@ -104,10 +105,10 @@ namespace Zeroconf
             catch (Exception)
             {
                 // If it fails, use the default
-
-                if (bestInterface)
+                var adapter = NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter;
+                if (bestInterface && adapter != null)
                 {
-                    await socket.BindServiceNameAsync("", NetworkInformation.GetInternetConnectionProfile().NetworkAdapter)
+                    await socket.BindServiceNameAsync("", adapter)
                                 .AsTask(cancellationToken)
                                 .ConfigureAwait(false);
                 }
