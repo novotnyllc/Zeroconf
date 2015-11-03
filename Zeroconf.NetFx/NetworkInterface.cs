@@ -51,6 +51,9 @@ namespace Zeroconf
 
                 await Task.WhenAll(tasks);
             }
+
+            // Signal scan complete or cancelled with an empty IP address and null buffer
+            onResponse(string.Empty, null);
         }
 
 
