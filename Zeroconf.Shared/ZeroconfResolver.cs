@@ -52,8 +52,11 @@ namespace Zeroconf
                     {
                         obs.OnError(e);
                     }
-
-                    obs.OnCompleted();
+                    finally
+                    {
+                        obs.OnCompleted();
+                    }
+                    
                 }); 
         }
 
@@ -146,7 +149,10 @@ namespace Zeroconf
                           {
                               obs.OnError(e);
                           }
-                          obs.OnCompleted();
+                          finally
+                          {
+                              obs.OnCompleted();
+                          }
                       });
         }
 
