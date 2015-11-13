@@ -105,6 +105,7 @@ namespace Zeroconf
         ///     Returns all available domains with services on them
         /// </summary>
         /// <param name="scanTime">Default is 2 seconds</param>
+        /// <param name="bestInterface">use all interfaces or just the best one. Default is all</param>
         /// <param name="cancellationToken"></param>
         /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
         /// <param name="retryDelayMilliseconds">The delay time between retries</param>
