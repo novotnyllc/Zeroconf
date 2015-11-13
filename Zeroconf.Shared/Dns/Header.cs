@@ -124,7 +124,7 @@ namespace Heijden.DNS
 		*/
 	#endregion
 
-    internal class Header
+    class Header
 	{
 		/// <summary>
 		/// An identifier assigned by the program
@@ -132,7 +132,7 @@ namespace Heijden.DNS
 		public ushort ID;
 
 		// internal flag
-		private ushort Flags;
+        ushort Flags;
 
 		/// <summary>
 		/// the number of entries in the question section
@@ -169,12 +169,12 @@ namespace Heijden.DNS
 		}
 
 
-		private ushort SetBits(ushort oldValue, int position, int length, bool blnValue)
+        ushort SetBits(ushort oldValue, int position, int length, bool blnValue)
 		{
 			return SetBits(oldValue, position, length, blnValue ? (ushort)1 : (ushort)0);
 		}
 
-		private ushort SetBits(ushort oldValue, int position, int length, ushort newValue)
+        ushort SetBits(ushort oldValue, int position, int length, ushort newValue)
 		{
 			// sanity check
 			if (length <= 0 || position >= 16)
@@ -191,7 +191,7 @@ namespace Heijden.DNS
 			return oldValue;
 		}
 
-		private ushort GetBits(ushort oldValue, int position, int length)
+        ushort GetBits(ushort oldValue, int position, int length)
 		{
 			// sanity check
 			if (length <= 0 || position >= 16)
@@ -222,7 +222,7 @@ namespace Heijden.DNS
 			}
 		}
 
-		private byte[] WriteShort(ushort sValue)
+        byte[] WriteShort(ushort sValue)
 		{
 			return BitConverter.GetBytes(HostToNetworkOrder((short)sValue));
 		}

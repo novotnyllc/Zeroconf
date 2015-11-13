@@ -176,13 +176,14 @@ namespace ZeroconfTest.WP
         public List<string> Protocols { get; set; }
         public string Protocol { get; set; }
         public ObservableCollection<IZeroconfHost> Servers { get; set; }
-        private void ProtocolSelected(object sender, SelectionChangedEventArgs e)
+
+        void ProtocolSelected(object sender, SelectionChangedEventArgs e)
         {
             Protocol = e.AddedItems.Count > 0 ? (string) e.AddedItems[0] : "";
             OnPropertyChanged("Protocol");
         }
 
-        private async void BrowseClick(object sender, RoutedEventArgs e)
+        async void BrowseClick(object sender, RoutedEventArgs e)
         {
 
             //var protocol = string.IsNullOrEmpty(Protocol) ? ProtocolPicker.SelectedItem : Protocol;

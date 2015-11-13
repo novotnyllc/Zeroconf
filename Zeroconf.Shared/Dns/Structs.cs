@@ -16,7 +16,8 @@ namespace Heijden.DNS
 	 *
 	 *		TYPE		value			meaning
 	 */
-    internal enum Type : ushort
+
+    enum Type : ushort
 	{
 		A = 1,				// a IPV4 host address
 		NS = 2,				// an authoritative name server
@@ -115,7 +116,8 @@ namespace Heijden.DNS
 	 *
 	 *		QTYPE		value			meaning
 	 */
-    internal enum QType : ushort
+
+    enum QType : ushort
 	{
 		A = Type.A,			// a IPV4 host address
 		NS = Type.NS,		// an authoritative name server
@@ -217,7 +219,8 @@ namespace Heijden.DNS
 	 *
 	 *		CLASS		value			meaning
 	 */
-    internal enum Class : ushort
+
+    enum Class : ushort
 	{
 		IN = 1,				// the Internet
 		CS = 2,				// the CSNET class (Obsolete - used only for examples in some obsolete RFCs)
@@ -233,7 +236,8 @@ namespace Heijden.DNS
 	 *
 	 *		QCLASS		value			meaning
 	 */
-    internal enum QClass : ushort
+
+    enum QClass : ushort
 	{
 		IN = Class.IN,		// the Internet
 		CS = Class.CS,		// the CSNET class (Obsolete - used only for examples in some obsolete RFCs)
@@ -248,7 +252,8 @@ RCODE           Response code - this 4 bit field is set as part of
                 responses.  The values have the following
                 interpretation:
 	 */
-    internal enum RCode
+
+    enum RCode
 	{
 		NoError = 0,		// No Error                           [RFC1035]
 		FormErr = 1,		// Format Error                       [RFC1035]
@@ -300,7 +305,8 @@ OPCODE          A four bit field that specifies kind of query in this
 
                 3-15            reserved for future use
 	 */
-    internal enum OPCode
+
+    enum OPCode
 	{
 		Query = 0,				// a standard query (QUERY)
 		IQUERY = 1,				// OpCode Retired (previously IQUERY - No further [RFC3425]
@@ -323,7 +329,7 @@ OPCODE          A four bit field that specifies kind of query in this
 		RESERVED15 = 15,
 	}
 
-    internal enum TransportType
+    enum TransportType
 	{
 		Udp,
 		Tcp

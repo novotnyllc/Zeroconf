@@ -4,10 +4,10 @@ using System.Text;
 
 namespace Heijden.DNS
 {
-	internal class RecordReader
+    class RecordReader
 	{
-		private byte[] m_Data;
-		private int m_Position;
+	    byte[] m_Data;
+	    int m_Position;
 		public RecordReader(byte[] data)
 		{
 			m_Data = data;

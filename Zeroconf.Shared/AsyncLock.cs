@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace Zeroconf
 {
-    internal class AsyncLock
+    class AsyncLock
     {
-        private readonly SemaphoreSlim m_semaphore;
-        private readonly Task<Releaser> m_releaser;
+        readonly SemaphoreSlim m_semaphore;
+        readonly Task<Releaser> m_releaser;
         
         public AsyncLock()
         {
@@ -22,7 +22,7 @@ namespace Zeroconf
 
         public struct Releaser : IDisposable
         {
-            private readonly AsyncLock m_toRelease;
+            readonly AsyncLock m_toRelease;
 
             internal Releaser(AsyncLock toRelease) { m_toRelease = toRelease; }
 

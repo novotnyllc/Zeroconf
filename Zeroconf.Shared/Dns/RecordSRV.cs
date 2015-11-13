@@ -65,7 +65,7 @@ using System;
 
 namespace Heijden.DNS
 {
-    internal class RecordSRV : Record
+    class RecordSRV : Record
 	{
 		public ushort PRIORITY;
 		public ushort WEIGHT;

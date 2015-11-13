@@ -22,7 +22,7 @@ depends on the domain where it is found.
 
 namespace Heijden.DNS
 {
-    internal class RecordTXT : Record
+    class RecordTXT : Record
 	{
 		public List<string> TXT;
 

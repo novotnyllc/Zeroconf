@@ -28,7 +28,7 @@ namespace ZeroconfTest.NetFx
             InitializeComponent();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        async void Button_Click(object sender, RoutedEventArgs e)
         {
 
             //Action<IZeroconfRecord> onMessage = record => Console.WriteLine("On Message: {0}", record);
@@ -43,7 +43,7 @@ namespace ZeroconfTest.NetFx
                 Console.WriteLine(resp);
         }
 
-        private async void Browse_Click(object sender, RoutedEventArgs e)
+        async void Browse_Click(object sender, RoutedEventArgs e)
         {
             var responses = await ZeroconfResolver.BrowseDomainsAsync();
             

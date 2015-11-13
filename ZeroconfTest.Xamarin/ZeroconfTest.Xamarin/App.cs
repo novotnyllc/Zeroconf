@@ -45,7 +45,7 @@ namespace ZeroconfTest.Xam
             };
         }
 
-        private static async void BrowseOnClicked(Label output)
+        static async void BrowseOnClicked(Label output)
         {
             ILookup<string, string> responses = null;
             //await Task.Run(async () =>
@@ -64,7 +64,7 @@ namespace ZeroconfTest.Xam
             }
         }
 
-        private static async void ResolveOnClicked(Label output)
+        static async void ResolveOnClicked(Label output)
         {
             IReadOnlyList<IZeroconfHost> responses = null;
             //await Task.Run(async () =>

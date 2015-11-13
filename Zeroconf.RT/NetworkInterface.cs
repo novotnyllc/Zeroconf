@@ -14,8 +14,7 @@ using Windows.Storage.Streams;
 
 namespace Zeroconf
 {
-
-    internal class NetworkInterface : INetworkInterface
+    class NetworkInterface : INetworkInterface
     {
         public async Task NetworkRequestAsync(byte[] requestBytes,
                                               TimeSpan scanTime,
@@ -82,7 +81,7 @@ namespace Zeroconf
             }
         }
 
-        private static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, bool bestInterface, CancellationToken cancellationToken)
+        static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, bool bestInterface, CancellationToken cancellationToken)
         {
 #if !WINDOWS_PHONE
             try

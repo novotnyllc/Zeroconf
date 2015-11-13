@@ -16,7 +16,7 @@ namespace ZeroconfTest.RT
             InitializeComponent();
         }
 
-        private async void ResolveClick(object sender, RoutedEventArgs e)
+        async void ResolveClick(object sender, RoutedEventArgs e)
         {
             
             var domains = await ZeroconfResolver.BrowseDomainsAsync();

@@ -57,9 +57,9 @@ namespace Zeroconf
     /// <summary>
     ///     A ZeroConf record response
     /// </summary>
-    internal class ZeroconfHost : IZeroconfHost
+    class ZeroconfHost : IZeroconfHost
     {
-        private readonly Dictionary<string, IService> _services = new Dictionary<string, IService>();
+        readonly Dictionary<string, IService> _services = new Dictionary<string, IService>();
 
         /// <summary>
         ///     Id, possibly different than the display name
@@ -115,9 +115,9 @@ namespace Zeroconf
         }
     }
 
-    internal class Service : IService
+    class Service : IService
     {
-        private readonly List<IReadOnlyDictionary<string, string>> _properties = new List<IReadOnlyDictionary<string, string>>();
+        readonly List<IReadOnlyDictionary<string, string>> _properties = new List<IReadOnlyDictionary<string, string>>();
 
         public string Name { get; set; }
         public int Port { get; set; }

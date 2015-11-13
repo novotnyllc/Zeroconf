@@ -64,7 +64,7 @@ namespace Heijden.DNS
 	/// Resource Record (rfc1034 3.6.)
 	/// </summary>
     [DebuggerDisplay("Name = {NAME} TTL={TTL} Class={Class} Type = {Type} Record={RECORD}")]
-    internal class RR
+	class RR
 	{
 		/// <summary>
 		/// The name of the node to which this resource record pertains
@@ -95,7 +95,8 @@ namespace Heijden.DNS
 				m_TTL = value;
 			}
 		}
-		private uint m_TTL;
+
+	    uint m_TTL;
 
 		/// <summary>
 		/// 
@@ -132,7 +133,7 @@ namespace Heijden.DNS
 		}
 	}
 
-    internal class AnswerRR : RR
+    class AnswerRR : RR
 	{
 		public AnswerRR(RecordReader br)
 			: base(br)
@@ -140,7 +141,7 @@ namespace Heijden.DNS
 		}
 	}
 
-    internal class AuthorityRR : RR
+    class AuthorityRR : RR
 	{
 		public AuthorityRR(RecordReader br)
 			: base(br)
@@ -148,7 +149,7 @@ namespace Heijden.DNS
 		}
 	}
 
-    internal class AdditionalRR : RR
+    class AdditionalRR : RR
 	{
 		public AdditionalRR(RecordReader br)
 			: base(br)

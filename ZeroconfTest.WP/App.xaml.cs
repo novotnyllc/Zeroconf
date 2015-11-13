@@ -59,30 +59,30 @@ namespace ZeroconfTest.WP
 
         // Code to execute when the application is launching (eg, from Start)
         // This code will not execute when the application is reactivated
-        private void Application_Launching(object sender, LaunchingEventArgs e)
+        void Application_Launching(object sender, LaunchingEventArgs e)
         {
         }
 
         // Code to execute when the application is activated (brought to foreground)
         // This code will not execute when the application is first launched
-        private void Application_Activated(object sender, ActivatedEventArgs e)
+        void Application_Activated(object sender, ActivatedEventArgs e)
         {
         }
 
         // Code to execute when the application is deactivated (sent to background)
         // This code will not execute when the application is closing
-        private void Application_Deactivated(object sender, DeactivatedEventArgs e)
+        void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
         }
 
         // Code to execute when the application is closing (eg, user hit Back)
         // This code will not execute when the application is deactivated
-        private void Application_Closing(object sender, ClosingEventArgs e)
+        void Application_Closing(object sender, ClosingEventArgs e)
         {
         }
 
         // Code to execute if a navigation fails
-        private void RootFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
+        void RootFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             if (Debugger.IsAttached)
             {
@@ -92,7 +92,7 @@ namespace ZeroconfTest.WP
         }
 
         // Code to execute on Unhandled Exceptions
-        private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
+        void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
             if (Debugger.IsAttached)
             {
@@ -104,10 +104,10 @@ namespace ZeroconfTest.WP
         #region Phone application initialization
 
         // Avoid double-initialization
-        private bool phoneApplicationInitialized = false;
+        bool phoneApplicationInitialized = false;
 
         // Do not add any additional code to this method
-        private void InitializePhoneApplication()
+        void InitializePhoneApplication()
         {
             if (phoneApplicationInitialized)
                 return;
@@ -128,7 +128,7 @@ namespace ZeroconfTest.WP
         }
 
         // Do not add any additional code to this method
-        private void CompleteInitializePhoneApplication(object sender, NavigationEventArgs e)
+        void CompleteInitializePhoneApplication(object sender, NavigationEventArgs e)
         {
             // Set the root visual to allow the application to render
             if (RootVisual != RootFrame)
@@ -138,7 +138,7 @@ namespace ZeroconfTest.WP
             RootFrame.Navigated -= CompleteInitializePhoneApplication;
         }
 
-        private void CheckForResetNavigation(object sender, NavigationEventArgs e)
+        void CheckForResetNavigation(object sender, NavigationEventArgs e)
         {
             // If the app has received a 'reset' navigation, then we need to check
             // on the next navigation to see if the page stack should be reset
@@ -146,7 +146,7 @@ namespace ZeroconfTest.WP
                 RootFrame.Navigated += ClearBackStackAfterReset;
         }
 
-        private void ClearBackStackAfterReset(object sender, NavigationEventArgs e)
+        void ClearBackStackAfterReset(object sender, NavigationEventArgs e)
         {
             // Unregister the event so it doesn't get called again
             RootFrame.Navigated -= ClearBackStackAfterReset;
@@ -181,7 +181,7 @@ namespace ZeroconfTest.WP
         //
         // For more info on localizing Windows Phone apps see http://go.microsoft.com/fwlink/?LinkId=262072.
         //
-        private void InitializeLanguage()
+        void InitializeLanguage()
         {
             try
             {

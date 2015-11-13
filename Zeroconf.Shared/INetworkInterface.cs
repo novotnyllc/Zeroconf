@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Zeroconf
 {
-    internal interface INetworkInterface
+    interface INetworkInterface
     {
         Task NetworkRequestAsync(byte[] requestBytes,
                                  TimeSpan scanTime,

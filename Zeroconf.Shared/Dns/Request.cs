@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Heijden.DNS
 {
-    internal class Request
+    class Request
 	{
 		public Header header;
 
-		private List<Question> questions;
+        List<Question> questions;
 
 		public Request()
 		{

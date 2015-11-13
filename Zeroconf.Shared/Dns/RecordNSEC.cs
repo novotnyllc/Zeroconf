@@ -5,7 +5,7 @@ using System;
 
 namespace Heijden.DNS
 {
-	internal class RecordNSEC : Record
+    class RecordNSEC : Record
 	{
 		public byte[] RDATA;
 

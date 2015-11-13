@@ -16,11 +16,11 @@ namespace Zeroconf
     /// </summary>
     public static class ZeroconfResolver
     {
-        private static readonly AsyncLock ResolverLock = new AsyncLock();
+        static readonly AsyncLock ResolverLock = new AsyncLock();
 
-        private static readonly INetworkInterface NetworkInterface = LoadPlatformNetworkInterface();
+        static readonly INetworkInterface NetworkInterface = LoadPlatformNetworkInterface();
 
-        private static INetworkInterface LoadPlatformNetworkInterface()
+        static INetworkInterface LoadPlatformNetworkInterface()
         {
 #if PCL
             throw new NotSupportedException("This PCL assembly must not be used at runtime. Make sure to add the Zeroconf Nuget reference to your main project.");
@@ -150,13 +150,13 @@ namespace Zeroconf
             return r.ToLookup(k => k.Service, k => k.Address);
         }
 
-        private static IEnumerable<string> BrowseResponseParser(Response response)
+        static IEnumerable<string> BrowseResponseParser(Response response)
         {
             return response.RecordsPTR.Select(ptr => ptr.PTRDNAME);
         }
 
 
-        private static async Task<IDictionary<string, Response>> ResolveInternal(IEnumerable<string> protocols,
+        static async Task<IDictionary<string, Response>> ResolveInternal(IEnumerable<string> protocols,
                                                                                  byte[] requestBytes,
                                                                                  TimeSpan scanTime,
                                                                                  int retries,
@@ -208,7 +208,7 @@ namespace Zeroconf
             }
         }
 
-        private static byte[] GetRequestBytes(IEnumerable<string> protocols)
+        static byte[] GetRequestBytes(IEnumerable<string> protocols)
         {
             var req = new Request();
 
@@ -222,7 +222,7 @@ namespace Zeroconf
             return req.Data;
         }
 
-        private static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress)
+        static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress)
         {
             var z = new ZeroconfHost();
 
