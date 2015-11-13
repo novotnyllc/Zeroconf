@@ -16,6 +16,11 @@ namespace Zeroconf
     /// </summary>
     public static class ZeroconfResolver
     {
+        public static bool Scanning
+        {
+            get; private set;
+        }
+
         private static readonly AsyncLock ResolverLock = new AsyncLock();
 
         private static readonly INetworkInterface NetworkInterface = LoadPlatformNetworkInterface();
@@ -76,29 +81,58 @@ namespace Zeroconf
                                                                             bool bestInterface = false,
                                                                             CancellationToken cancellationToken = default (CancellationToken))
         {
-            Action<string, Response> wrappedAction = null;
-            if (callback != null)
+            if (!Scanning)
             {
-                wrappedAction = (address, resp) =>
-                                {
-                                    var zc = ResponseToZeroconf(resp, address);
-                                    callback(zc);
-                                };
+                Action<string, Response> wrappedAction = null;
+                if (callback != null)
+                {
+                    wrappedAction = (address, resp) =>
+                                    {
+                                        if (!string.IsNullOrEmpty(address) && (resp != null))
+                                        {
+                                            var zc = ResponseToZeroconf(resp, address);
+                                            callback(zc);
+                                        }
+                                        else
+                                        {
+                                            // Signal scan complete with a null
+                                            callback(null);
+                                        }
+                                    };
+                }
+
+                var protos = protocols.ToList(); // prevent multiple enumeration
+                var buffer = GetRequestBytes(protos);
+                try
+                {
+                    Scanning = true;
+
+                    var dict = await ResolveInternal(protos,
+                                                 buffer,
+                                                 scanTime,
+                                                 retries,
+                                                 retryDelayMilliseconds,
+                                                 wrappedAction,
+                                                 bestInterface,
+                                                 cancellationToken)
+                                        .ConfigureAwait(false);
+
+                    Scanning = false;
+
+                    return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key)).ToList();
+                }
+                catch (Exception ex)
+                {
+                    Scanning = false;
+
+                    Debug.WriteLine(ex.Message);
+                    throw ex;   // Forward the exception
+                }
             }
-
-            var protos = protocols.ToList(); // prevent multiple enumeration
-            var buffer = GetRequestBytes(protos);
-            var dict = await ResolveInternal(protos,
-                                             buffer,
-                                             scanTime,
-                                             retries,
-                                             retryDelayMilliseconds,
-                                             wrappedAction,
-                                             bestInterface,
-                                             cancellationToken)
-                                 .ConfigureAwait(false);
-
-            return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key)).ToList();
+            else
+            {
+                throw new OperationCanceledException("Scan already in progress.");
+            }
         }
 
         /// <summary>
@@ -117,37 +151,68 @@ namespace Zeroconf
                                                                              bool bestInterface = false,
                                                                              CancellationToken cancellationToken = default (CancellationToken))
         {
-            const string protocol = "_services._dns-sd._udp.local.";
-
-            Action<string, Response> wrappedAction = null;
-            if (callback != null)
+            if (!Scanning)
             {
-                wrappedAction = (address, response) =>
-                                {
-                                    foreach (var service in BrowseResponseParser(response))
+                const string protocol = "_services._dns-sd._udp.local.";
+
+                Action<string, Response> wrappedAction = null;
+                if (callback != null)
+                {
+                    wrappedAction = (address, response) =>
                                     {
-                                        callback(service, address);
-                                    }
-                                };
+                                        if (!string.IsNullOrEmpty(address) && (response != null))
+                                        {
+                                            foreach (var service in BrowseResponseParser(response))
+                                            {
+                                                callback(service, address);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            // Signal scan complete by passing empty strings
+                                            callback(string.Empty, string.Empty);
+                                        }
+                                    };
+                }
+
+                var protocols = new[] { protocol };
+                var buffer = GetRequestBytes(protocols);
+
+                try
+                {
+                    Scanning = true;
+
+                    var dict = await ResolveInternal(protocols,
+                                                 buffer,
+                                                 scanTime,
+                                                 retries,
+                                                 retryDelayMilliseconds,
+                                                 wrappedAction,
+                                                 bestInterface,
+                                                 cancellationToken)
+                                        .ConfigureAwait(false);
+
+                    Scanning = false;
+
+                    var r = from kvp in dict
+                            from service in BrowseResponseParser(kvp.Value)
+                            select new { Service = service, Address = kvp.Key };
+
+                    return r.ToLookup(k => k.Service, k => k.Address);
+                }
+                catch (Exception ex)
+                {
+                    Scanning = false;
+
+                    Debug.WriteLine(ex.Message);
+
+                    throw ex;   // Forward the exception
+                }
             }
-
-            var protocols = new[] {protocol};
-            var buffer = GetRequestBytes(protocols);
-            var dict = await ResolveInternal(protocols,
-                                             buffer,
-                                             scanTime,
-                                             retries,
-                                             retryDelayMilliseconds,
-                                             wrappedAction,
-                                             bestInterface,
-                                             cancellationToken)
-                                 .ConfigureAwait(false);
-
-            var r = from kvp in dict
-                    from service in BrowseResponseParser(kvp.Value)
-                    select new {Service = service, Address = kvp.Key};
-
-            return r.ToLookup(k => k.Service, k => k.Address);
+            else
+            {
+                throw new OperationCanceledException("Scan already in progress.");
+            }
         }
 
         private static IEnumerable<string> BrowseResponseParser(Response response)
@@ -175,21 +240,29 @@ namespace Zeroconf
 
                 Action<string, byte[]> converter = (address, buffer) =>
                                                    {
-                                                       var resp = new Response(buffer);
-                                                       Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}",
+                                                       if (!string.IsNullOrEmpty(address) && (buffer != null))
+                                                       {
+                                                           var resp = new Response(buffer);
+                                                           Debug.WriteLine("IP: {0}, Bytes: {1}, IsResponse: {2}",
                                                                        address,
                                                                        buffer.Length,
                                                                        resp.header.QR);
 
-                                                       if (resp.header.QR)
-                                                       {
-                                                           lock (dict)
+                                                           if (resp.header.QR)
                                                            {
-                                                               dict[address] = resp;
-                                                           }
+                                                               lock (dict)
+                                                               {
+                                                                   dict[address] = resp;
+                                                               }
 
-                                                           if (callback != null)
-                                                               callback(address, resp);
+                                                               if (callback != null)
+                                                                   callback(address, resp);
+                                                           }
+                                                       }
+                                                       else if (callback != null)
+                                                       {
+                                                           // Signal scan complete by passing nulls
+                                                           callback(string.Empty, null);
                                                        }
                                                    };
 

@@ -78,6 +78,9 @@ namespace Zeroconf
                     // wait for responses
                     await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
                     Debug.WriteLine("Done Scanning");
+
+                    // Signal scan complete or cancelled with an empty IP address and null buffer
+                    onResponse(string.Empty, null);
                 }
             }
         }

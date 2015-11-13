@@ -8,11 +8,10 @@
     mc:Ignorable="d">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel Margin="20,100,20,20">
-            <Button
-                Content="Resolve"
-                Click="ResolveClick"
-                />
+        <StackPanel Orientation="Vertical">
+            <Button Content="Resolve" HorizontalAlignment="Left" Margin="20" VerticalAlignment="Top" Width="100" Click="Resolve_Click"/>
+            <Button Content="Browse" HorizontalAlignment="Left" Margin="20" VerticalAlignment="Top" Width="100" Click="Browse_Click"/>
+            <Button Content="Cancel" HorizontalAlignment="Left" Margin="20" VerticalAlignment="Top" Width="100" Click="Cancel_Click"/>
         </StackPanel>
     </Grid>
 </Page>
