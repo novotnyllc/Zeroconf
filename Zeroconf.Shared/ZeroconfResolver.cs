@@ -31,6 +31,15 @@ namespace Zeroconf
 #endif
         }
 
+        /// <summary>
+        ///     Resolves available ZeroConf services
+        /// </summary>
+        /// <param name="scanTime">Default is 2 seconds</param>
+        /// <param name="bestInterface">Use only the best interface or all interfaces</param>
+        /// <param name="protocol"></param>
+        /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
+        /// <param name="retryDelayMilliseconds">The delay time between retries</param>
+        /// <returns></returns>
         public static IObservable<IZeroconfHost> Resolve(string protocol,
                                                          TimeSpan scanTime = default(TimeSpan),
                                                          int retries = 2,
@@ -40,13 +49,39 @@ namespace Zeroconf
             if (string.IsNullOrWhiteSpace(protocol))
                 throw new ArgumentNullException(nameof(protocol));
 
+            return Resolve(new[] { protocol }, scanTime, retries, retryDelayMilliseconds, bestInterface);
+        }
+
+        /// <summary>
+        ///     Resolves available ZeroConf services
+        /// </summary>
+        /// <param name="scanTime">Default is 2 seconds</param>
+        /// <param name="bestInterface">Use only the best interface or all interfaces</param>
+        /// <param name="protocols"></param>
+        /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
+        /// <param name="retryDelayMilliseconds">The delay time between retries</param>
+        /// <returns></returns>
+        public static IObservable<IZeroconfHost> Resolve(IEnumerable<string> protocols,
+                                                         TimeSpan scanTime = default(TimeSpan),
+                                                         int retries = 2,
+                                                         int retryDelayMilliseconds = 2000,
+                                                         bool bestInterface = false)
+        {
+            if (protocols == null)
+                throw new ArgumentNullException(nameof(protocols));
+
+
             return Observable.Create<IZeroconfHost>(
                 async (obs, cxl) =>
                 {
                     try
                     {
                         Action<IZeroconfHost> cb = obs.OnNext;
-                        await ResolveAsync(protocol, scanTime, retries, retryDelayMilliseconds, cb, bestInterface, cxl);
+                        await ResolveAsync(protocols, scanTime, retries, retryDelayMilliseconds, cb, bestInterface, cxl);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Nothing to do here, eat it and mark completed
                     }
                     catch (Exception e)
                     {
@@ -56,8 +91,8 @@ namespace Zeroconf
                     {
                         obs.OnCompleted();
                     }
-                    
-                }); 
+
+                });
         }
 
         /// <summary>
