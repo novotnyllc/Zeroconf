@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Dns\Response.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Dns\RR.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Dns\Structs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DomainService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)INetworkInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ZeroconfRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ZeroconfResolver.cs" />

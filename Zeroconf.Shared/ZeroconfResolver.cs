@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Heijden.DNS;
+using Zeroconf.Shared;
 using DnsType = Heijden.DNS.Type;
 
 
@@ -27,6 +29,32 @@ namespace Zeroconf
 #else
             return new NetworkInterface();
 #endif
+        }
+
+        public static IObservable<IZeroconfHost> Resolve(string protocol,
+                                                         TimeSpan scanTime = default(TimeSpan),
+                                                         int retries = 2,
+                                                         int retryDelayMilliseconds = 2000,
+                                                         bool bestInterface = false)
+        {
+            if (string.IsNullOrWhiteSpace(protocol))
+                throw new ArgumentNullException(nameof(protocol));
+
+            return Observable.Create<IZeroconfHost>(
+                async (obs, cxl) =>
+                {
+                    try
+                    {
+                        Action<IZeroconfHost> cb = obs.OnNext;
+                        await ResolveAsync(protocol, scanTime, retries, retryDelayMilliseconds, cb, bestInterface, cxl);
+                    }
+                    catch (Exception e)
+                    {
+                        obs.OnError(e);
+                    }
+
+                    obs.OnCompleted();
+                }); 
         }
 
         /// <summary>
@@ -99,6 +127,27 @@ namespace Zeroconf
                                  .ConfigureAwait(false);
 
             return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key)).ToList();
+        }
+
+        public static IObservable<DomainService> BrowseDomains(TimeSpan scanTime = default(TimeSpan),
+                                                                             int retries = 2,
+                                                                             int retryDelayMilliseconds = 2000,
+                                                                             bool bestInterface = false)
+        {
+            return Observable.Create<DomainService>(
+                async (obs, cxl) =>
+                      {
+                          try
+                          {
+                              Action<string, string> cb = (d, s) => obs.OnNext(new DomainService(d, s));
+                              await BrowseDomainsAsync(scanTime, retries, retryDelayMilliseconds, cb, bestInterface, cxl);
+                          }
+                          catch (Exception e)
+                          {
+                              obs.OnError(e);
+                          }
+                          obs.OnCompleted();
+                      });
         }
 
         /// <summary>

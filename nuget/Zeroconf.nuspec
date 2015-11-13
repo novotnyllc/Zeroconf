@@ -15,6 +15,9 @@
         <language>en-US</language>
         <tags>zeroconf bonjour mdns service discovery pcl xamarin monoandroid monotouch xamarin.ios wpa universal</tags>
     </metadata>
+    <dependencies>
+      <dependency id="Rx-Linq" version="2.2.5" /> 
+    </dependencies>
     <files>
       <!-- Win8 + Wpa81 -->
       <file src="..\Zeroconf.RT\bin\Release\Zeroconf.dll" target="lib\portable-win81+wpa81\Zeroconf.dll" />
