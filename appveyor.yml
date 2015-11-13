@@ -22,3 +22,9 @@ after_build:
   - cmd: nuget pack nuget\Zeroconf.nuspec -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%" -NoPackageAnalysis
   - cmd: appveyor PushArtifact "Zeroconf.%GitVersion_NuGetVersion%.nupkg"  
   
+deploy:
+  provider: NuGet
+  server: https://www.myget.org/F/zeroconf/api/v2/package
+  api_key:
+    secure: bmqlJK8a5HYiUXOT99HXT1j7JiM5+fpR4kHhxIC30oaaEXbv94f0fKdiKlU1QC/l
+  artifact: /.*\.nupkg/
