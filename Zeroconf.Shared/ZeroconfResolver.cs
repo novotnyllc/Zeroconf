@@ -49,7 +49,7 @@ namespace Zeroconf
                                                                       CancellationToken cancellationToken = default (CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(protocol))
-                throw new ArgumentNullException("protocol");
+                throw new ArgumentNullException(nameof(protocol));
 
             return ResolveAsync(new[] {protocol},
                                 scanTime,
@@ -189,8 +189,7 @@ namespace Zeroconf
                                                                dict[address] = resp;
                                                            }
 
-                                                           if (callback != null)
-                                                               callback(address, resp);
+                                                           callback?.Invoke(address, resp);
                                                        }
                                                    };
 

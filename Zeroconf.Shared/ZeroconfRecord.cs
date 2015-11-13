@@ -88,7 +88,7 @@ namespace Zeroconf
         internal void AddService(IService service)
         {
             if (service == null)
-                throw new ArgumentNullException("service");
+                throw new ArgumentNullException(nameof(service));
 
             _services[service.Name] = service;
         }
@@ -130,7 +130,7 @@ namespace Zeroconf
         internal void AddPropertySet(IReadOnlyDictionary<string, string> set)
         {
             if (set == null)
-                throw new ArgumentNullException("set");
+                throw new ArgumentNullException(nameof(set));
 
             _properties.Add(set);
         }
