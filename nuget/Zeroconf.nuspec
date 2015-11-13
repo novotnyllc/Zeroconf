@@ -12,12 +12,12 @@
         <description>Bonjour support for .NET 4.5, Windows Phone 8 and 8.1, Xamarin iOS and Android, and Windows Store apps with PCL support</description>
       <releaseNotes>Fix a compatibility issue with discovering OpenHAB services</releaseNotes>
       <copyright>© Oren Novotny 2014</copyright>
-        <language>en-US</language>
-        <tags>zeroconf bonjour mdns service discovery pcl xamarin monoandroid monotouch xamarin.ios wpa universal</tags>
+      <language>en-US</language>
+      <tags>zeroconf bonjour mdns service discovery pcl xamarin monoandroid monotouch xamarin.ios wpa universal</tags>
+      <dependencies>
+        <dependency id="Rx-Linq" version="2.2.5" /> 
+      </dependencies>
     </metadata>
-    <dependencies>
-      <dependency id="Rx-Linq" version="2.2.5" /> 
-    </dependencies>
     <files>
       <!-- Win8 + Wpa81 -->
       <file src="..\Zeroconf.RT\bin\Release\Zeroconf.dll" target="lib\portable-win81+wpa81\Zeroconf.dll" />
