@@ -20,13 +20,23 @@ namespace ZeroconfTest.RT
         {
             
             var domains = await ZeroconfResolver.BrowseDomainsAsync();
-            var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));
+            // var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));
 
             // var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.");
 
 
-            foreach (var resp in responses)
-                Debug.WriteLine(resp);
+            //foreach (var resp in responses)
+            //    Debug.WriteLine(resp);
+
+
+            var sub = ZeroconfResolver.Resolve(domains.Select(g => g.Key));
+            IDisposable disp = null;
+            disp = sub.Subscribe(h => Debug.WriteLine(h), () =>
+                                                              {
+                                                                  Debug.WriteLine("Completed");
+                                                                  disp.Dispose(); ;
+                                                              });
+            
         }
     }
 }
