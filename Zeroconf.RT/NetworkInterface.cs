@@ -53,6 +53,11 @@ namespace Zeroconf
                     catch (Exception e)
                     {
                         socketBound = false;
+
+                        // If we were canceled, don't retry
+                        if (e is OperationCanceledException)
+                            throw;
+
                         Debug.WriteLine("Exception trying to Bind:\n{0}", e);
 
                         // Most likely a fatal error
