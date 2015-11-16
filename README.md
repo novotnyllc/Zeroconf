@@ -1,14 +1,14 @@
 Zeroconf
 ==========
 
-Bonjour/mDNS support for .NET 4.5, Windows Phone 8, Windows Store apps and Portable Class Libraries
--
+# Bonjour/mDNS support for .NET 4.5, Windows Phone 8, Windows Store apps and Portable Class Libraries
+
 The core logic is implemented as a PCL, but due to networking APIs being 
 platform-specific, a platform-specific helper library is required. Just make
 sure that you also install the NuGet to your main app and you'll be all set.
 
-Installation
--
+## Installation
+
 The easiest way to get started is to use the NuGet package.
 
 > Install-Package [Zeroconf](http://www.nuget.org/packages/Zeroconf)
@@ -16,8 +16,8 @@ The easiest way to get started is to use the NuGet package.
 Current Build Status:
 [![Build status](https://ci.appveyor.com/api/projects/status/52nr1dgg9ftrxeh9/branch/master?svg=true)](https://ci.appveyor.com/project/onovotny/zeroconf/branch/master)
 
-Usage
--
+## Usage
+
 There's are two methods with a few optional parameters:
 
     using Zeroconf;
@@ -50,61 +50,25 @@ offering that service. Thst most common use would be in the example above, passi
 all keys (services) to the Resolve method. Otherwise, you can also see what hosts are
 offering which services as well.
 
+### IObservable
+
+Starting in v2.5, there are two additional methods that return `IObservable`'s instead of Tasks. These methods
+are otherwise identical to the `*Async` versions but are more suitable for some usages. 
+
 ### Parameters
 
-<table>
-    <tr>
-        <th>Parameter Name</th>
-        <th>Default Value</th>
-        <th>Notes</th>
-    </tr>
-    <tr>
-        <td>protocol</td>
-        <td></td>
-        <td>Service to query. Almost always must end with <em>.local.</em></td>
-    </tr>
-    <tr>
-        <td>scanTime</td>
-        <td>2 seconds</td>
-        <td>Amount of time to listen for responses</td>
-    </tr>
-    <tr>
-        <td>retries</td>
-        <td>2</td>
-        <td>
-            Number of times to attempt to bind to the socket. Binding may fail if
-            another app is currently using it.
-        </td>
-    </tr>
-    <tr>
-        <td>retryDelayMilliseconds</td>
-        <td>2000</td>
-        <td>Delay between retries</td>
-    </tr>
-    <tr>
-        <td>callback</td>
-        <td>null</td>
-        <td>
-            If provided, called per IZeroconfigHost as they are processed. This can be used to stream
-            data back prior to call completion.
-        </td>
-    </tr>
-    <tr>
-        <td>bestInterface</td>
-        <td>false</td>
-        <td>
-            Use only the best interface to search for devices. Default's to false to search all
-            connected interfaces that support multicast.
-        </td>
-    </tr>
-    <tr>
-        <td>cancellationToken</td>
-        <td>CancellationToken.None</td>
-        <td>Optional use of task cancellation</td>
-    </tr>
-</table>
+| Parameter Name | Default Value | Notes |
+| -------------- | ------------- | ----- |
+| protocol | | Service to query. Almost always must end with *.local.* |
+| scanTime | 2 seconds | Amount of time to listen for responses |
+| retries | 2 | Number of times to attempt to bind to the socket. Binding may fail if another app is currently using it. |
+| retryDelayMilliseconds | 2000 | Delay between retries |
+| callback | null | If provided, called per `IZeroconfigHost` as they are processed. This can be used to stream data back prior to call completion. |
+| bestInterface | false | Use only the best interface to search for devices. Default's to false to search all connected interfaces that support multicast. |
+| cancellationToken | CancellationToken.None | Optional use of task cancellation |
 
-### Notes
+
+## Notes
 
 The `ResolveAsync` method is thread-safe, however all calls to it are serialized as only
 one can be in-progress at a time.
@@ -113,7 +77,7 @@ one can be in-progress at a time.
 There is currently a [bug](https://bugzilla.xamarin.com/show_bug.cgi?id=21578) on Xamarin.Android 4.x that incorrectly strips out internal Socket methods. This has been [fixed](http://developer.xamarin.com/releases/android/xamarin.android_5/xamarin.android_5.0/) for the Xamarin.Android 5.0 series but that is still in preview and unsupported. As a workaround, entering `System;` in to the `Ignore Assemblies` field in the `Project Options->Build->Android Build` page will fix the problem.
 
 
-### Credits
+## Credits
 
 This library was made possible through the efforts of the following projects:
 
