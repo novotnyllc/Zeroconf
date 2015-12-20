@@ -1,0 +1,15 @@
+{
+    "dependencies": {
+        "WPtoolkit": "4.2013.08.16"
+    },
+    "frameworks": {
+        "wp8": { }
+    },
+    "supports": { },
+    "runtimes": {
+        "win": { },
+        "win-arm": { },
+        "win-x86": { },
+        "win-anycpu": { }
+    }
+}

@@ -15,7 +15,7 @@
       <language>en-US</language>
       <tags>zeroconf bonjour mdns service discovery pcl xamarin monoandroid monotouch xamarin.ios wpa universal</tags>
       <dependencies>
-        <dependency id="Rx-Linq" version="2.2.5" /> 
+        <dependency id="Rx-Main" version="2.2.5" /> 
       </dependencies>
     </metadata>
     <files>

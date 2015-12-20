@@ -1,9 +1,11 @@
 {
     "dependencies": {
-        "Rx-Main": "2.2.5"
     },
     "frameworks": {
         "MonoTouch,Version=v1.0": { }
     },
-    "supports": { }
+    "supports": { },    
+    "runtimes": {
+        "win": { }
+    }
 }
