@@ -1,0 +1,9 @@
+{
+    "dependencies": {
+        "Rx-Linq": "2.2.5"
+    },
+    "frameworks": {
+        "wp8": { }
+    },
+    "supports": { }
+}
