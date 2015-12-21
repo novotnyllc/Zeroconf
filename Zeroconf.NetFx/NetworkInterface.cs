@@ -59,9 +59,11 @@ namespace Zeroconf
                                               CancellationToken cancellationToken)
         {
             // http://stackoverflow.com/questions/2192548/specifying-what-network-interface-an-udp-multicast-should-go-to-in-net
+
+#if !XAMARIN
             if (!adapter.GetIPProperties().MulticastAddresses.Any())
                 return; // most of VPN adapters will be skipped
-
+#endif
             if (!adapter.SupportsMulticast)
                 return; // multicast is meaningless for this type of connection
 
@@ -73,6 +75,8 @@ namespace Zeroconf
                 return; // IPv4 is not configured on this adapter
 
             var ifaceIndex = p.Index;
+
+            Debug.WriteLine($"Scanning on iface {adapter.Name}, idx {ifaceIndex}, IP: {adapter.GetIPProperties().UnicastAddresses.FirstOrDefault().Address}");
             
 
             using (var client = new UdpClient())
