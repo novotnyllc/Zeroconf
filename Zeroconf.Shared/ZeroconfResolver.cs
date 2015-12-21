@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Heijden.DNS;
 using Zeroconf.Shared;
-using DnsType = Heijden.DNS.Type;
 
 
 namespace Zeroconf
@@ -160,7 +158,6 @@ namespace Zeroconf
                                              retries,
                                              retryDelayMilliseconds,
                                              wrappedAction,
-                                             bestInterface,
                                              cancellationToken)
                                  .ConfigureAwait(false);
 
@@ -169,8 +166,7 @@ namespace Zeroconf
 
         public static IObservable<DomainService> BrowseDomains(TimeSpan scanTime = default(TimeSpan),
                                                                              int retries = 2,
-                                                                             int retryDelayMilliseconds = 2000,
-                                                                             bool bestInterface = false)
+                                                                             int retryDelayMilliseconds = 2000)
         {
             return Observable.Create<DomainService>(
                 async (obs, cxl) =>
@@ -178,7 +174,7 @@ namespace Zeroconf
                           try
                           {
                               Action<string, string> cb = (d, s) => obs.OnNext(new DomainService(d, s));
-                              await BrowseDomainsAsync(scanTime, retries, retryDelayMilliseconds, cb, bestInterface, cxl);
+                              await BrowseDomainsAsync(scanTime, retries, retryDelayMilliseconds, cb, cxl);
                           }
                           catch (Exception e)
                           {
@@ -195,7 +191,6 @@ namespace Zeroconf
         ///     Returns all available domains with services on them
         /// </summary>
         /// <param name="scanTime">Default is 2 seconds</param>
-        /// <param name="bestInterface">use all interfaces or just the best one. Default is all</param>
         /// <param name="cancellationToken"></param>
         /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
         /// <param name="retryDelayMilliseconds">The delay time between retries</param>
@@ -205,7 +200,6 @@ namespace Zeroconf
                                                                              int retries = 2,
                                                                              int retryDelayMilliseconds = 2000,
                                                                              Action<string, string> callback = null,
-                                                                             bool bestInterface = false,
                                                                              CancellationToken cancellationToken = default (CancellationToken))
         {
             const string protocol = "_services._dns-sd._udp.local.";
@@ -230,7 +224,6 @@ namespace Zeroconf
                                              retries,
                                              retryDelayMilliseconds,
                                              wrappedAction,
-                                             bestInterface,
                                              cancellationToken)
                                  .ConfigureAwait(false);
 
@@ -253,7 +246,6 @@ namespace Zeroconf
                                                                                  int retries,
                                                                                  int retryDelayMilliseconds,
                                                                                  Action<string, Response> callback,
-                                                                                 bool bestInterface,
                                                                                  CancellationToken cancellationToken)
         {
             using (await ResolverLock.LockAsync())
@@ -289,8 +281,7 @@ namespace Zeroconf
                                                            scanTime,
                                                            retries,
                                                            retryDelayMilliseconds,
-                                                           converter,
-                                                           bestInterface,
+                                                           converter,                                                           
                                                            cancellationToken)
                                       .ConfigureAwait(false);
 

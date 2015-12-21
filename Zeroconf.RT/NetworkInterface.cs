@@ -21,7 +21,6 @@ namespace Zeroconf
                                               int retries,
                                               int retryDelayMilliseconds,
                                               Action<string, byte[]> onResponse,
-                                              bool bestInterface,
                                               CancellationToken cancellationToken)
         {
             using (var socket = new DatagramSocket())
@@ -46,7 +45,6 @@ namespace Zeroconf
                     {
                         await BindToSocketAndWriteQuery(socket,
                                                         requestBytes,
-                                                        bestInterface,
                                                         cancellationToken).ConfigureAwait(false);
                         socketBound = true;
                     }
@@ -86,14 +84,14 @@ namespace Zeroconf
             }
         }
 
-        static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, bool bestInterface, CancellationToken cancellationToken)
+        static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, CancellationToken cancellationToken)
         {
 #if !WINDOWS_PHONE
             try
             {
                 // Try to bind using port 5353 first
                 var adapter = NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter;
-                if (bestInterface && adapter != null)
+                if (adapter != null)
                {
                     await socket.BindServiceNameAsync("5353", adapter)
                            .AsTask(cancellationToken)
@@ -110,7 +108,7 @@ namespace Zeroconf
             {
                 // If it fails, use the default
                 var adapter = NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter;
-                if (bestInterface && adapter != null)
+                if ( adapter != null)
                 {
                     await socket.BindServiceNameAsync("", adapter)
                                 .AsTask(cancellationToken)
@@ -125,10 +123,20 @@ namespace Zeroconf
 
             }
 #else
-            await socket.BindServiceNameAsync("5353")
+            try
+            {
+                await socket.BindServiceNameAsync("5353")
                         .AsTask(cancellationToken)
                         .ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                // fallback to "" for WinPhone 10
+                await socket.BindServiceNameAsync("")
+                           .AsTask(cancellationToken)
+                           .ConfigureAwait(false);
 
+            }
 #endif
                         
 

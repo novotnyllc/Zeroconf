@@ -35,26 +35,22 @@ namespace Zeroconf
                                               int retries,
                                               int retryDelayMilliseconds,
                                               Action<string, byte[]> onResponse,
-                                              bool bestInterface,
                                               CancellationToken cancellationToken)
         {
-            if (bestInterface)
-            {
-                await NetworkRequestAsync(requestBytes, scanTime, retries, retryDelayMilliseconds, onResponse, null, cancellationToken);
-            }
-            else
-            {
-                var tasks = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
-                    .Select(inter =>
-                        NetworkRequestAsync(requestBytes, scanTime, retries, retryDelayMilliseconds, onResponse, inter, cancellationToken))
-                        .ToList();
 
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-            }
+
+            var tasks = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
+                              .Select(inter =>
+                                      NetworkRequestAsync(requestBytes, scanTime, retries, retryDelayMilliseconds, onResponse, inter, cancellationToken))
+                              .ToList();
+
+            await Task.WhenAll(tasks)
+                      .ConfigureAwait(false);
+
         }
 
 
-        private async Task NetworkRequestAsync(byte[] requestBytes,
+        async Task NetworkRequestAsync(byte[] requestBytes,
                                               TimeSpan scanTime,
                                               int retries,
                                               int retryDelayMilliseconds,
@@ -62,37 +58,22 @@ namespace Zeroconf
                                               System.Net.NetworkInformation.NetworkInterface adapter,
                                               CancellationToken cancellationToken)
         {
-            int ifaceIndex = 0;
+            // http://stackoverflow.com/questions/2192548/specifying-what-network-interface-an-udp-multicast-should-go-to-in-net
+            if (!adapter.GetIPProperties().MulticastAddresses.Any())
+                return; // most of VPN adapters will be skipped
 
-#if XAMARIN
-            ifaceIndex = 0;
-#else
-            if (adapter != null)
-            {
-                // http://stackoverflow.com/questions/2192548/specifying-what-network-interface-an-udp-multicast-should-go-to-in-net
-                if (!adapter.GetIPProperties().MulticastAddresses.Any())
-                    return; // most of VPN adapters will be skipped
+            if (!adapter.SupportsMulticast)
+                return; // multicast is meaningless for this type of connection
 
-                if (!adapter.SupportsMulticast)
-                    return; // multicast is meaningless for this type of connection
+            if (OperationalStatus.Up != adapter.OperationalStatus)
+                return; // this adapter is off or not connected
 
-                if (OperationalStatus.Up != adapter.OperationalStatus)
-                    return; // this adapter is off or not connected
+            var p = adapter.GetIPProperties().GetIPv4Properties();
+            if (null == p)
+                return; // IPv4 is not configured on this adapter
 
-                var p = adapter.GetIPProperties().GetIPv4Properties();
-                if (null == p)
-                    return; // IPv4 is not configured on this adapter
-
-                ifaceIndex = p.Index;
-            }
-            else
-            {
-                // There could be multiple adapters, get the default one
-                uint index = 0;
-                GetBestInterface(0, out index);
-                ifaceIndex = (int)index;
-            }
-#endif
+            var ifaceIndex = p.Index;
+            
 
             using (var client = new UdpClient())
             {
@@ -165,7 +146,12 @@ namespace Zeroconf
                         await Task.Delay(scanTime, cancellationToken)
                                   .ConfigureAwait(false);
                         shouldCancel = true;
+#if CORECLR
+                        client.Dispose();
+#else
                         client.Close();
+#endif
+
                         Debug.WriteLine("Done Scanning");
 
 
@@ -190,11 +176,5 @@ namespace Zeroconf
                 }
             }
         }
-
-
-#if !XAMARIN
-        [DllImport("iphlpapi.dll", CharSet = CharSet.Auto)]
-        private static extern int GetBestInterface(UInt32 DestAddr, out UInt32 BestIfIndex);
-#endif
     }
 }

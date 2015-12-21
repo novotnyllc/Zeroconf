@@ -14,7 +14,6 @@ namespace Zeroconf
                                  int retries,
                                  int retryDelayMilliseconds,
                                  Action<string, byte[]> onResponse,
-                                 bool bestInterface,
                                  CancellationToken cancellationToken);
     }
 }
