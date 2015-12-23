@@ -70,14 +70,22 @@ namespace Zeroconf
             if (OperationalStatus.Up != adapter.OperationalStatus)
                 return; // this adapter is off or not connected
 
+            if (adapter.NetworkInterfaceType == NetworkInterfaceType.Loopback)
+                return; // strip out loopback addresses
+
             var p = adapter.GetIPProperties().GetIPv4Properties();
             if (null == p)
                 return; // IPv4 is not configured on this adapter
 
+            var ipv4Address = adapter.GetIPProperties().UnicastAddresses
+                                    .FirstOrDefault(ua => ua.Address.AddressFamily == AddressFamily.InterNetwork)?.Address;
+
+            if (ipv4Address == null)
+                return; // could not find an IPv4 address for this adapter
+
             var ifaceIndex = p.Index;
 
-            Debug.WriteLine($"Scanning on iface {adapter.Name}, idx {ifaceIndex}, IP: {adapter.GetIPProperties().UnicastAddresses.FirstOrDefault().Address}");
-            
+            Debug.WriteLine($"Scanning on iface {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}");
 
             using (var client = new UdpClient())
             {
@@ -91,9 +99,6 @@ namespace Zeroconf
 #if ANDROID
                         mlock.Acquire();
 #endif
-
-                        var localEp = new IPEndPoint(IPAddress.Any, 5353);
-
                         client.Client.SetSocketOption(SocketOptionLevel.IP,
                                                       SocketOptionName.MulticastInterface,
                                                       IPAddress.HostToNetworkOrder(ifaceIndex));
@@ -109,10 +114,14 @@ namespace Zeroconf
                                                       scanTime.Milliseconds);
                         client.ExclusiveAddressUse = false;
 
+                        
+                        var localEp = new IPEndPoint(IPAddress.Any, 5353);
+
+                        Debug.WriteLine($"Attempting to bind to {localEp} on adapter {adapter.Name}");
                         client.Client.Bind(localEp);
+                        Debug.WriteLine($"Bound to {localEp}");
 
                         var multicastAddress = IPAddress.Parse("224.0.0.251");
-
                         var multOpt = new MulticastOption(multicastAddress, ifaceIndex);
                         client.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
 
@@ -139,11 +148,10 @@ namespace Zeroconf
                                                }, cancellationToken);
 
                         var broadcastEp = new IPEndPoint(IPAddress.Parse("224.0.0.251"), 5353);
-
-
+                        Debug.WriteLine($"About to send on iface {adapter.Name}");
                         await client.SendAsync(requestBytes, requestBytes.Length, broadcastEp)
                                     .ConfigureAwait(false);
-                        Debug.WriteLine("Sent mDNS query");
+                        Debug.WriteLine($"Sent mDNS query on iface {adapter.Name}");
 
 
                         // wait for responses
@@ -165,7 +173,7 @@ namespace Zeroconf
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine("Execption: ", e);
+                        Debug.WriteLine($"Execption with network request, IP {ipv4Address}\n: {e}");
                         if (i + 1 >= retries) // last one, pass underlying out
                             throw;
                     }
