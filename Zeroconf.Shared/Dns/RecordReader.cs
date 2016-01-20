@@ -52,11 +52,6 @@ namespace Heijden.DNS
 				return m_Data[m_Position++];
 		}
 
-		public char ReadChar()
-		{
-			return (char)ReadByte();
-		}
-
 		public UInt16 ReadUInt16()
 		{
 			return (UInt16)(ReadByte() << 8 | ReadByte());
@@ -75,7 +70,7 @@ namespace Heijden.DNS
 
 		public string ReadDomainName()
 		{
-			StringBuilder name = new StringBuilder();
+			var bytes = new List<byte>();
 			int length = 0;
 
 			// get  the length of the first label
@@ -86,32 +81,33 @@ namespace Heijden.DNS
 				{
 					// work out the existing domain name, copy this pointer
 					RecordReader newRecordReader = new RecordReader(m_Data, (length & 0x3f) << 8 | ReadByte());
-
-					name.Append(newRecordReader.ReadDomainName());
-					return name.ToString();
+					if (bytes.Count > 0)
+					{
+						return Encoding.UTF8.GetString(bytes.ToArray(), 0, bytes.Count) + newRecordReader.ReadDomainName();
+					}
+					return newRecordReader.ReadDomainName();
 				}
 
 				// if not using compression, copy a char at a time to the domain name
 				while (length > 0)
 				{
-					name.Append(ReadChar());
+					bytes.Add(ReadByte());
 					length--;
 				}
-				name.Append('.');
+				bytes.Add((byte)'.');
 			}
-			if (name.Length == 0)
+			if (bytes.Count == 0)
 				return ".";
-			else
-				return name.ToString();
+			return Encoding.UTF8.GetString(bytes.ToArray(), 0, bytes.Count);
 		}
 
 		public string ReadString()
 		{
-			short length = this.ReadByte();
-			StringBuilder str = new StringBuilder();
-			for(int intI=0;intI<length;intI++)
-				str.Append(ReadChar());
-			return str.ToString();
+			short length = ReadByte();
+			var bytes = new List<byte>();
+			for (int i=0;i<length;i++)
+				bytes.Add(ReadByte());
+			return Encoding.UTF8.GetString(bytes.ToArray(), 0, bytes.Count);
 		}
 
 		// changed 28 augustus 2008
