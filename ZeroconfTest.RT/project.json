@@ -3,8 +3,7 @@
     },
     "frameworks": {
         ".NETCore,Version=v4.5.1": { }
-    },
-    "supports": { },    
+    },  
     "runtimes": {
         "win": { },
         "win-anycpu": { },
