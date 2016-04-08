@@ -95,7 +95,7 @@ namespace Zeroconf
                                                       true);
                         socket.SetSocketOption(SocketOptionLevel.Socket,
                                                       SocketOptionName.ReceiveTimeout,
-                                                      scanTime.Milliseconds);
+                                                      (int)scanTime.TotalMilliseconds);
                         client.ExclusiveAddressUse = false;
 
 
