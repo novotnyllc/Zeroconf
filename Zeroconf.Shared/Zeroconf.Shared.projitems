@@ -9,6 +9,7 @@
     <Import_RootNamespace>Zeroconf.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AdapterInformation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AsyncLock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Dns\Header.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Dns\Question.cs" />

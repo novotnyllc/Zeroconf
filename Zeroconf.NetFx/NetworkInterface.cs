@@ -188,5 +188,90 @@ namespace Zeroconf
                 }
             }
         }
+
+        public Task ListenForAnnouncementsAsync(Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
+        {
+            return Task.WhenAll(System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
+#if !XAMARIN
+                                      .Where(a => a.GetIPProperties().MulticastAddresses.Any())
+#endif
+                                      .Where(a => a.SupportsMulticast)
+                                      .Where(a => a.OperationalStatus == OperationalStatus.Up)
+                                      .Where(a => a.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                                      .Where(a => a.GetIPProperties().GetIPv4Properties() != null)
+                                      .Where(a => a.GetIPProperties().UnicastAddresses.Any(ua => ua.Address.AddressFamily == AddressFamily.InterNetwork))
+                                      .Select(inter => ListenForAnnouncementsAsync(inter, callback, cancellationToken)));
+        }
+
+        private Task ListenForAnnouncementsAsync(System.Net.NetworkInformation.NetworkInterface adapter, Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(async () =>
+            {
+                var ipv4Address = adapter.GetIPProperties().UnicastAddresses
+                                         .First(ua => ua.Address.AddressFamily == AddressFamily.InterNetwork)?.Address;
+
+                var ifaceIndex = adapter.GetIPProperties().GetIPv4Properties().Index;
+
+                Debug.WriteLine($"Scanning on iface {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}");
+
+                using (var client = new UdpClient())
+                {
+#if ANDROID
+                    var mlock = wifi.CreateMulticastLock("Zeroconf listen lock");
+#endif
+                    try
+                    {
+#if ANDROID
+                        mlock.Acquire();
+#endif
+                        client.Client.SetSocketOption(SocketOptionLevel.IP,
+                                                      SocketOptionName.MulticastInterface,
+                                                      IPAddress.HostToNetworkOrder(ifaceIndex));
+
+                        client.Client.SetSocketOption(SocketOptionLevel.Socket,
+                                                      SocketOptionName.ReuseAddress,
+                                                      true);
+                        client.ExclusiveAddressUse = false;
+
+
+                        var localEp = new IPEndPoint(IPAddress.Any, 5353);
+                        client.Client.Bind(localEp);
+
+                        var multicastAddress = IPAddress.Parse("224.0.0.251");
+                        var multOpt = new MulticastOption(multicastAddress, ifaceIndex);
+                        client.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
+
+                        while (!cancellationToken.IsCancellationRequested)
+                        {
+                            var packet = await client.ReceiveAsync().ConfigureAwait(false);
+                            try
+                            {
+                                callback(new AdapterInformation(ipv4Address.ToString(), adapter.Name), packet.RemoteEndPoint.Address.ToString(), packet.Buffer);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine("Callback threw an exception: {0}", ex);
+                            }
+                        }
+
+#if CORECLR
+                        client.Dispose();
+#else
+                        client.Close();
+#endif
+
+                        Debug.WriteLine("Done listening for MDNS packets.");
+
+                        cancellationToken.ThrowIfCancellationRequested();
+                    }
+                    finally
+                    {
+#if ANDROID
+                    mlock.Release();
+#endif
+                    }
+                }
+            }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        }
     }
 }

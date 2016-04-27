@@ -377,5 +377,15 @@ namespace Zeroconf
 
             return z;
         }
+
+        public static Task ListenForAnnouncementsAsync(Action<AdapterInformation, IZeroconfHost> callback, CancellationToken cancellationToken)
+        {
+            return NetworkInterface.ListenForAnnouncementsAsync((adapter, address, buffer) =>
+            {
+                var response = new Response(buffer);
+                if (response.IsQueryResponse)
+                    callback(adapter, ResponseToZeroconf(response, address));
+            }, cancellationToken);
+        }
     }
 }

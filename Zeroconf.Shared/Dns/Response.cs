@@ -265,5 +265,10 @@ namespace Heijden.DNS
 				return list.ToArray();
 			}
 		}
+
+        public bool IsQueryResponse
+        {
+            get { return header.QR; }
+        }
 	}
 }

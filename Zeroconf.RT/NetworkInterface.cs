@@ -157,5 +157,10 @@ namespace Zeroconf
                 writer.DetachStream();
             }
         }
+
+        public Task ListenForAnnouncementsAsync(Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException("Windows RT does not support socket address reuse, which makes listening virtually impossible, as most users have browsers and Apple Bonjour running which already listens to 5353");
+        }
     }
 }
