@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Zeroconf.Shared
+namespace Zeroconf
 {
     public struct DomainService : IEquatable<DomainService>
     {
