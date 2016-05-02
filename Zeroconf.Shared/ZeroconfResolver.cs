@@ -261,6 +261,8 @@ namespace Zeroconf
                           {
                               await ListenForAnnouncementsAsync(obs.OnNext, cxl);
                           }
+                          catch(OperationCanceledException)
+                          { }
                           catch (Exception e)
                           {
                               obs.OnError(e);

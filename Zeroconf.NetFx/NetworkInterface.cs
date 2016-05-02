@@ -265,7 +265,7 @@ namespace Zeroconf
                         client.Close();
 #endif
 
-                        Debug.WriteLine("Done listening for mDNS packets.");
+                        Debug.WriteLine($"Done listening for mDNS packets on {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}.");
 
                         cancellationToken.ThrowIfCancellationRequested();
                     }
@@ -276,7 +276,7 @@ namespace Zeroconf
 #endif
                     }
                 }
-            }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
         }
     }
 }

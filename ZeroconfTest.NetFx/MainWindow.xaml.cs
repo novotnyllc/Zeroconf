@@ -92,7 +92,8 @@ namespace ZeroconfTest.NetFx
         }
 
         IDisposable listenSubscription;
-
+        IObservable<ServiceAnnouncement> subscription;
+            
         async void StartStopListener_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -106,8 +107,8 @@ namespace ZeroconfTest.NetFx
                 }
                 else
                 {
-                    var obs = ZeroconfResolver.ListenForAnnouncementsAsync();
-                    listenSubscription = obs.Subscribe(OnAnnouncement);
+                    subscription = ZeroconfResolver.ListenForAnnouncementsAsync();
+                    listenSubscription = subscription.Subscribe(OnAnnouncement);
                 }
 
             }
