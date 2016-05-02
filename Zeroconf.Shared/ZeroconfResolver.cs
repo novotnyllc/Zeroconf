@@ -174,6 +174,8 @@ namespace Zeroconf
                               Action<string, string> cb = (d, s) => obs.OnNext(new DomainService(d, s));
                               await BrowseDomainsAsync(scanTime, retries, retryDelayMilliseconds, cb, cxl);
                           }
+                          catch (OperationCanceledException)
+                          { }
                           catch (Exception e)
                           {
                               obs.OnError(e);
