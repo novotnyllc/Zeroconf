@@ -5,7 +5,6 @@
     "frameworks": {
         "wp8": { }
     },
-    "supports": { },
     "runtimes": {
         "win": { },
         "win-arm": { },
