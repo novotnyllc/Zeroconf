@@ -6,8 +6,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Heijden.DNS;
-using Zeroconf.Shared;
-
 
 namespace Zeroconf
 {
@@ -234,6 +232,48 @@ namespace Zeroconf
             return r.ToLookup(k => k.Service, k => k.Address);
         }
 
+        /// <summary>
+        /// Listens for mDNS Service Announcements
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task ListenForAnnouncementsAsync(Action<ServiceAnnouncement> callback, CancellationToken cancellationToken)
+        {
+            return NetworkInterface.ListenForAnnouncementsAsync((adapter, address, buffer) =>
+            {
+                var response = new Response(buffer);
+                if (response.IsQueryResponse)
+                    callback(new ServiceAnnouncement(adapter, ResponseToZeroconf(response, address)));
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Listens for mDNS Service Announcements
+        /// </summary>
+        /// <returns></returns>
+        public static IObservable<ServiceAnnouncement> ListenForAnnouncementsAsync()
+        {
+            return Observable.Create<ServiceAnnouncement> (
+                async (obs, cxl) =>
+                      {
+                          try
+                          {
+                              await ListenForAnnouncementsAsync(obs.OnNext, cxl);
+                          }
+                          catch(OperationCanceledException)
+                          { }
+                          catch (Exception e)
+                          {
+                              obs.OnError(e);
+                          }
+                          finally
+                          {
+                              obs.OnCompleted();
+                          }
+                      });
+        }
+
         static IEnumerable<string> BrowseResponseParser(Response response)
         {
             return response.RecordsPTR.Select(ptr => ptr.PTRDNAME);
@@ -377,5 +417,7 @@ namespace Zeroconf
 
             return z;
         }
+
+
     }
 }
