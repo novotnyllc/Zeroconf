@@ -73,54 +73,43 @@ namespace ZeroconfTest.NetFx
             }
         }
 
-        private void OnAnnouncement(AdapterInformation info, IZeroconfHost host)
+        private void OnAnnouncement(ServiceAnnouncement sa)
         {
             Log.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
             {
-                WriteLogLine("---- Announced on {0} ({1}) ----", info.Name, info.Address);
-                WriteLogLine(host.ToString());
+                WriteLogLine("---- Announced on {0} ({1}) ----", sa.AdapterInformation.Name, sa.AdapterInformation.Address);
+                WriteLogLine(sa.Host.ToString());
             }));
         }
 
         private void OnWindowClosed(object sender, EventArgs e)
         {
-            if (m_listenTask != null)
+            if (listenSubscription != null)
             {
-                m_cancellationTokenSource.Cancel();
-
-                try
-                {
-                    m_listenTask.Wait();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                listenSubscription.Dispose();
+                listenSubscription = null;
             }
         }
 
-        private CancellationTokenSource m_cancellationTokenSource;
-        private Task m_listenTask;
+        IDisposable listenSubscription;
 
-        private async void StartStopListener_Click(object sender, RoutedEventArgs e)
+        async void StartStopListener_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 ListenButton.IsEnabled = false;
 
-                if (m_listenTask != null)
+                if (listenSubscription != null)
                 {
-                    m_cancellationTokenSource.Cancel();
-                    await m_listenTask;
-                    m_cancellationTokenSource.Dispose();
-                    m_cancellationTokenSource = null;
-                    m_listenTask = null;
+                    listenSubscription.Dispose();
+                    listenSubscription = null;
                 }
                 else
                 {
-                    m_cancellationTokenSource = new CancellationTokenSource();
-                    m_listenTask = ZeroconfResolver.ListenForAnnouncementsAsync(OnAnnouncement, m_cancellationTokenSource.Token);
+                    var obs = ZeroconfResolver.ListenForAnnouncementsAsync();
+                    listenSubscription = obs.Subscribe(OnAnnouncement);
                 }
+
             }
             finally
             {

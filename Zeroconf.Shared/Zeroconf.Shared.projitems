@@ -6,10 +6,11 @@
     <SharedGUID>e3969c40-4ee6-4b48-b7c8-a84d937a0127</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Zeroconf.Shared</Import_RootNamespace>
+    <Import_RootNamespace>Zeroconf</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AdapterInformation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ServiceAnnouncement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AsyncLock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Dns\Header.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Dns\Question.cs" />

@@ -6,8 +6,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Heijden.DNS;
-using Zeroconf.Shared;
-
 
 namespace Zeroconf
 {
@@ -240,14 +238,38 @@ namespace Zeroconf
         /// <param name="callback"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static Task ListenForAnnouncementsAsync(Action<AdapterInformation, IZeroconfHost> callback, CancellationToken cancellationToken)
+        public static Task ListenForAnnouncementsAsync(Action<ServiceAnnouncement> callback, CancellationToken cancellationToken)
         {
             return NetworkInterface.ListenForAnnouncementsAsync((adapter, address, buffer) =>
             {
                 var response = new Response(buffer);
                 if (response.IsQueryResponse)
-                    callback(adapter, ResponseToZeroconf(response, address));
+                    callback(new ServiceAnnouncement(adapter, ResponseToZeroconf(response, address)));
             }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Listens for mDNS Service Announcements
+        /// </summary>
+        /// <returns></returns>
+        public static IObservable<ServiceAnnouncement> ListenForAnnouncementsAsync()
+        {
+            return Observable.Create<ServiceAnnouncement> (
+                async (obs, cxl) =>
+                      {
+                          try
+                          {
+                              await ListenForAnnouncementsAsync(obs.OnNext, cxl);
+                          }
+                          catch (Exception e)
+                          {
+                              obs.OnError(e);
+                          }
+                          finally
+                          {
+                              obs.OnCompleted();
+                          }
+                      });
         }
 
         static IEnumerable<string> BrowseResponseParser(Response response)
