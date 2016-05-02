@@ -203,14 +203,19 @@ namespace Zeroconf
                                       .Select(inter => ListenForAnnouncementsAsync(inter, callback, cancellationToken)));
         }
 
-        private Task ListenForAnnouncementsAsync(System.Net.NetworkInformation.NetworkInterface adapter, Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
+        Task ListenForAnnouncementsAsync(System.Net.NetworkInformation.NetworkInterface adapter, Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
         {
             return Task.Factory.StartNew(async () =>
             {
                 var ipv4Address = adapter.GetIPProperties().UnicastAddresses
                                          .First(ua => ua.Address.AddressFamily == AddressFamily.InterNetwork)?.Address;
 
-                var ifaceIndex = adapter.GetIPProperties().GetIPv4Properties().Index;
+                if (ipv4Address == null)
+                    return;
+
+                var ifaceIndex = adapter.GetIPProperties().GetIPv4Properties()?.Index;
+                if (ifaceIndex == null)
+                    return;
 
                 Debug.WriteLine($"Scanning on iface {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}");
 
@@ -226,7 +231,7 @@ namespace Zeroconf
 #endif
                         client.Client.SetSocketOption(SocketOptionLevel.IP,
                                                       SocketOptionName.MulticastInterface,
-                                                      IPAddress.HostToNetworkOrder(ifaceIndex));
+                                                      IPAddress.HostToNetworkOrder(ifaceIndex.Value));
 
                         client.Client.SetSocketOption(SocketOptionLevel.Socket,
                                                       SocketOptionName.ReuseAddress,
@@ -238,7 +243,7 @@ namespace Zeroconf
                         client.Client.Bind(localEp);
 
                         var multicastAddress = IPAddress.Parse("224.0.0.251");
-                        var multOpt = new MulticastOption(multicastAddress, ifaceIndex);
+                        var multOpt = new MulticastOption(multicastAddress, ifaceIndex.Value);
                         client.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
 
                         while (!cancellationToken.IsCancellationRequested)
@@ -250,7 +255,7 @@ namespace Zeroconf
                             }
                             catch (Exception ex)
                             {
-                                Debug.WriteLine("Callback threw an exception: {0}", ex);
+                                Debug.WriteLine($"Callback threw an exception: {ex}");
                             }
                         }
 
@@ -260,7 +265,7 @@ namespace Zeroconf
                         client.Close();
 #endif
 
-                        Debug.WriteLine("Done listening for MDNS packets.");
+                        Debug.WriteLine("Done listening for mDNS packets.");
 
                         cancellationToken.ThrowIfCancellationRequested();
                     }
