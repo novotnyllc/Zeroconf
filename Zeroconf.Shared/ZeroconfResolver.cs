@@ -234,6 +234,22 @@ namespace Zeroconf
             return r.ToLookup(k => k.Service, k => k.Address);
         }
 
+        /// <summary>
+        /// Listens for mDNS Service Announcements
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static Task ListenForAnnouncementsAsync(Action<AdapterInformation, IZeroconfHost> callback, CancellationToken cancellationToken)
+        {
+            return NetworkInterface.ListenForAnnouncementsAsync((adapter, address, buffer) =>
+            {
+                var response = new Response(buffer);
+                if (response.IsQueryResponse)
+                    callback(adapter, ResponseToZeroconf(response, address));
+            }, cancellationToken);
+        }
+
         static IEnumerable<string> BrowseResponseParser(Response response)
         {
             return response.RecordsPTR.Select(ptr => ptr.PTRDNAME);
@@ -378,14 +394,6 @@ namespace Zeroconf
             return z;
         }
 
-        public static Task ListenForAnnouncementsAsync(Action<AdapterInformation, IZeroconfHost> callback, CancellationToken cancellationToken)
-        {
-            return NetworkInterface.ListenForAnnouncementsAsync((adapter, address, buffer) =>
-            {
-                var response = new Response(buffer);
-                if (response.IsQueryResponse)
-                    callback(adapter, ResponseToZeroconf(response, address));
-            }, cancellationToken);
-        }
+
     }
 }
