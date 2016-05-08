@@ -1,0 +1,26 @@
+﻿<Page
+    x:Class="ZeroconfTest.UWP.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ZeroconfTest.UWP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="20">
+            <Button HorizontalAlignment="Stretch" Content="Browse" Click="BrowseClick" Margin="2" />
+            <Button HorizontalAlignment="Stretch" Content="Resolve" Click="ResolveClick" Margin="2" />
+            <Button HorizontalAlignment="Stretch" Content="Listen" Click="ListenClick" Margin="2" />
+        </StackPanel>
+
+        <ScrollViewer x:Name="scollViewer" Grid.Column="1" Margin="20"
+                      BorderBrush="{ThemeResource SystemControlForegroundChromeMediumBrush}" BorderThickness="2">
+            <TextBox IsReadOnly="True" AcceptsReturn="True" x:Name="Log" BorderThickness="0"/>
+        </ScrollViewer>
+    </Grid>
+</Page>
