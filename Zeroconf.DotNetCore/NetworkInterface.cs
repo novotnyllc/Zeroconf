@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -74,9 +75,7 @@ namespace Zeroconf
             Debug.WriteLine($"Scanning on iface {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}");
 
 
-            var localEp = new IPEndPoint(IPAddress.Any, 5353);
-
-            using (var client = new UdpClient(localEp))
+            using (var client = new UdpClient())
             {
                 for (var i = 0; i < retries; i++)
                 {
@@ -89,29 +88,37 @@ namespace Zeroconf
                         mlock.Acquire();
 #endif
 
+                        var socket = GetSocketFromUdpClient(client);
 
-                        //client.Client.SetSocketOption(SocketOptionLevel.IP,
-                        //                              SocketOptionName.MulticastInterface,
-                        //                              IPAddress.HostToNetworkOrder(ifaceIndex));
-                        
+                        socket.SetSocketOption(SocketOptionLevel.IP,
+                                                     SocketOptionName.MulticastInterface,
+                                                     IPAddress.HostToNetworkOrder(ifaceIndex));
+
+
 
                         client.ExclusiveAddressUse = false;
-                        
+                        socket.SetSocketOption(SocketOptionLevel.Socket,
+                                                      SocketOptionName.ReuseAddress,
+                                                      true);
+                        socket.SetSocketOption(SocketOptionLevel.Socket,
+                                                      SocketOptionName.ReceiveTimeout,
+                                                      scanTime.Milliseconds);
+                        client.ExclusiveAddressUse = false;
 
-                        
 
-  //                      Debug.WriteLine($"Attempting to bind to {localEp} on adapter {adapter.Name}");
-  ////                      client.Client.Bind(localEp);
-  //                      Debug.WriteLine($"Bound to {localEp}");
+                        var localEp = new IPEndPoint(IPAddress.Any, 5353);
+
+                        Debug.WriteLine($"Attempting to bind to {localEp} on adapter {adapter.Name}");
+                        socket.Bind(localEp);
+                        Debug.WriteLine($"Bound to {localEp}");
 
                         var multicastAddress = IPAddress.Parse("224.0.0.251");
-                 //       var multOpt = new MulticastOption(multicastAddress, ifaceIndex);
-                        //                        client.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
+                        var multOpt = new MulticastOption(multicastAddress, ifaceIndex);
+                        socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
 
-
-                        client.JoinMulticastGroup(ifaceIndex, multicastAddress);
 
                         Debug.WriteLine("Bound to multicast address");
+
 
                         // Start a receive loop
                         var shouldCancel = false;
@@ -203,9 +210,8 @@ namespace Zeroconf
                     return;
 
                 Debug.WriteLine($"Scanning on iface {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}");
-
-                var localEp = new IPEndPoint(IPAddress.Any, 5353);
-                using (var client = new UdpClient(localEp))
+                
+                using (var client = new UdpClient())
                 {
 #if ANDROID
                     var mlock = wifi.CreateMulticastLock("Zeroconf listen lock");
@@ -215,22 +221,24 @@ namespace Zeroconf
 #if ANDROID
                         mlock.Acquire();
 #endif
-                        //client.Client.SetSocketOption(SocketOptionLevel.IP,
-                        //                              SocketOptionName.MulticastInterface,
-                        //                              IPAddress.HostToNetworkOrder(ifaceIndex.Value));
 
-                        //client.Client.SetSocketOption(SocketOptionLevel.Socket,
-                        //                              SocketOptionName.ReuseAddress,
-                        //                              true);
+                        var socket = GetSocketFromUdpClient(client);
+                        socket.SetSocketOption(SocketOptionLevel.IP,
+                                                       SocketOptionName.MulticastInterface,
+                                                       IPAddress.HostToNetworkOrder(ifaceIndex.Value));
+
+                        socket.SetSocketOption(SocketOptionLevel.Socket,
+                                                      SocketOptionName.ReuseAddress,
+                                                      true);
                         client.ExclusiveAddressUse = false;
 
 
-                        //client.Client.Bind(localEp);
+                        var localEp = new IPEndPoint(IPAddress.Any, 5353);
+                        socket.Bind(localEp);
 
                         var multicastAddress = IPAddress.Parse("224.0.0.251");
-                        //var multOpt = new MulticastOption(multicastAddress, ifaceIndex.Value);
-                        //client.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
-                        client.JoinMulticastGroup(ifaceIndex.Value, multicastAddress);
+                        var multOpt = new MulticastOption(multicastAddress, ifaceIndex.Value);
+                        socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
 
 
                         while (!cancellationToken.IsCancellationRequested)
@@ -264,6 +272,35 @@ namespace Zeroconf
                     }
                 }
             }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
+        }
+
+        static Socket GetSocketFromUdpClient(UdpClient client)
+        {
+            var mi = GetSocketMember.Value as MethodInfo;
+            if (mi != null)
+            {
+                return (Socket)mi.Invoke(client, null);
+            }
+            var fi = GetSocketMember.Value as FieldInfo;
+            if (fi != null)
+            {
+                return (Socket)fi.GetValue(client);
+            }
+
+            throw new NotSupportedException("Could not locate Socket");
+        }
+
+        static readonly Lazy<MemberInfo> GetSocketMember = new Lazy<MemberInfo>(GetSocketMemberImpl);
+
+        static MemberInfo GetSocketMemberImpl()
+        {
+            // See if there's a client prop
+            var pi = typeof(UdpClient).GetRuntimeProperties().FirstOrDefault(p => p.PropertyType == typeof(Socket));
+            if (pi != null)
+                return pi.GetMethod;
+
+            var mi = typeof(UdpClient).GetRuntimeFields().First(fi => fi.FieldType == typeof(Socket));
+            return mi;
         }
     }
 }
