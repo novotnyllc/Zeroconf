@@ -53,7 +53,7 @@
       <Link>NetworkInterface.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Properties\Zeroconf.UWP.rd.xml" />
+    <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
   </ItemGroup>
   <Import Project="..\Zeroconf.Shared\Zeroconf.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
