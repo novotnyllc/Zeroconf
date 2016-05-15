@@ -1,66 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-    <metadata>
-        <id>Zeroconf</id>
-        <version>2.3.3</version>
-        <title />
-        <authors>Oren Novotny</authors>
-        <owners />
-        <licenseUrl>http://opensource.org/licenses/ms-pl</licenseUrl>
-        <projectUrl>https://github.com/onovotny/Zeroconf</projectUrl>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Bonjour support for .NET 4.5, Windows Phone 8 and 8.1, Xamarin iOS and Android, and Windows Store apps with PCL support</description>
-      <releaseNotes>Fix a compatibility issue with discovering OpenHAB services</releaseNotes>
-      <copyright>© Oren Novotny 2014</copyright>
-      <language>en-US</language>
-      <tags>zeroconf bonjour mdns service discovery pcl xamarin monoandroid monotouch xamarin.ios wpa universal</tags>
-      <dependencies>
-        <dependency id="Rx-Main" version="2.2.5" /> 
-      </dependencies>
-    </metadata>
-    <files>
-      <!-- Win8 + Wpa81 -->
-      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.dll" target="lib\portable-win81+wpa81\Zeroconf.dll" />
-      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pdb" target="lib\portable-win81+wpa81\Zeroconf.pdb" />
-      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pri" target="lib\portable-win81+wpa81\Zeroconf.pri" />
-      <file src="..\Zeroconf.RT\bin\Release\Zeroconf.xml" target="lib\portable-win81+wpa81\Zeroconf.xml" />
-
-      <!-- uap10.0 -->
-      <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.dll" target="lib\uap10.0\Zeroconf.dll" />
-      <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.pdb" target="lib\uap10.0\Zeroconf.pdb" />
-      <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.pri" target="lib\uap10.0\Zeroconf.pri" />
-      <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.xml" target="lib\uap10.0\Zeroconf.xml" />
-        
-      <!-- WP8 -->
-      <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.dll" target="lib\wp8\Zeroconf.dll" />
-      <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.pdb" target="lib\wp8\Zeroconf.pdb" />
-      <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.xml" target="lib\wp8\Zeroconf.xml" />
-
-      
-      <!-- Net45 -->  
-      <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
-      <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.pdb" target="lib\net45\Zeroconf.pdb" />
-      <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.xml" target="lib\net45\Zeroconf.xml" />
-
-      <!-- Android -->
-      <file src="..\Zeroconf.Android\Bin\Release\Zeroconf.dll" target="lib\monoandroid\Zeroconf.dll" />
-      <file src="..\Zeroconf.Android\Bin\Release\Zeroconf.pdb" target="lib\monoandroid\Zeroconf.pdb" />
-      <file src="..\Zeroconf.Android\Bin\Release\Zeroconf.xml" target="lib\monoandroid\Zeroconf.xml" />
-
-      <!-- iOS Classic -->
-      <file src="..\Zeroconf.iOS\Bin\iPhone\Release\Zeroconf.dll" target="lib\monotouch\Zeroconf.dll" />
-      <file src="..\Zeroconf.iOS\Bin\iPhone\Release\Zeroconf.pdb" target="lib\monotouch\Zeroconf.pdb" />
-      <file src="..\Zeroconf.iOS\Bin\iPhone\Release\Zeroconf.xml" target="lib\monotouch\Zeroconf.xml" />
-
-      <!-- iOS Unified -->
-      <file src="..\Zeroconf.iOS-Unified\Bin\iPhone\Release\Zeroconf.dll" target="lib\xamarin.ios\Zeroconf.dll" />
-      <file src="..\Zeroconf.iOS-Unified\Bin\iPhone\Release\Zeroconf.pdb" target="lib\xamarin.ios\Zeroconf.pdb" />
-      <file src="..\Zeroconf.iOS-Unified\Bin\iPhone\Release\Zeroconf.xml" target="lib\xamarin.ios\Zeroconf.xml" />
-      
-      <!-- PCL -->
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\portable-net45+wp8+win8+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.dll" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\portable-net45+wp8+win8+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.pdb" />
-      <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\portable-net45+wp8+win8+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.xml" />
-      
-    </files>
+  <metadata>
+    <id>Zeroconf</id>
+    <version>2.3.3</version>
+    <title />
+    <authors>Oren Novotny</authors>
+    <owners />
+    <licenseUrl>http://opensource.org/licenses/ms-pl</licenseUrl>
+    <projectUrl>https://github.com/onovotny/Zeroconf</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Bonjour support for .NET 4.5, Windows Phone 8 and 8.1, Xamarin iOS and Android, and Windows Store apps with PCL support</description>
+    <releaseNotes>Fix a compatibility issue with discovering OpenHAB services</releaseNotes>
+    <copyright>© Oren Novotny 2014</copyright>
+    <language>en-US</language>
+    <tags>zeroconf bonjour mdns service discovery pcl xamarin monoandroid monotouch xamarin.ios wpa universal</tags>
+    <dependencies>
+      <group>
+        <dependency id="Rx-Main" version="2.2.5" />  
+      </group>
+      <group targetFramework="uap10.0">
+        <dependency id="Rx-Main" version="2.2.5" />
+        <dependency id="Rx-Linq" version="2.2.5" />
+        <dependency id="System.Collections" version="4.0.10" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
+        <dependency id="System.Linq" version="4.0.0" />
+        <dependency id="System.Runtime" version="4.0.20" />
+        <dependency id="System.Runtime.Extensions" version="4.0.10" />
+        <dependency id="System.Runtime.InteropServices.WindowsRuntime" version="4.0.0" />
+        <dependency id="System.Runtime.WindowsRuntime" version="4.0.10" />
+        <dependency id="System.Text.Encoding" version="4.0.10" />
+        <dependency id="System.Threading" version="4.0.10" />
+        <dependency id="System.Threading.Tasks" version="4.0.10" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- Win8 + Wpa81 -->
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.dll" target="lib\portable-win81+wpa81\Zeroconf.dll" />
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pdb" target="lib\portable-win81+wpa81\Zeroconf.pdb" />
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pri" target="lib\portable-win81+wpa81\Zeroconf.pri" />
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.xml" target="lib\portable-win81+wpa81\Zeroconf.xml" />
+    <!-- uap10.0 -->
+    <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.dll" target="lib\uap10.0\Zeroconf.dll" />
+    <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.pdb" target="lib\uap10.0\Zeroconf.pdb" />
+    <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.pri" target="lib\uap10.0\Zeroconf.pri" />
+    <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.xml" target="lib\uap10.0\Zeroconf.xml" />
+    <!-- WP8 -->
+    <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.dll" target="lib\wp8\Zeroconf.dll" />
+    <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.pdb" target="lib\wp8\Zeroconf.pdb" />
+    <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.xml" target="lib\wp8\Zeroconf.xml" />
+    <!-- Net45 -->
+    <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
+    <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.pdb" target="lib\net45\Zeroconf.pdb" />
+    <file src="..\Zeroconf.NetFX\Bin\Release\Zeroconf.xml" target="lib\net45\Zeroconf.xml" />
+    <!-- Android -->
+    <file src="..\Zeroconf.Android\Bin\Release\Zeroconf.dll" target="lib\monoandroid\Zeroconf.dll" />
+    <file src="..\Zeroconf.Android\Bin\Release\Zeroconf.pdb" target="lib\monoandroid\Zeroconf.pdb" />
+    <file src="..\Zeroconf.Android\Bin\Release\Zeroconf.xml" target="lib\monoandroid\Zeroconf.xml" />
+    <!-- iOS Classic -->
+    <file src="..\Zeroconf.iOS\Bin\iPhone\Release\Zeroconf.dll" target="lib\monotouch\Zeroconf.dll" />
+    <file src="..\Zeroconf.iOS\Bin\iPhone\Release\Zeroconf.pdb" target="lib\monotouch\Zeroconf.pdb" />
+    <file src="..\Zeroconf.iOS\Bin\iPhone\Release\Zeroconf.xml" target="lib\monotouch\Zeroconf.xml" />
+    <!-- iOS Unified -->
+    <file src="..\Zeroconf.iOS-Unified\Bin\iPhone\Release\Zeroconf.dll" target="lib\xamarin.ios\Zeroconf.dll" />
+    <file src="..\Zeroconf.iOS-Unified\Bin\iPhone\Release\Zeroconf.pdb" target="lib\xamarin.ios\Zeroconf.pdb" />
+    <file src="..\Zeroconf.iOS-Unified\Bin\iPhone\Release\Zeroconf.xml" target="lib\xamarin.ios\Zeroconf.xml" />
+    <!-- PCL -->
+    <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\portable-net45+wp8+win8+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.dll" />
+    <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\portable-net45+wp8+win8+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.pdb" />
+    <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\portable-net45+wp8+win8+wpa81+monoandroid+monotouch+xamarin.ios\Zeroconf.xml" />
+  </files>
 </package>

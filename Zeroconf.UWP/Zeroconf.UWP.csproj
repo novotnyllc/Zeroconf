@@ -43,6 +43,12 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <!-- example NuSpec file that must be specified -->
+    <NuSpecFile Include="$(SolutionDir)nuget\Zeroconf.nuspec">
+      <Visible>False</Visible>
+    </NuSpecFile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\Zeroconf.RT\NetworkInterface.cs">
       <Link>NetworkInterface.cs</Link>
     </Compile>
