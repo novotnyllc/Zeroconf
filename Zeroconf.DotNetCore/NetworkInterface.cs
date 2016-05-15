@@ -16,7 +16,6 @@ namespace Zeroconf
 {
     class NetworkInterface : INetworkInterface
     {
-        
         public async Task NetworkRequestAsync(byte[] requestBytes,
                                               TimeSpan scanTime,
                                               int retries,
@@ -47,10 +46,9 @@ namespace Zeroconf
         {
             // http://stackoverflow.com/questions/2192548/specifying-what-network-interface-an-udp-multicast-should-go-to-in-net
 
-#if !XAMARIN
             if (!adapter.GetIPProperties().MulticastAddresses.Any())
                 return; // most of VPN adapters will be skipped
-#endif
+
             if (!adapter.SupportsMulticast)
                 return; // multicast is meaningless for this type of connection
 
@@ -79,15 +77,8 @@ namespace Zeroconf
             {
                 for (var i = 0; i < retries; i++)
                 {
-#if ANDROID
-                    var mlock = wifi.CreateMulticastLock("Zeroconf lock");
-#endif
                     try
                     {
-#if ANDROID
-                        mlock.Acquire();
-#endif
-
                         var socket = GetSocketFromUdpClient(client);
 
                         socket.SetSocketOption(SocketOptionLevel.IP,
@@ -150,11 +141,8 @@ namespace Zeroconf
                         await Task.Delay(scanTime, cancellationToken)
                                   .ConfigureAwait(false);
                         shouldCancel = true;
-#if CORECLR
+
                         client.Dispose();
-#else
-                        client.Close();
-#endif
 
                         Debug.WriteLine("Done Scanning");
 
@@ -169,12 +157,6 @@ namespace Zeroconf
                         if (i + 1 >= retries) // last one, pass underlying out
                             throw;
                     }
-                    finally
-                    {
-#if ANDROID
-                        mlock.Release();
-#endif
-                    }
 
                     await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
                 }
@@ -184,9 +166,7 @@ namespace Zeroconf
         public Task ListenForAnnouncementsAsync(Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
         {
             return Task.WhenAll(System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
-#if !XAMARIN
                                       .Where(a => a.GetIPProperties().MulticastAddresses.Any())
-#endif
                                       .Where(a => a.SupportsMulticast)
                                       .Where(a => a.OperationalStatus == OperationalStatus.Up)
                                       .Where(a => a.NetworkInterfaceType != NetworkInterfaceType.Loopback)
@@ -210,66 +190,48 @@ namespace Zeroconf
                     return;
 
                 Debug.WriteLine($"Scanning on iface {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}");
-                
+
                 using (var client = new UdpClient())
                 {
-#if ANDROID
-                    var mlock = wifi.CreateMulticastLock("Zeroconf listen lock");
-#endif
-                    try
+                    var socket = GetSocketFromUdpClient(client);
+                    socket.SetSocketOption(SocketOptionLevel.IP,
+                                           SocketOptionName.MulticastInterface,
+                                           IPAddress.HostToNetworkOrder(ifaceIndex.Value));
+
+                    socket.SetSocketOption(SocketOptionLevel.Socket,
+                                           SocketOptionName.ReuseAddress,
+                                           true);
+                    client.ExclusiveAddressUse = false;
+
+
+                    var localEp = new IPEndPoint(IPAddress.Any, 5353);
+                    socket.Bind(localEp);
+
+                    var multicastAddress = IPAddress.Parse("224.0.0.251");
+                    var multOpt = new MulticastOption(multicastAddress, ifaceIndex.Value);
+                    socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
+
+
+                    while (!cancellationToken.IsCancellationRequested)
                     {
-#if ANDROID
-                        mlock.Acquire();
-#endif
-
-                        var socket = GetSocketFromUdpClient(client);
-                        socket.SetSocketOption(SocketOptionLevel.IP,
-                                                       SocketOptionName.MulticastInterface,
-                                                       IPAddress.HostToNetworkOrder(ifaceIndex.Value));
-
-                        socket.SetSocketOption(SocketOptionLevel.Socket,
-                                                      SocketOptionName.ReuseAddress,
-                                                      true);
-                        client.ExclusiveAddressUse = false;
-
-
-                        var localEp = new IPEndPoint(IPAddress.Any, 5353);
-                        socket.Bind(localEp);
-
-                        var multicastAddress = IPAddress.Parse("224.0.0.251");
-                        var multOpt = new MulticastOption(multicastAddress, ifaceIndex.Value);
-                        socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
-
-
-                        while (!cancellationToken.IsCancellationRequested)
+                        var packet = await client.ReceiveAsync()
+                                                 .ConfigureAwait(false);
+                        try
                         {
-                            var packet = await client.ReceiveAsync().ConfigureAwait(false);
-                            try
-                            {
-                                callback(new AdapterInformation(ipv4Address.ToString(), adapter.Name), packet.RemoteEndPoint.Address.ToString(), packet.Buffer);
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.WriteLine($"Callback threw an exception: {ex}");
-                            }
+                            callback(new AdapterInformation(ipv4Address.ToString(), adapter.Name), packet.RemoteEndPoint.Address.ToString(), packet.Buffer);
                         }
-
-#if CORECLR
-                        client.Dispose();
-#else
-                        client.Close();
-#endif
-
-                        Debug.WriteLine($"Done listening for mDNS packets on {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}.");
-
-                        cancellationToken.ThrowIfCancellationRequested();
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"Callback threw an exception: {ex}");
+                        }
                     }
-                    finally
-                    {
-#if ANDROID
-                    mlock.Release();
-#endif
-                    }
+
+                    client.Dispose();
+
+
+                    Debug.WriteLine($"Done listening for mDNS packets on {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}.");
+
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
             }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
         }
