@@ -24,6 +24,12 @@
       <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pdb" target="lib\portable-win81+wpa81\Zeroconf.pdb" />
       <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pri" target="lib\portable-win81+wpa81\Zeroconf.pri" />
       <file src="..\Zeroconf.RT\bin\Release\Zeroconf.xml" target="lib\portable-win81+wpa81\Zeroconf.xml" />
+
+      <!-- uap10.0 -->
+      <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.dll" target="lib\uap10.0\Zeroconf.dll" />
+      <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.pdb" target="lib\uap10.0\Zeroconf.pdb" />
+      <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.pri" target="lib\uap10.0\Zeroconf.pri" />
+      <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.xml" target="lib\uap10.0\Zeroconf.xml" />
         
       <!-- WP8 -->
       <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.dll" target="lib\wp8\Zeroconf.dll" />
