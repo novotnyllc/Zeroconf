@@ -81,47 +81,19 @@ namespace Zeroconf
                     await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
                     Debug.WriteLine("Done Scanning");
                 }
+                socket.MessageReceived -= handler;
             }
         }
 
         static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, CancellationToken cancellationToken)
         {
-#if !WINDOWS_PHONE
-            try
-            {
 #if WINDOWS_UWP
-                // Set control option for multicast. This enables re-use of the port, which is always in use under Windows 10 otherwise.
-                socket.Control.MulticastOnly = true;
+            // Set control option for multicast. This enables re-use of the port, which is always in use under Windows 10 otherwise.
+            socket.Control.MulticastOnly = true;
 #endif
-                await socket.BindServiceNameAsync("5353")
-                            .AsTask(cancellationToken)
-                            .ConfigureAwait(false);
-            }
-            catch (Exception)
-            {
-
-                await socket.BindServiceNameAsync("")
-                            .AsTask(cancellationToken)
-                            .ConfigureAwait(false);
-       
-            }
-#else
-            try
-            {
-                await socket.BindServiceNameAsync("5353")
+            await socket.BindServiceNameAsync("5353") // binds to the local IP addresses of all network interfaces on the local computer if no adapter is specified
                         .AsTask(cancellationToken)
                         .ConfigureAwait(false);
-            }
-            catch (Exception)
-            {
-                // fallback to "" for WinPhone 10
-                await socket.BindServiceNameAsync("")
-                           .AsTask(cancellationToken)
-                           .ConfigureAwait(false);
-
-            }
-#endif
-                        
 
             socket.JoinMulticastGroup(new HostName("224.0.0.251"));
             var os = await socket.GetOutputStreamAsync(new HostName("224.0.0.251"), "5353")
