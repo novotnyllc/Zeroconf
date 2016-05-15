@@ -89,38 +89,21 @@ namespace Zeroconf
 #if !WINDOWS_PHONE
             try
             {
-                // Try to bind using port 5353 first
-                var adapter = NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter;
-                if (adapter != null)
-               {
-                    await socket.BindServiceNameAsync("5353", adapter)
-                           .AsTask(cancellationToken)
-                           .ConfigureAwait(false);
-               }
-               else
-               {
-                    await socket.BindServiceNameAsync("5353")
-                                .AsTask(cancellationToken)
-                                .ConfigureAwait(false);
-               }
+#if WINDOWS_UWP
+                // Set control option for multicast. This enables re-use of the port, which is always in use under Windows 10 otherwise.
+                socket.Control.MulticastOnly = true;
+#endif
+                await socket.BindServiceNameAsync("5353")
+                            .AsTask(cancellationToken)
+                            .ConfigureAwait(false);
             }
             catch (Exception)
             {
-                // If it fails, use the default
-                var adapter = NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter;
-                if ( adapter != null)
-                {
-                    await socket.BindServiceNameAsync("", adapter)
-                                .AsTask(cancellationToken)
-                                .ConfigureAwait(false);
-                }
-                else
-                {
-                    await socket.BindServiceNameAsync("")
-                                .AsTask(cancellationToken)
-                                .ConfigureAwait(false);
-                }
 
+                await socket.BindServiceNameAsync("")
+                            .AsTask(cancellationToken)
+                            .ConfigureAwait(false);
+       
             }
 #else
             try
@@ -160,7 +143,63 @@ namespace Zeroconf
 
         public Task ListenForAnnouncementsAsync(Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
         {
+#if WINDOWS_UWP
+             return ListenForAnnouncementsAsync(NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter, callback, cancellationToken);
+#else
             throw new NotImplementedException("Windows RT does not support socket address reuse, which makes listening virtually impossible, as most users have browsers and Apple Bonjour running which already listens to 5353");
+#endif
         }
+
+#if WINDOWS_UWP
+        // listen for announcements on a given adapter
+        Task ListenForAnnouncementsAsync(NetworkAdapter adapter, Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(async () =>
+            {
+                using (var socket = new DatagramSocket())
+                {
+                    // setup delegate to detach from later
+                    TypedEventHandler<DatagramSocket, DatagramSocketMessageReceivedEventArgs> handler =
+                        (sock, args) =>
+                        {
+                            var dr = args.GetDataReader();
+                            var buffer = dr.ReadBuffer(dr.UnconsumedBufferLength).ToArray();
+
+                            callback(new AdapterInformation(args.LocalAddress.CanonicalName.ToString(), args.LocalAddress.RawName.ToString()), args.RemoteAddress.RawName.ToString(), buffer);
+                        };
+
+                    socket.MessageReceived += handler;
+
+                    // Set control option for multicast. This enables re-use of the port, which is always in use under Windows 10 otherwise.
+                    socket.Control.MulticastOnly = true;
+
+                    if (adapter != null)
+                    {
+                        await socket.BindServiceNameAsync("5353", adapter)
+                               .AsTask(cancellationToken)
+                               .ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await socket.BindServiceNameAsync("5353")
+                                    .AsTask(cancellationToken)
+                                    .ConfigureAwait(false);
+                    }
+
+                    socket.JoinMulticastGroup(new HostName("224.0.0.251"));
+
+                    while (!cancellationToken.IsCancellationRequested)
+                    {
+                        await Task.Delay(5000, cancellationToken).ConfigureAwait(false);
+                    }
+                    socket.MessageReceived -= handler;
+                    socket.Dispose();
+                }
+
+            }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
+        }
+#endif
+
     }
 }
+
