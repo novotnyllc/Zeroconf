@@ -39,10 +39,11 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Zeroconf.NetFx\NetworkInterface.cs">
-      <Link>NetworkInterface.cs</Link>
-    </Compile>
+    <Compile Include="NetworkInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
   </ItemGroup>
   <Import Project="..\Zeroconf.Shared\Zeroconf.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
@@ -53,7 +54,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <PropertyGroup>
-    <NuGetTargetMoniker>.NETPlatform,Version=v5.5</NuGetTargetMoniker>
-  </PropertyGroup>
 </Project>

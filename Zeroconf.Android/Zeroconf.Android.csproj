@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Zeroconf.NetFx\NetworkInterface.cs">
+    <Compile Include="..\Zeroconf.DotNetCore\NetworkInterface.cs">
       <Link>NetworkInterface.cs</Link>
     </Compile>
     <Compile Include="..\Zeroconf.RT\Properties\SharedAssemblyInfo.cs">

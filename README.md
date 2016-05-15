@@ -75,6 +75,32 @@ one can be in-progress at a time.
 #### Xamarin.Android 4.x Linker bug
 There is currently a [bug](https://bugzilla.xamarin.com/show_bug.cgi?id=21578) on Xamarin.Android 4.x that incorrectly strips out internal Socket methods. This has been [fixed](http://developer.xamarin.com/releases/android/xamarin.android_5/xamarin.android_5.0/) for the Xamarin.Android 5.0 series. As a workaround on 4.x, entering `System;` in to the `Ignore Assemblies` field in the `Project Options->Build->Android Build` page will fix the problem.
 
+### Android
+You must call the WifiManager.MulticastLock manager Aquire and Release before/after you call the Zeroconf methods.
+Previous versions (prior to 2.7 did this internally, now it requires the caller to do it).
+
+Something like thisl
+```csharp
+
+// Somewhere early
+var wifi = (WifiManager)ApplicationContext.GetSystemService(Context.WifiService);
+var mlock = wifi.CreateMulticastLock("Zeroconf lock");
+
+---
+// Later, before you call Zeroconf
+try
+{
+  mlock.Acquire();
+
+  // Call Zeroconf
+  ZeroconfResolver....
+}
+finally
+{
+  mlock.Release();
+}
+```
+
 
 ## Credits
 

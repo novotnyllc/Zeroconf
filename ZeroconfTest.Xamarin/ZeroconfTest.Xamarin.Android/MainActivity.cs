@@ -15,19 +15,32 @@ using ZeroconfTest.Xam;
 namespace ZeroconfTest.Xamarin.Droid
 {
 	[Activity (Label = "ZeroconfTest.Xamarin", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-	public class MainActivity : AndroidActivity
+	public class MainActivity : FormsApplicationActivity
 	{
-		protected override void OnCreate (Bundle bundle)
+        WifiManager wifi;
+        WifiManager.MulticastLock mlock;
+        protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
 
 			global::Xamarin.Forms.Forms.Init (this, bundle);
 
+            wifi = (WifiManager)ApplicationContext.GetSystemService(Context.WifiService);
+            mlock = wifi.CreateMulticastLock("Zeroconf lock");
+            mlock.SetReferenceCounted(true);
+            mlock.Acquire();
             SetPage (App.GetMainPage ());
 		}
 
-	   
-	   
+	    protected override void OnDestroy()
+	    {
+            if (mlock != null)
+            {
+                mlock.Release();
+                mlock = null;
+            }
+            base.OnDestroy();
+	    }
 	}
 }
 

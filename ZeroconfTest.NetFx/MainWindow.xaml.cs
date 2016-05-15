@@ -94,7 +94,7 @@ namespace ZeroconfTest.NetFx
         IDisposable listenSubscription;
         IObservable<ServiceAnnouncement> subscription;
             
-        async void StartStopListener_Click(object sender, RoutedEventArgs e)
+        void StartStopListener_Click(object sender, RoutedEventArgs e)
         {
             try
             {
