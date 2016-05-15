@@ -27,7 +27,6 @@ namespace ZeroconfTest.Xamarin.Droid
 
             wifi = (WifiManager)ApplicationContext.GetSystemService(Context.WifiService);
             mlock = wifi.CreateMulticastLock("Zeroconf lock");
-            mlock.SetReferenceCounted(true);
             mlock.Acquire();
             SetPage (App.GetMainPage ());
 		}
