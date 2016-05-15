@@ -16,7 +16,7 @@
     <tags>zeroconf bonjour mdns service discovery pcl xamarin monoandroid monotouch xamarin.ios wpa universal</tags>
     <dependencies>
       <group>
-        <dependency id="Rx-Main" version="2.2.5" />  
+        <dependency id="Rx-Main" version="2.2.5" />
       </group>
       <group targetFramework="uap10.0">
         <dependency id="Rx-Main" version="2.2.5" />
