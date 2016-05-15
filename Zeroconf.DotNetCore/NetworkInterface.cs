@@ -142,7 +142,7 @@ namespace Zeroconf
                                   .ConfigureAwait(false);
                         shouldCancel = true;
 
-                        client.Dispose();
+                        ((IDisposable)client).Dispose();
 
                         Debug.WriteLine("Done Scanning");
 
@@ -226,7 +226,7 @@ namespace Zeroconf
                         }
                     }
 
-                    client.Dispose();
+                    ((IDisposable)client).Dispose();
 
 
                     Debug.WriteLine($"Done listening for mDNS packets on {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}.");
