@@ -730,7 +730,6 @@ Global
 		{982A1EE8-900E-435A-B27E-5A779A693651}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{982A1EE8-900E-435A-B27E-5A779A693651}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{982A1EE8-900E-435A-B27E-5A779A693651}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{982A1EE8-900E-435A-B27E-5A779A693651}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{982A1EE8-900E-435A-B27E-5A779A693651}.Release|x64.ActiveCfg = Release|Any CPU
 		{982A1EE8-900E-435A-B27E-5A779A693651}.Release|x64.Build.0 = Release|Any CPU
 		{982A1EE8-900E-435A-B27E-5A779A693651}.Release|x86.ActiveCfg = Release|Any CPU
