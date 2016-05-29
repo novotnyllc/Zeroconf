@@ -46,8 +46,9 @@ namespace Zeroconf
         {
             // http://stackoverflow.com/questions/2192548/specifying-what-network-interface-an-udp-multicast-should-go-to-in-net
 
-            if (!adapter.GetIPProperties().MulticastAddresses.Any())
-                return; // most of VPN adapters will be skipped
+            // Xamarin doesn't support this
+            //if (!adapter.GetIPProperties().MulticastAddresses.Any())
+            //    return; // most of VPN adapters will be skipped
 
             if (!adapter.SupportsMulticast)
                 return; // multicast is meaningless for this type of connection
@@ -166,7 +167,7 @@ namespace Zeroconf
         public Task ListenForAnnouncementsAsync(Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
         {
             return Task.WhenAll(System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
-                                      .Where(a => a.GetIPProperties().MulticastAddresses.Any())
+                                     // .Where(a => a.GetIPProperties().MulticastAddresses.Any()) // Xamarin doesn't support this
                                       .Where(a => a.SupportsMulticast)
                                       .Where(a => a.OperationalStatus == OperationalStatus.Up)
                                       .Where(a => a.NetworkInterfaceType != NetworkInterfaceType.Loopback)

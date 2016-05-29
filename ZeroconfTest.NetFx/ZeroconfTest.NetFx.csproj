@@ -97,9 +97,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Zeroconf.DotNetCore\Zeroconf.DotNetCore.csproj">
-      <Project>{982a1ee8-900e-435a-b27e-5a779a693651}</Project>
-      <Name>Zeroconf.DotNetCore</Name>
+    <ProjectReference Include="..\Zeroconf.NetFx\Zeroconf.NetFx.csproj">
+      <Project>{23079f74-51a5-4441-af92-559780095aa4}</Project>
+      <Name>Zeroconf.NetFx</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
