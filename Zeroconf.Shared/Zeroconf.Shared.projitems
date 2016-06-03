@@ -31,5 +31,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)INetworkInterface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ZeroconfRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ZeroconfResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ZeroconfResolver.Observable.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ZeroconfResolver.Async.cs" />
   </ItemGroup>
 </Project>
