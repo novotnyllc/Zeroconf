@@ -94,11 +94,12 @@ namespace ZeroconfTest.NetFx
         IDisposable listenSubscription;
         IObservable<ServiceAnnouncement> subscription;
             
+        
         void StartStopListener_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                ListenButton.IsEnabled = false;
+                ListenButton.IsChecked = false;
 
                 if (listenSubscription != null)
                 {
@@ -114,7 +115,32 @@ namespace ZeroconfTest.NetFx
             }
             finally
             {
-                ListenButton.IsEnabled = true;
+                ListenButton.IsChecked = true;
+            }
+        }
+
+        async void ResolveContinuous_OnClickListener_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ResolveContinuous.IsChecked = false;
+
+                if (listenSubscription != null)
+                {
+                    listenSubscription.Dispose();
+                    listenSubscription = null;
+                }
+                else
+                {
+                    var domains = await ZeroconfResolver.BrowseDomainsAsync();
+                    var sub = ZeroconfResolver.ResolveContinuous(domains.Select(g => g.Key));
+                    listenSubscription = sub.Subscribe(resp => WriteLogLine(resp.ToString()));
+                }
+
+            }
+            finally
+            {
+                ResolveContinuous.IsChecked = true;
             }
         }
     }
