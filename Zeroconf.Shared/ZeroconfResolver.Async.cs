@@ -15,7 +15,6 @@ namespace Zeroconf
         ///     Resolves available ZeroConf services
         /// </summary>
         /// <param name="scanTime">Default is 2 seconds</param>
-        /// <param name="bestInterface">Use only the best interface or all interfaces</param>
         /// <param name="cancellationToken"></param>
         /// <param name="protocol"></param>
         /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
@@ -27,7 +26,6 @@ namespace Zeroconf
                                                                       int retries = 2,
                                                                       int retryDelayMilliseconds = 2000,
                                                                       Action<IZeroconfHost> callback = null,
-                                                                      bool bestInterface = false,
                                                                       CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(protocol))
@@ -36,14 +34,13 @@ namespace Zeroconf
             return ResolveAsync(new[] { protocol },
                                 scanTime,
                                 retries,
-                                retryDelayMilliseconds, callback, bestInterface, cancellationToken);
+                                retryDelayMilliseconds, callback, cancellationToken);
         }
 
         /// <summary>
         ///     Resolves available ZeroConf services
         /// </summary>
         /// <param name="scanTime">Default is 2 seconds</param>
-        /// <param name="bestInterface">Use only the best interface or all interfaces</param>
         /// <param name="cancellationToken"></param>
         /// <param name="protocols"></param>
         /// <param name="retries">If the socket is busy, the number of times the resolver should retry</param>
@@ -55,7 +52,6 @@ namespace Zeroconf
                                                                             int retries = 2,
                                                                             int retryDelayMilliseconds = 2000,
                                                                             Action<IZeroconfHost> callback = null,
-                                                                            bool bestInterface = false,
                                                                             CancellationToken cancellationToken = default(CancellationToken))
         {
             Action<string, Response> wrappedAction = null;

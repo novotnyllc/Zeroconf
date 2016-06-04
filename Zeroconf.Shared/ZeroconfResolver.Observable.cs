@@ -19,13 +19,12 @@ namespace Zeroconf
         public static IObservable<IZeroconfHost> Resolve(string protocol,
                                                          TimeSpan scanTime = default(TimeSpan),
                                                          int retries = 2,
-                                                         int retryDelayMilliseconds = 2000,
-                                                         bool bestInterface = false)
+                                                         int retryDelayMilliseconds = 2000)
         {
             if (string.IsNullOrWhiteSpace(protocol))
                 throw new ArgumentNullException(nameof(protocol));
 
-            return Resolve(new[] { protocol }, scanTime, retries, retryDelayMilliseconds, bestInterface);
+            return Resolve(new[] { protocol }, scanTime, retries, retryDelayMilliseconds);
         }
 
 
@@ -42,8 +41,7 @@ namespace Zeroconf
         public static IObservable<IZeroconfHost> Resolve(IEnumerable<string> protocols,
                                                          TimeSpan scanTime = default(TimeSpan),
                                                          int retries = 2,
-                                                         int retryDelayMilliseconds = 2000,
-                                                         bool bestInterface = false)
+                                                         int retryDelayMilliseconds = 2000)
         {
             if (protocols == null)
                 throw new ArgumentNullException(nameof(protocols));
@@ -55,7 +53,7 @@ namespace Zeroconf
                     try
                     {
                         Action<IZeroconfHost> cb = obs.OnNext;
-                        await ResolveAsync(protocols, scanTime, retries, retryDelayMilliseconds, cb, bestInterface, cxl);
+                        await ResolveAsync(protocols, scanTime, retries, retryDelayMilliseconds, cb, cxl);
                     }
                     catch (OperationCanceledException)
                     {
@@ -124,5 +122,6 @@ namespace Zeroconf
                     }
                 });
         }
+
     }
 }
