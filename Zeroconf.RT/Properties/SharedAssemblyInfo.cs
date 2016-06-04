@@ -9,5 +9,3 @@ using System.Reflection;
 [assembly: AssemblyCopyright("Copyright © Oren Novotny 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.7.0.0")]
-[assembly: AssemblyFileVersion("2.7.0.0")]

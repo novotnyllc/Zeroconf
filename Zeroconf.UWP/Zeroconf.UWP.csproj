@@ -52,9 +52,6 @@
     <Compile Include="..\Zeroconf.RT\NetworkInterface.cs">
       <Link>NetworkInterface.cs</Link>
     </Compile>
-    <Compile Include="..\Zeroconf.RT\Properties\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
   </ItemGroup>
