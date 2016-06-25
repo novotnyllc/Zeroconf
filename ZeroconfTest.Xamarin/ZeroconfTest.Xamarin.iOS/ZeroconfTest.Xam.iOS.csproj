@@ -62,19 +62,23 @@
     <CodesignEntitlements />
     <CodesignResourceRules />
     <CodesignExtraArgs />
-    <MtouchSdkVersion>7.1</MtouchSdkVersion>
+    <MtouchSdkVersion>9.3</MtouchSdkVersion>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchProfiling>False</MtouchProfiling>
-    <MtouchExtraArgs />
     <MtouchFastDev>False</MtouchFastDev>
     <MtouchEnableGenericValueTypeSharing>True</MtouchEnableGenericValueTypeSharing>
-    <MtouchArch>Default, ARMv7</MtouchArch>
+    <MtouchArch>ARMv7</MtouchArch>
     <MtouchUseLlvm>False</MtouchUseLlvm>
     <MtouchUseThumb>False</MtouchUseThumb>
     <MtouchUseSGen>False</MtouchUseSGen>
     <MtouchUseRefCounting>False</MtouchUseRefCounting>
     <MtouchOptimizePNGs>True</MtouchOptimizePNGs>
-    <MtouchI18n />
+    <MtouchEnableBitcode>False</MtouchEnableBitcode>
+    <OptimizePNGs>True</OptimizePNGs>
+    <MtouchTlsProvider>Default</MtouchTlsProvider>
+    <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
+    <MtouchFloat32>False</MtouchFloat32>
+    <DeviceSpecificBuild>False</DeviceSpecificBuild>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>pdbonly</DebugType>
@@ -127,6 +131,10 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Zeroconf.DotNetCore\Zeroconf.DotNetCore.csproj">
+      <Project>{982a1ee8-900e-435a-b27e-5a779a693651}</Project>
+      <Name>Zeroconf.DotNetCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ZeroconfTest.Xamarin\ZeroconfTest.Xam.csproj">
       <Name>ZeroconfTest.Xam</Name>
       <Project>{A279A26E-E98C-432F-AE6A-CDCD57FE188D}</Project>

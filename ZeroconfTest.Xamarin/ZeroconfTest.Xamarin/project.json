@@ -1,9 +1,12 @@
 {
-    "dependencies": {
-        "Xamarin.Forms": "2.0.0.6490"
-    },
-    "frameworks": {
-        ".NETPortable,Version=v4.5,Profile=Profile78": { }
-    },
-    "supports": { }
+  "supports": {},
+  "dependencies": {
+    "Xamarin.Forms": "2.3.0.49",
+    "NETStandard.Library": "1.6.0"
+  },
+  "frameworks": {
+    "netstandard1.0": {
+      "imports": "portable-net45+win8+wp8"
+    }
+  }
 }

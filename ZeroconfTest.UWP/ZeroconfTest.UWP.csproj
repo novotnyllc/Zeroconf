@@ -128,6 +128,12 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Zeroconf.DotNetCore\Zeroconf.DotNetCore.csproj">
+      <Project>{982a1ee8-900e-435a-b27e-5a779a693651}</Project>
+      <Name>Zeroconf.DotNetCore</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
