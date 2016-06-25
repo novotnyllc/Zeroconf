@@ -18,9 +18,20 @@
       <group>
         <dependency id="System.Reactive" version="3.0.0" />
       </group>
-      <group targetFramework="netstandard1.0">
-      </group>
-      <group targetFramework="netstandard1.3">
+      <group targetFramework="netstandard1.0"></group>
+      <group targetFramework="netstandard1.3"></group>
+      <group targetFramework="uap10.0">
+        <dependency id="System.Collections" version="4.0.11" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.11" />
+        <dependency id="System.Linq" version="4.1.0" />
+        <dependency id="System.Reactive.Linq" version="3.0.0" />
+        <dependency id="System.Runtime" version="4.1.0" />
+        <dependency id="System.Runtime.Extensions" version="4.1.0" />
+        <dependency id="System.Runtime.InteropServices.WindowsRuntime" version="4.0.1" />
+        <dependency id="System.Runtime.WindowsRuntime" version="4.0.11" />
+        <dependency id="System.Text.Encoding" version="4.0.11" />
+        <dependency id="System.Threading" version="4.0.11" />
+        <dependency id="System.Threading.Tasks" version="4.0.11" />
       </group>
     </dependencies>
   </metadata>
@@ -30,6 +41,11 @@
     <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pdb" target="lib\portable-win81+wpa81\Zeroconf.pdb" />
     <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pri" target="lib\portable-win81+wpa81\Zeroconf.pri" />
     <file src="..\Zeroconf.RT\bin\Release\Zeroconf.xml" target="lib\portable-win81+wpa81\Zeroconf.xml" />
+    <!-- uap10.0 -->
+    <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.dll" target="lib\uap10.0\Zeroconf.dll" />
+    <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.pdb" target="lib\uap10.0\Zeroconf.pdb" />
+    <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.pri" target="lib\uap10.0\Zeroconf.pri" />
+    <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.xml" target="lib\uap10.0\Zeroconf.xml" />
     <!-- WP8 -->
     <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.dll" target="lib\wp8\Zeroconf.dll" />
     <file src="..\Zeroconf.WP\Bin\Release\Zeroconf.pdb" target="lib\wp8\Zeroconf.pdb" />
@@ -42,5 +58,9 @@
     <file src="..\Zeroconf\Bin\Release\Zeroconf.dll" target="lib\netstandard1.0\Zeroconf.dll" />
     <file src="..\Zeroconf\Bin\Release\Zeroconf.pdb" target="lib\netstandard1.0\Zeroconf.pdb" />
     <file src="..\Zeroconf\Bin\Release\Zeroconf.xml" target="lib\netstandard1.0\Zeroconf.xml" />
+    <!-- Net Standard 1.3 -->
+    <file src="..\Zeroconf.DotNetCore\Bin\Release\Zeroconf.dll" target="lib\netstandard1.3\Zeroconf.dll" />
+    <file src="..\Zeroconf.DotNetCore\Bin\Release\Zeroconf.pdb" target="lib\netstandard1.3\Zeroconf.pdb" />
+    <file src="..\Zeroconf.DotNetCore\Bin\Release\Zeroconf.xml" target="lib\netstandard1.3\Zeroconf.xml" />
   </files>
 </package>
