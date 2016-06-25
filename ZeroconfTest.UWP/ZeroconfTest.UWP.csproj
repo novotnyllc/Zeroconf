@@ -128,12 +128,6 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Zeroconf.UWP\Zeroconf.UWP.csproj">
-      <Project>{a748d857-e221-42a2-9dc6-c2599d351e90}</Project>
-      <Name>Zeroconf.UWP</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

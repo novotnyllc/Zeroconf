@@ -127,10 +127,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Zeroconf.iOS\Zeroconf.iOS.csproj">
-      <Project>{3263adb9-b20b-46b8-bc60-79ecdc176a59}</Project>
-      <Name>Zeroconf.iOS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ZeroconfTest.Xamarin\ZeroconfTest.Xam.csproj">
       <Name>ZeroconfTest.Xam</Name>
       <Project>{A279A26E-E98C-432F-AE6A-CDCD57FE188D}</Project>
