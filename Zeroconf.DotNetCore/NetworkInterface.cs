@@ -81,7 +81,7 @@ namespace Zeroconf
                 {
                     try
                     {
-                        var socket = GetSocketFromUdpClient(client);
+                        var socket = client.Client;
 
                         socket.SetSocketOption(SocketOptionLevel.IP,
                                                      SocketOptionName.MulticastInterface,
@@ -204,7 +204,7 @@ namespace Zeroconf
 
                 using (var client = new UdpClient())
                 {
-                    var socket = GetSocketFromUdpClient(client);
+                    var socket = client.Client;
                     socket.SetSocketOption(SocketOptionLevel.IP,
                                            SocketOptionName.MulticastInterface,
                                            IPAddress.HostToNetworkOrder(ifaceIndex.Value));
@@ -256,35 +256,6 @@ namespace Zeroconf
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
-        }
-
-        static Socket GetSocketFromUdpClient(UdpClient client)
-        {
-            var mi = GetSocketMember.Value as MethodInfo;
-            if (mi != null)
-            {
-                return (Socket)mi.Invoke(client, null);
-            }
-            var fi = GetSocketMember.Value as FieldInfo;
-            if (fi != null)
-            {
-                return (Socket)fi.GetValue(client);
-            }
-
-            throw new NotSupportedException("Could not locate Socket");
-        }
-
-        static readonly Lazy<MemberInfo> GetSocketMember = new Lazy<MemberInfo>(GetSocketMemberImpl);
-
-        static MemberInfo GetSocketMemberImpl()
-        {
-            // See if there's a client prop
-            var pi = typeof(UdpClient).GetRuntimeProperties().FirstOrDefault(p => p.PropertyType == typeof(Socket));
-            if (pi != null)
-                return pi.GetMethod;
-
-            var mi = typeof(UdpClient).GetRuntimeFields().First(fi => fi.FieldType == typeof(Socket));
-            return mi;
         }
     }
 }

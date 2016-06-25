@@ -28,7 +28,6 @@
   <Library Name="Zeroconf">
 
     <!-- add directives for your library here -->
-    <Type Name="System.Net.Sockets.UdpClient" Dynamic="Required All" />
-    
+
   </Library>
 </Directives>
