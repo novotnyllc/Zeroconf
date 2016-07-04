@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -123,6 +124,7 @@ namespace Zeroconf
                                                        {
                                                            var res = await client.ReceiveAsync()
                                                                                  .ConfigureAwait(false);
+
                                                            onResponse(res.RemoteEndPoint.Address.ToString(), res.Buffer);
                                                        }
                                                    }
@@ -133,16 +135,19 @@ namespace Zeroconf
                                                }, cancellationToken);
 
                         var broadcastEp = new IPEndPoint(IPAddress.Parse("224.0.0.251"), 5353);
+
                         Debug.WriteLine($"About to send on iface {adapter.Name}");
                         await client.SendAsync(requestBytes, requestBytes.Length, broadcastEp)
                                     .ConfigureAwait(false);
+
                         Debug.WriteLine($"Sent mDNS query on iface {adapter.Name}");
 
 
                         // wait for responses
                         await Task.Delay(scanTime, cancellationToken)
                                   .ConfigureAwait(false);
-                        shouldCancel = true;
+
+                        Volatile.Write(ref shouldCancel, true);
 
                         ((IDisposable)client).Dispose();
 
@@ -157,7 +162,11 @@ namespace Zeroconf
                     {
                         Debug.WriteLine($"Execption with network request, IP {ipv4Address}\n: {e}");
                         if (i + 1 >= retries) // last one, pass underlying out
+                        {
+                            // Ensure all inner info is captured                            
+                            ExceptionDispatchInfo.Capture(e).Throw();
                             throw;
+                        }
                     }
 
                     await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
