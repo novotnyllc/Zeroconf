@@ -119,15 +119,16 @@ namespace Zeroconf
                                                {
                                                    try
                                                    {
-                                                       while (!shouldCancel)
+                                                       while (!Volatile.Read(ref shouldCancel))
                                                        {
                                                            var res = await client.ReceiveAsync()
                                                                                  .ConfigureAwait(false);
                                                            onResponse(res.RemoteEndPoint.Address.ToString(), res.Buffer);
                                                        }
                                                    }
-                                                   catch (ObjectDisposedException)
+                                                   catch when (Volatile.Read(ref shouldCancel))
                                                    {
+                                                       // If we're canceling, eat any exceptions that come from here   
                                                    }
                                                }, cancellationToken);
 
@@ -213,21 +214,32 @@ namespace Zeroconf
                     socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
 
 
+                    cancellationToken.Register((() =>
+                                                {
+                                                    ((IDisposable)client).Dispose();
+                                                }));
+                        
+
                     while (!cancellationToken.IsCancellationRequested)
                     {
-                        var packet = await client.ReceiveAsync()
-                                                 .ConfigureAwait(false);
                         try
                         {
-                            callback(new AdapterInformation(ipv4Address.ToString(), adapter.Name), packet.RemoteEndPoint.Address.ToString(), packet.Buffer);
+                            var packet = await client.ReceiveAsync()
+                                                 .ConfigureAwait(false);
+                            try
+                            {
+                                callback(new AdapterInformation(ipv4Address.ToString(), adapter.Name), packet.RemoteEndPoint.Address.ToString(), packet.Buffer);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"Callback threw an exception: {ex}");
+                            }
                         }
-                        catch (Exception ex)
+                        catch when (cancellationToken.IsCancellationRequested)
                         {
-                            Debug.WriteLine($"Callback threw an exception: {ex}");
+                            // eat any exceptions if we've been cancelled
                         }
                     }
-
-                    ((IDisposable)client).Dispose();
 
 
                     Debug.WriteLine($"Done listening for mDNS packets on {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}.");
