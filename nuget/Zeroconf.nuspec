@@ -9,38 +9,35 @@
     <licenseUrl>http://opensource.org/licenses/ms-pl</licenseUrl>
     <projectUrl>https://github.com/onovotny/Zeroconf</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Bonjour support for .NET 4.5, Windows Phone 8 and 8.1, Xamarin iOS and Android, and Windows Store apps with PCL support</description>
-    <releaseNotes>Fix a compatibility issue with discovering OpenHAB services</releaseNotes>
+    <description>Bonjour support for .NET Standard, .NET 4.5, .NET Core, Xamarin, Windows Phone, Windows Store/UWP</description>
+    <releaseNotes></releaseNotes>
     <copyright>© Oren Novotny 2016</copyright>
     <language>en-US</language>
-    <tags>zeroconf bonjour mdns service discovery pcl xamarin monoandroid monotouch xamarin.ios wpa universal</tags>
+    <tags>zeroconf bonjour mdns service discovery pcl xamarin netstandard universal</tags>
     <dependencies>
-      <group>
+      <group targetFramework="netstandard1.0">
+        <dependency id="NETStandard.Library" version="1.6.0" />
         <dependency id="System.Reactive" version="3.0.0" />
       </group>
-      <group targetFramework="netstandard1.0"></group>
-      <group targetFramework="netstandard1.3"></group>
+
       <group targetFramework="uap10.0">
-        <dependency id="System.Collections" version="4.0.11" />
-        <dependency id="System.Diagnostics.Debug" version="4.0.11" />
-        <dependency id="System.Linq" version="4.1.0" />
-        <dependency id="System.Reactive.Linq" version="3.0.0" />
-        <dependency id="System.Runtime" version="4.1.0" />
-        <dependency id="System.Runtime.Extensions" version="4.1.0" />
-        <dependency id="System.Runtime.InteropServices.WindowsRuntime" version="4.0.1" />
-        <dependency id="System.Runtime.WindowsRuntime" version="4.0.11" />
-        <dependency id="System.Text.Encoding" version="4.0.11" />
-        <dependency id="System.Threading" version="4.0.11" />
-        <dependency id="System.Threading.Tasks" version="4.0.11" />
+        <dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="5.2.2" />
+        <dependency id="System.Reactive" version="3.0.0" />
       </group>
     </dependencies>
   </metadata>
   <files>
     <!-- Win8 + Wpa81 -->
-    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.dll" target="lib\portable-win81+wpa81\Zeroconf.dll" />
-    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pdb" target="lib\portable-win81+wpa81\Zeroconf.pdb" />
-    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pri" target="lib\portable-win81+wpa81\Zeroconf.pri" />
-    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.xml" target="lib\portable-win81+wpa81\Zeroconf.xml" />
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.dll" target="lib\win81\Zeroconf.dll" />
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pdb" target="lib\win81\Zeroconf.pdb" />
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pri" target="lib\win81\Zeroconf.pri" />
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.xml" target="lib\win81\Zeroconf.xml" />
+
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.dll" target="lib\wpa81\Zeroconf.dll" />
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pdb" target="lib\wpa81\Zeroconf.pdb" />
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.pri" target="lib\wpa81\Zeroconf.pri" />
+    <file src="..\Zeroconf.RT\bin\Release\Zeroconf.xml" target="lib\wpa81\Zeroconf.xml" />
+    
     <!-- uap10.0 -->
     <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.dll" target="lib\uap10.0\Zeroconf.dll" />
     <file src="..\Zeroconf.UWP\bin\Release\Zeroconf.pdb" target="lib\uap10.0\Zeroconf.pdb" />
