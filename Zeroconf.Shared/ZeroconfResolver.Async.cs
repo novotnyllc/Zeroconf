@@ -55,16 +55,20 @@ namespace Zeroconf
                                                                             CancellationToken cancellationToken = default(CancellationToken))
         {
             Action<string, Response> wrappedAction = null;
+
+            var protos = new HashSet<string>(protocols, StringComparer.OrdinalIgnoreCase);
             if (callback != null)
             {
                 wrappedAction = (address, resp) =>
                 {
                     var zc = ResponseToZeroconf(resp, address);
-                    callback(zc);
+                    if (zc.Services.Any(s => protos.Contains(s.Key)))
+                    {
+                        callback(zc);
+                    }
                 };
             }
-
-            var protos = protocols.ToList(); // prevent multiple enumeration
+            
             var buffer = GetRequestBytes(protos);
             var dict = await ResolveInternal(protos,
                                              buffer,
@@ -75,7 +79,9 @@ namespace Zeroconf
                                              cancellationToken)
                                  .ConfigureAwait(false);
 
-            return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key)).ToList();
+            return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key))
+                       .Where(zh => zh.Services.Any(s => protos.Contains(s.Key))) // Ensure we only return records that have matching services
+                       .ToList();
         }
 
 
