@@ -10,7 +10,7 @@ if([string]::IsNullOrEmpty($env:SignClientSecret)){
 
 $appSettings = "$currentDirectory\appsettings.json"
 
-$appPath = "$currentDirectory\..\packages\tools\SignClient.dll"
+$appPath = "$currentDirectory\..\packages\SignClient\tools\SignClient.dll"
 
 $nupgks = ls $currentDirectory\..\*.nupkg | Select -ExpandProperty FullName
 
