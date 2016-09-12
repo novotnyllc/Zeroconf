@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 15.0.25608.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeroconf.RT", "Zeroconf.RT\Zeroconf.RT.csproj", "{B3534F12-4701-4193-83EE-FAD2C4F9A629}"
 EndProject
