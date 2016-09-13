@@ -17,7 +17,7 @@ $nupgks = ls $currentDirectory\..\*.nupkg | Select -ExpandProperty FullName
 foreach ($nupkg in $nupgks){
 	Write-Host "Submitting $nupkg for signing"
 
-	dotnet $appPath $appSettings $nupkg $nupkg 'zip' $env:SignClientSecret 'Zeroconf' 'https://github.com/onovotny/zeroconf' 
+	dotnet $appPath 'zip' -c $appSettings -i $nupkg -s $env:SignClientSecret -n 'Zeroconf' -d 'Zeroconf' -u 'https://github.com/onovotny/zeroconf' 
 
 	Write-Host "Finished signing $nupkg"
 }
