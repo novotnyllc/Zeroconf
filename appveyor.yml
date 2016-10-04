@@ -20,7 +20,6 @@ build:
   project: Zeroconf.sln
   
 after_build:
-  - cmd: '.\packages\gitlink\lib\net45\GitLink.exe . -f Zeroconf.sln -u https://github.com/onovotny/Zeroconf -s %APPVEYOR_REPO_COMMIT% -errorsaswarnings'
   - cmd: nuget pack nuget\Zeroconf.nuspec -version "%GitVersion_NuGetVersion%-bld%GitVersion_BuildMetaDataPadded%" -prop "target=%CONFIGURATION%" -NoPackageAnalysis
   - ps: '.\SignClient\SignPackage.ps1'
   - cmd: appveyor PushArtifact "Zeroconf.%GitVersion_NuGetVersion%-bld%GitVersion_BuildMetaDataPadded%.nupkg"  
