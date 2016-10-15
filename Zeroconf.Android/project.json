@@ -1,9 +1,0 @@
-{
-    "dependencies": {
-        "Rx-Main": "2.2.5"
-    },
-    "frameworks": {        
-        "MonoAndroid,Version=v6.0": { }
-    },
-    "supports": { }
-}
