@@ -1,7 +1,7 @@
 Zeroconf
 ==========
 
-# Bonjour/mDNS support for .NET 4.5, Windows Phone 8, Windows Store apps and Portable Class Libraries
+# Bonjour/mDNS discovery support for .NET 4.5, Windows Phone 8, Windows Store apps and Portable Class Libraries
 
 The core logic is implemented as a PCL, but due to networking APIs being 
 platform-specific, a platform-specific helper library is required. Just make
