@@ -26,7 +26,6 @@ namespace ZeroconfTest.Xam.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::ZeroconfTest.Xam.Droid.Resource.Attribute.actionBarSize;
 		}
 		
 		public partial class Animation
