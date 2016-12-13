@@ -1,23 +1,7 @@
 <Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- <PropertyGroup Condition="'$(TargetFramework)' == 'portable-win81+wpa81'">
-    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile32</TargetFrameworkProfile>
-  </PropertyGroup> -->
-  <!-- <ItemGroup Condition=" '$(TargetFramework)' == 'portable-win81+wpa81' ">
-    <Reference Include="System" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Runtime.Extensions" />
-    <Reference Include="System.Resources.ResourceManager" />
-    <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup> -->
   <!--<Import Condition=" '$(TargetFramework)' == 'uap10.0'"  Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />-->
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;uap10.0</TargetFrameworks>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <TargetFrameworks>netstandard1.0;netstandard1.3;net45;uap10.0;portable-win81+wpa81;win8;wpa81;wp8</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'win8'">
     <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
@@ -27,13 +11,27 @@
     <TargetFrameworkIdentifier>WindowsPhoneApp</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-win81+wpa81'">
+    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile32</TargetFrameworkProfile>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
+    <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
   </PropertyGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'portable-win81+wpa81' ">
+    <Reference Include="System" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.Extensions" />
+    <Reference Include="System.Resources.ResourceManager" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'wp8'">
     <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
@@ -42,7 +40,7 @@
     <Compile Include="**\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NETStandard.Library" Version="1.6.1" />
+    <PackageReference Include="NETStandard.Library" Version="1.6.1" Condition="'$(TargetFramework)' != 'net45'"/>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System" />
@@ -57,8 +55,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>5.2.2</Version>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.2.2" />
+    <PackageReference Include="Microsoft.TargetingPack.Private.WinRT" Version="1.0.3">
+      <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 </Project>
