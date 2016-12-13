@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.0;netstandard1.3;net45;uap10.0;portable-win81+wpa81;win8;wpa81;wp8</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0;netstandard1.3;net45;uap10.0;portable-win81+wpa81;win8;wpa81</TargetFrameworks>
     <DefaultLanguage>en-US</DefaultLanguage>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <Product>Zeroconf ($(TargetFramework))</Product>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
     <DefineConstants>$(DefineConstants);PCL</DefineConstants>
