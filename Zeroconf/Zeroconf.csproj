@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.0;netstandard1.3;net45;uap10.0;portable-win81+wpa81;win8;wpa81</TargetFrameworks>
+    <TargetFrameworks>netstandard1.0;netstandard1.3;net45;uap10.0;portable-win81+wpa81;win8;wpa81;wp8</TargetFrameworks>
     <DefaultLanguage>en-US</DefaultLanguage>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <Product>Zeroconf ($(TargetFramework))</Product>
@@ -69,7 +69,6 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.2" />
   </ItemGroup>
-
   <!-- Workaround for https://github.com/Microsoft/msbuild/issues/1474 -->
   <Target Name="AdjustReferringTargetFrameworkForUAP" BeforeTargets="GetTargetFrameworkProperties">
     <PropertyGroup Condition="'$(ReferringTargetFramework)' == '.NETCore,Version=v5.0'">
