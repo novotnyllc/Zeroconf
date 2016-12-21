@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -80,7 +81,7 @@ namespace Zeroconf
                 {
                     try
                     {
-                        var socket = GetSocketFromUdpClient(client);
+                        var socket = client.Client;
 
                         socket.SetSocketOption(SocketOptionLevel.IP,
                                                      SocketOptionName.MulticastInterface,
@@ -94,7 +95,7 @@ namespace Zeroconf
                                                       true);
                         socket.SetSocketOption(SocketOptionLevel.Socket,
                                                       SocketOptionName.ReceiveTimeout,
-                                                      scanTime.Milliseconds);
+                                                      (int)scanTime.TotalMilliseconds);
                         client.ExclusiveAddressUse = false;
 
 
@@ -119,29 +120,34 @@ namespace Zeroconf
                                                {
                                                    try
                                                    {
-                                                       while (!shouldCancel)
+                                                       while (!Volatile.Read(ref shouldCancel))
                                                        {
                                                            var res = await client.ReceiveAsync()
                                                                                  .ConfigureAwait(false);
+
                                                            onResponse(res.RemoteEndPoint.Address.ToString(), res.Buffer);
                                                        }
                                                    }
-                                                   catch (ObjectDisposedException)
+                                                   catch when (Volatile.Read(ref shouldCancel))
                                                    {
+                                                       // If we're canceling, eat any exceptions that come from here   
                                                    }
                                                }, cancellationToken);
 
                         var broadcastEp = new IPEndPoint(IPAddress.Parse("224.0.0.251"), 5353);
+
                         Debug.WriteLine($"About to send on iface {adapter.Name}");
                         await client.SendAsync(requestBytes, requestBytes.Length, broadcastEp)
                                     .ConfigureAwait(false);
+
                         Debug.WriteLine($"Sent mDNS query on iface {adapter.Name}");
 
 
                         // wait for responses
                         await Task.Delay(scanTime, cancellationToken)
                                   .ConfigureAwait(false);
-                        shouldCancel = true;
+
+                        Volatile.Write(ref shouldCancel, true);
 
                         ((IDisposable)client).Dispose();
 
@@ -156,7 +162,11 @@ namespace Zeroconf
                     {
                         Debug.WriteLine($"Execption with network request, IP {ipv4Address}\n: {e}");
                         if (i + 1 >= retries) // last one, pass underlying out
+                        {
+                            // Ensure all inner info is captured                            
+                            ExceptionDispatchInfo.Capture(e).Throw();
                             throw;
+                        }
                     }
 
                     await Task.Delay(retryDelayMilliseconds, cancellationToken).ConfigureAwait(false);
@@ -194,7 +204,7 @@ namespace Zeroconf
 
                 using (var client = new UdpClient())
                 {
-                    var socket = GetSocketFromUdpClient(client);
+                    var socket = client.Client;
                     socket.SetSocketOption(SocketOptionLevel.IP,
                                            SocketOptionName.MulticastInterface,
                                            IPAddress.HostToNetworkOrder(ifaceIndex.Value));
@@ -213,21 +223,32 @@ namespace Zeroconf
                     socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
 
 
+                    cancellationToken.Register((() =>
+                                                {
+                                                    ((IDisposable)client).Dispose();
+                                                }));
+                        
+
                     while (!cancellationToken.IsCancellationRequested)
                     {
-                        var packet = await client.ReceiveAsync()
-                                                 .ConfigureAwait(false);
                         try
                         {
-                            callback(new AdapterInformation(ipv4Address.ToString(), adapter.Name), packet.RemoteEndPoint.Address.ToString(), packet.Buffer);
+                            var packet = await client.ReceiveAsync()
+                                                 .ConfigureAwait(false);
+                            try
+                            {
+                                callback(new AdapterInformation(ipv4Address.ToString(), adapter.Name), packet.RemoteEndPoint.Address.ToString(), packet.Buffer);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"Callback threw an exception: {ex}");
+                            }
                         }
-                        catch (Exception ex)
+                        catch when (cancellationToken.IsCancellationRequested)
                         {
-                            Debug.WriteLine($"Callback threw an exception: {ex}");
+                            // eat any exceptions if we've been cancelled
                         }
                     }
-
-                    ((IDisposable)client).Dispose();
 
 
                     Debug.WriteLine($"Done listening for mDNS packets on {adapter.Name}, idx {ifaceIndex}, IP: {ipv4Address}.");
@@ -235,35 +256,6 @@ namespace Zeroconf
                     cancellationToken.ThrowIfCancellationRequested();
                 }
             }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
-        }
-
-        static Socket GetSocketFromUdpClient(UdpClient client)
-        {
-            var mi = GetSocketMember.Value as MethodInfo;
-            if (mi != null)
-            {
-                return (Socket)mi.Invoke(client, null);
-            }
-            var fi = GetSocketMember.Value as FieldInfo;
-            if (fi != null)
-            {
-                return (Socket)fi.GetValue(client);
-            }
-
-            throw new NotSupportedException("Could not locate Socket");
-        }
-
-        static readonly Lazy<MemberInfo> GetSocketMember = new Lazy<MemberInfo>(GetSocketMemberImpl);
-
-        static MemberInfo GetSocketMemberImpl()
-        {
-            // See if there's a client prop
-            var pi = typeof(UdpClient).GetRuntimeProperties().FirstOrDefault(p => p.PropertyType == typeof(Socket));
-            if (pi != null)
-                return pi.GetMethod;
-
-            var mi = typeof(UdpClient).GetRuntimeFields().First(fi => fi.FieldType == typeof(Socket));
-            return mi;
         }
     }
 }

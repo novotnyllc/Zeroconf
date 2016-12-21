@@ -81,7 +81,9 @@ namespace Zeroconf
                     await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
                     Debug.WriteLine("Done Scanning");
                 }
+#if WINDOWS_UWP
                 socket.MessageReceived -= handler;
+#endif
             }
         }
 

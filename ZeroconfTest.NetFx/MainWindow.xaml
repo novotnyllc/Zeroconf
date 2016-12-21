@@ -20,6 +20,8 @@
             <Button Content="Resolve" HorizontalAlignment="Stretch" VerticalAlignment="Top" Click="Button_Click"/>
             <Button Content="Browse" HorizontalAlignment="Stretch" VerticalAlignment="Top" Click="Browse_Click"/>
             <ToggleButton Content="Listen" x:Name="ListenButton" HorizontalAlignment="Stretch" VerticalAlignment="Top" Click="StartStopListener_Click"/>
+
+            <ToggleButton Content="Resolve Continuous" x:Name="ResolveContinuous" HorizontalAlignment="Stretch" VerticalAlignment="Top" Click="ResolveContinuous_OnClickListener_Click"/>
         </StackPanel>
 
         <TextBox Grid.Column="1" x:Name="Log" TextWrapping="Wrap" Text="" AcceptsReturn="True" IsReadOnly="True"

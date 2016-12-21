@@ -1,9 +1,0 @@
-{
-    "dependencies": {
-        "Rx-Main": "2.2.5"
-    },
-    "frameworks": {
-        "Xamarin.iOS,Version=v1.0": { }
-    },
-    "supports": { }
-}

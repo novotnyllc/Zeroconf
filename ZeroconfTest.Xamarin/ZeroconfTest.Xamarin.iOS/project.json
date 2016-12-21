@@ -2,7 +2,7 @@
     "dependencies": {
     },
     "frameworks": {
-        "MonoTouch,Version=v1.0": { }
+        "Xamarin.iOS,Version=v1.0": { }
     },   
     "runtimes": {
         "win": { }

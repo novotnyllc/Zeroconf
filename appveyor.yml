@@ -1,30 +1,30 @@
-configuration: Release
+image: Visual Studio 2017 RC
 
-init:
-  - cmd: set
-  
-install: 
-  - cmd: appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/latest/nuget.exe  
-  - cmd: nuget install GitVersion.CommandLine -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
-  - cmd: nuget install gitlink -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
+environment:
+  SignClientSecret:
+    secure: S26+NphAhj/vo5ZdHd/N/4toty3ztdNGmuNdvAB57W1oIVQEHVKqAVuhTD8B9ATy
      
-before_build:
-  - cmd: nuget restore Zeroconf.sln
-  - cmd: '.\packages\GitVersion.CommandLine\tools\GitVersion.exe /l console /output buildserver /updateAssemblyInfo'
-  
-build:
-  verbosity: normal
-  parallel: true
-  project: Zeroconf.sln
+install: 
+  - cmd: nuget install gitlink -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
+  - cmd: nuget install SignClient -Version 0.5.0-beta4 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
+    
+build_script:
+  - cmd: '"%ProgramFiles(x86)%\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\sn.exe" -Vr *'
+  - cmd: '"%ProgramFiles(x86)%\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\x64\sn.exe" -Vr *'
+  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:restore /p:Configuration=Release
+  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:pack /p:Configuration=Release
   
 after_build:
-  - cmd: '.\packages\gitlink\lib\net45\GitLink.exe . -f Zeroconf.sln -u https://github.com/onovotny/Zeroconf -s %APPVEYOR_REPO_COMMIT% -errorsaswarnings'
-  - cmd: nuget pack nuget\Zeroconf.nuspec -version "%GitVersion_NuGetVersion%-bld%GitVersion_BuildMetaDataPadded%" -prop "target=%CONFIGURATION%" -NoPackageAnalysis
-  - cmd: appveyor PushArtifact "Zeroconf.%GitVersion_NuGetVersion%-bld%GitVersion_BuildMetaDataPadded%.nupkg"  
+  - cmd: move Zeroconf\bin\Release\*.nupkg .
+  - ps: '.\SignClient\SignPackage.ps1'
+
+artifacts:
+  - path: '*.nupkg'
   
 deploy:
   provider: NuGet
   server: https://www.myget.org/F/zeroconf/api/v2/package
+  symbol_server: https://www.myget.org/F/zeroconf/symbols/api/v2/package
   api_key:
     secure: bmqlJK8a5HYiUXOT99HXT1j7JiM5+fpR4kHhxIC30oaaEXbv94f0fKdiKlU1QC/l
   artifact: /.*\.nupkg/
