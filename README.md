@@ -3,9 +3,9 @@ Zeroconf
 
 # Bonjour/mDNS discovery support for .NET 4.5, Windows Phone 8, Windows Store apps and Portable Class Libraries
 
-The core logic is implemented as a PCL, but due to networking APIs being 
-platform-specific, a platform-specific helper library is required. Just make
-sure that you also install the NuGet to your main app and you'll be all set.
+The core logic is implemented primarily .NET Standard 1.3 but with a .NET Standard 1.0 reference assembly.
+Due to networking APIs being platform-specific on earlier platforms, a platform-specific version is required. Just make
+sure that you also install the NuGet to your main app (or use project.json/PackageReferences) and you'll be all set.
 
 ## Installation
 
