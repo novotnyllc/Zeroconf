@@ -13,6 +13,7 @@
     <PackageTags>zeroconf;bonjour;mdns;service;discovery;pcl;xamarin;netstandard;universal</PackageTags>
     <Product>Zeroconf ($(TargetFramework))</Product>
     <IncludeSymbols>true</IncludeSymbols>
+    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
