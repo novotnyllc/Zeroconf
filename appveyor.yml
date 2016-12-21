@@ -19,11 +19,12 @@ after_build:
   - ps: '.\SignClient\SignPackage.ps1'
 
 artifacts:
-  - path: '**\*.nupkg'
+  - path: '*.nupkg'
   
 deploy:
   provider: NuGet
   server: https://www.myget.org/F/zeroconf/api/v2/package
+  symbol_server: https://www.myget.org/F/zeroconf/symbols/api/v2/package
   api_key:
     secure: bmqlJK8a5HYiUXOT99HXT1j7JiM5+fpR4kHhxIC30oaaEXbv94f0fKdiKlU1QC/l
   artifact: /.*\.nupkg/
