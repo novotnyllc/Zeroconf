@@ -1,0 +1,7 @@
+legacy-semver-padding: 2
+build-metadata-padding: 3
+mode: ContinuousDeployment
+
+branches:
+  master:
+    tag: beta

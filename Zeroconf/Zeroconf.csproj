@@ -4,7 +4,6 @@
     <TargetFrameworks>netstandard1.0;netstandard1.3;net45;uap10.0;portable-win81+wpa81;win8;wpa81;wp8</TargetFrameworks>
     <DefaultLanguage>en-US</DefaultLanguage>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-    <UpdateAssemblyInfo>false</UpdateAssemblyInfo>
     <Authors>Oren Novotny</Authors>
     <PackageLicenseUrl>http://opensource.org/licenses/ms-pl</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/onovotny/Zeroconf</PackageProjectUrl>
@@ -56,7 +55,7 @@
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="Platforms\**\*.*" />
     <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
-    <PackageReference Include="GitVersionTask" Version="4.0.0-pullrequest1119-1207">
+    <PackageReference Include="GitVersionTask" Version="4.0.0-pullrequest1119-1208">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="System.Reactive" Version="3.1.1" />
@@ -86,12 +85,6 @@
   <Target Name="AdjustReferringTargetFrameworkForUAP" BeforeTargets="GetTargetFrameworkProperties">
     <PropertyGroup Condition="'$(ReferringTargetFramework)' == '.NETCore,Version=v5.0'">
       <ReferringTargetFramework>UAP,Version=v10.0</ReferringTargetFramework>
-    </PropertyGroup>
-  </Target>
-  <Target Name="UpdateVersionVars" AfterTargets="GetVersion">
-    <PropertyGroup>
-      <Version>$(GitVersion_SemVer)</Version>
-      <PackageVersion>$(GitVersion_SemVer)</PackageVersion>
     </PropertyGroup>
   </Target>
 </Project>
