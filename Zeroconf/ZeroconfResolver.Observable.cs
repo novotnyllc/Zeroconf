@@ -28,8 +28,6 @@ namespace Zeroconf
             return Resolve(new[] { protocol }, scanTime, retries, retryDelayMilliseconds);
         }
 
-
-
         /// <summary>
         ///     Resolves available ZeroConf services
         /// </summary>
@@ -43,8 +41,29 @@ namespace Zeroconf
                                                          int retries = 2,
                                                          int retryDelayMilliseconds = 2000)
         {
-            if (protocols == null)
-                throw new ArgumentNullException(nameof(protocols));
+            if (retries <= 0) throw new ArgumentOutOfRangeException(nameof(retries));
+            if (retryDelayMilliseconds <= 0) throw new ArgumentOutOfRangeException(nameof(retryDelayMilliseconds));
+            if (scanTime == default(TimeSpan))
+                scanTime = TimeSpan.FromSeconds(2);
+
+            var options = new ResolveOptions(protocols)
+            {
+                Retries = retries,
+                RetryDelay = TimeSpan.FromMilliseconds(retryDelayMilliseconds),
+                ScanTime = scanTime
+            };
+
+            return Resolve(options); 
+        }
+
+        /// <summary>
+        ///     Resolves available ZeroConf services
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static IObservable<IZeroconfHost> Resolve(ResolveOptions options)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
 
 
             return Observable.Create<IZeroconfHost>(
@@ -53,7 +72,7 @@ namespace Zeroconf
                     try
                     {
                         Action<IZeroconfHost> cb = obs.OnNext;
-                        await ResolveAsync(protocols, scanTime, retries, retryDelayMilliseconds, cb, cxl);
+                        await ResolveAsync(options, cb, cxl);
                     }
                     catch (OperationCanceledException)
                     {
@@ -72,16 +91,35 @@ namespace Zeroconf
         }
 
         public static IObservable<DomainService> BrowseDomains(TimeSpan scanTime = default(TimeSpan),
-                                                                             int retries = 2,
-                                                                             int retryDelayMilliseconds = 2000)
+                                                               int retries = 2,
+                                                               int retryDelayMilliseconds = 2000)
         {
+            if (retries <= 0) throw new ArgumentOutOfRangeException(nameof(retries));
+            if (retryDelayMilliseconds <= 0) throw new ArgumentOutOfRangeException(nameof(retryDelayMilliseconds));
+            if (scanTime == default(TimeSpan))
+                scanTime = TimeSpan.FromSeconds(2);
+
+            var options = new BrowseDomainsOptions
+            {
+                Retries = retries,
+                RetryDelay = TimeSpan.FromMilliseconds(retryDelayMilliseconds),
+                ScanTime = scanTime
+            };
+
+            return BrowseDomains(options);
+        }
+
+        public static IObservable<DomainService> BrowseDomains(BrowseDomainsOptions options)
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+
             return Observable.Create<DomainService>(
                 async (obs, cxl) =>
                 {
                     try
                     {
                         Action<string, string> cb = (d, s) => obs.OnNext(new DomainService(d, s));
-                        await BrowseDomainsAsync(scanTime, retries, retryDelayMilliseconds, cb, cxl);
+                        await BrowseDomainsAsync(options, cb, cxl);
                     }
                     catch (OperationCanceledException)
                     { }

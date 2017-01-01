@@ -37,20 +37,14 @@ namespace Zeroconf
         }
 
 
-        static async Task<IDictionary<string, Response>> ResolveInternal(IEnumerable<string> protocols,
-                                                                                 byte[] requestBytes,
-                                                                                 TimeSpan scanTime,
-                                                                                 int retries,
-                                                                                 int retryDelayMilliseconds,
-                                                                                 Action<string, Response> callback,
-                                                                                 CancellationToken cancellationToken)
+        static async Task<IDictionary<string, Response>> ResolveInternal(ZeroconfOptions options,
+                                                                         Action<string, Response> callback,
+                                                                         CancellationToken cancellationToken)
         {
+            var requestBytes = GetRequestBytes(options);
             using (await ResolverLock.LockAsync())
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (scanTime == default(TimeSpan))
-                    scanTime = TimeSpan.FromSeconds(2);
-
                 var dict = new Dictionary<string, Response>();
 
                 Action<string, byte[]> converter =
@@ -70,12 +64,12 @@ namespace Zeroconf
                         }
                     };
 
-                Debug.WriteLine($"Looking for {string.Join(", ", protocols)} with scantime {scanTime}");
+                Debug.WriteLine($"Looking for {string.Join(", ", options.Protocols)} with scantime {options.ScanTime}");
 
                 await NetworkInterface.NetworkRequestAsync(requestBytes,
-                                                           scanTime,
-                                                           retries,
-                                                           retryDelayMilliseconds,
+                                                           options.ScanTime,
+                                                           options.Retries,
+                                                           (int)options.RetryDelay.TotalMilliseconds,
                                                            converter,                                                           
                                                            cancellationToken)
                                       .ConfigureAwait(false);
@@ -84,11 +78,11 @@ namespace Zeroconf
             }
         }
 
-        static byte[] GetRequestBytes(IEnumerable<string> protocols)
+        static byte[] GetRequestBytes(ZeroconfOptions options)
         {
             var req = new Request();
 
-            foreach (var protocol in protocols)
+            foreach (var protocol in options.Protocols)
             {
                 var question = new Question(protocol, QType.PTR, QClass.ANY);
 

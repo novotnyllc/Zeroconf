@@ -54,36 +54,56 @@ namespace Zeroconf
                                                                             Action<IZeroconfHost> callback = null,
                                                                             CancellationToken cancellationToken = default(CancellationToken))
         {
-            Action<string, Response> wrappedAction = null;
+            if (retries <= 0) throw new ArgumentOutOfRangeException(nameof(retries));
+            if (retryDelayMilliseconds <= 0) throw new ArgumentOutOfRangeException(nameof(retryDelayMilliseconds));
+            if (scanTime == default(TimeSpan))
+                scanTime = TimeSpan.FromSeconds(2);
 
-            var protos = new HashSet<string>(protocols, StringComparer.OrdinalIgnoreCase);
+            var options = new ResolveOptions(protocols)
+            {
+                Retries = retries,
+                RetryDelay = TimeSpan.FromMilliseconds(retryDelayMilliseconds),
+                ScanTime = scanTime
+            };
+
+            return await ResolveAsync(options, callback, cancellationToken).ConfigureAwait(false);   
+        }
+
+
+        /// <summary>
+        ///     Resolves available ZeroConf services
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="callback">Called per record returned as they come in.</param>
+        /// <returns></returns>
+        public static async Task<IReadOnlyList<IZeroconfHost>> ResolveAsync(ResolveOptions options,
+                                                                            Action<IZeroconfHost> callback = null,
+                                                                            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            Action<string, Response> wrappedAction = null;
+            
             if (callback != null)
             {
                 wrappedAction = (address, resp) =>
                 {
                     var zc = ResponseToZeroconf(resp, address);
-                    if (zc.Services.Any(s => protos.Contains(s.Key)))
+                    if (zc.Services.Any(s => options.Protocols.Contains(s.Key)))
                     {
                         callback(zc);
                     }
                 };
             }
             
-            var buffer = GetRequestBytes(protos);
-            var dict = await ResolveInternal(protos,
-                                             buffer,
-                                             scanTime,
-                                             retries,
-                                             retryDelayMilliseconds,
+            var dict = await ResolveInternal(options,
                                              wrappedAction,
                                              cancellationToken)
                                  .ConfigureAwait(false);
 
             return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key))
-                       .Where(zh => zh.Services.Any(s => protos.Contains(s.Key))) // Ensure we only return records that have matching services
+                       .Where(zh => zh.Services.Any(s => options.Protocols.Contains(s.Key))) // Ensure we only return records that have matching services
                        .ToList();
         }
-
 
         /// <summary>
         ///     Returns all available domains with services on them
@@ -99,9 +119,36 @@ namespace Zeroconf
                                                                              int retryDelayMilliseconds = 2000,
                                                                              Action<string, string> callback = null,
                                                                              CancellationToken cancellationToken = default(CancellationToken))
-        {
-            const string protocol = "_services._dns-sd._udp.local.";
 
+        {
+            if (retries <= 0) throw new ArgumentOutOfRangeException(nameof(retries));
+            if (retryDelayMilliseconds <= 0) throw new ArgumentOutOfRangeException(nameof(retryDelayMilliseconds));
+            if (scanTime == default(TimeSpan))
+                scanTime = TimeSpan.FromSeconds(2);
+
+            var options = new BrowseDomainsOptions
+            {
+                Retries = retries,
+                RetryDelay = TimeSpan.FromMilliseconds(retryDelayMilliseconds),
+                ScanTime = scanTime
+            };
+
+            return await BrowseDomainsAsync(options, callback, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        ///     Returns all available domains with services on them
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="callback">Called per record returned as they come in.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<ILookup<string, string>> BrowseDomainsAsync(BrowseDomainsOptions options,
+                                                                             Action<string, string> callback = null,
+                                                                             CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (options == null) throw new ArgumentNullException(nameof(options));
+       
             Action<string, Response> wrappedAction = null;
             if (callback != null)
             {
@@ -113,14 +160,8 @@ namespace Zeroconf
                     }
                 };
             }
-
-            var protocols = new[] { protocol };
-            var buffer = GetRequestBytes(protocols);
-            var dict = await ResolveInternal(protocols,
-                                             buffer,
-                                             scanTime,
-                                             retries,
-                                             retryDelayMilliseconds,
+            
+            var dict = await ResolveInternal(options,
                                              wrappedAction,
                                              cancellationToken)
                                  .ConfigureAwait(false);
