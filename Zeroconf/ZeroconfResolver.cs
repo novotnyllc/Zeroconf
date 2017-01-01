@@ -81,10 +81,11 @@ namespace Zeroconf
         static byte[] GetRequestBytes(ZeroconfOptions options)
         {
             var req = new Request();
+            var queryType = options.ScanQueryType == ScanQueryType.Ptr ? QType.PTR : QType.ANY;
 
             foreach (var protocol in options.Protocols)
             {
-                var question = new Question(protocol, QType.PTR, QClass.ANY);
+                var question = new Question(protocol, queryType, QClass.ANY);
 
                 req.AddQuestion(question);
             }

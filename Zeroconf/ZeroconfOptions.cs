@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Zeroconf
 {
     public abstract class ZeroconfOptions
     {
-        
         int retries;
 
-        public ZeroconfOptions(string protocol) : 
-            this(new []{protocol})
+        public ZeroconfOptions(string protocol) :
+            this(new[] {protocol})
         {
-            
         }
 
         public ZeroconfOptions(IEnumerable<string> protocols)
@@ -22,12 +22,10 @@ namespace Zeroconf
             Retries = 2;
             RetryDelay = TimeSpan.FromSeconds(2);
             ScanTime = TimeSpan.FromSeconds(2);
-
-
+            ScanQueryType = ScanQueryType.Ptr;
         }
-        public IEnumerable<string> Protocols { get; }
 
-        public TimeSpan ScanTime { get; set; }
+        public IEnumerable<string> Protocols { get; }
 
         public int Retries
         {
@@ -35,19 +33,28 @@ namespace Zeroconf
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value));   
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 retries = value;
             }
         }
 
         public TimeSpan RetryDelay { get; set; }
+
+        public TimeSpan ScanTime { get; set; }
+
+        public ScanQueryType ScanQueryType { get; set; }
+    }
+
+    public enum ScanQueryType
+    {
+        Ptr,
+        Any
     }
 
     public class BrowseDomainsOptions : ZeroconfOptions
     {
-        public BrowseDomainsOptions() :base("_services._dns-sd._udp.local.")
+        public BrowseDomainsOptions() : base("_services._dns-sd._udp.local.")
         {
-            
         }
     }
 
