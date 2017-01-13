@@ -54,7 +54,7 @@
     <LanguageTargets>$(MSBuildProgramFiles32)\MSBuild\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets</LanguageTargets>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="**\*.cs" Exclude="Platforms\**\*.*" />
+    <Compile Remove="Platforms\**\*.*" />
     <None Include="Platforms\**\*.*" />
     <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
     <PackageReference Include="GitVersionTask" Version="4.0.0-pullrequest1119-1208">
