@@ -139,7 +139,8 @@ namespace Zeroconf
                 var svc = new Service
                 {
                     Name = ptrRec.RR.NAME,
-                    Port = srvRec.PORT
+                    Port = srvRec.PORT,
+                    Ttl = (int)srvRec.RR.TTL
                 };
 
                 // There may be 0 or more text records - property sets

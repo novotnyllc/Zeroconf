@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -49,6 +50,11 @@ namespace Zeroconf
         int Port { get; }
 
         /// <summary>
+        /// Time-to-live
+        /// </summary>
+        int Ttl { get; }
+
+        /// <summary>
         ///     Properties of the object. Most services have a single set of properties, but some services
         ///     may return multiple sets of properties
         /// </summary>
@@ -60,7 +66,7 @@ namespace Zeroconf
     /// </summary>
     class ZeroconfHost : IZeroconfHost, IEquatable<ZeroconfHost>, IEquatable<IZeroconfHost>
     {
-        readonly Dictionary<string, IService> _services = new Dictionary<string, IService>();
+        readonly Dictionary<string, IService> services = new Dictionary<string, IService>();
 
         public bool Equals(IZeroconfHost other)
         {
@@ -87,10 +93,7 @@ namespace Zeroconf
         /// <summary>
         ///     Collection of services provided by the host
         /// </summary>
-        public IReadOnlyDictionary<string, IService> Services
-        {
-            get { return _services; }
-        }
+        public IReadOnlyDictionary<string, IService> Services => services;
 
 
         /// <summary>
@@ -110,7 +113,7 @@ namespace Zeroconf
         {
             unchecked
             {
-                return ((Id != null ? Id.GetHashCode() : 0)*397) ^ (IPAddress != null ? IPAddress.GetHashCode() : 0);
+                return ((Id?.GetHashCode() ?? 0)*397) ^ (IPAddress?.GetHashCode() ?? 0);
             }
         }
 
@@ -121,12 +124,12 @@ namespace Zeroconf
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("Id: {0}, DisplayName: {1}, IP: {2}, Services: {3}", Id, DisplayName, IPAddress, _services.Count);
+            sb.Append($"Id: {Id}, DisplayName: {DisplayName}, IP: {IPAddress}, Services: {services.Count}");
 
-            if (_services.Any())
+            if (services.Any())
             {
                 sb.AppendLine();
-                foreach (var svc in _services)
+                foreach (var svc in services)
                 {
                     sb.AppendLine(svc.Value.ToString());
                 }
@@ -137,43 +140,38 @@ namespace Zeroconf
 
         internal void AddService(IService service)
         {
-            if (service == null)
-                throw new ArgumentNullException(nameof(service));
-
-            _services[service.Name] = service;
+            services[service.Name] = service ?? throw new ArgumentNullException(nameof(service));
         }
     }
 
     class Service : IService
     {
-        readonly List<IReadOnlyDictionary<string, string>> _properties = new List<IReadOnlyDictionary<string, string>>();
+        readonly List<IReadOnlyDictionary<string, string>> properties = new List<IReadOnlyDictionary<string, string>>();
 
         public string Name { get; set; }
         public int Port { get; set; }
+        public int Ttl { get; set; }
 
-        public IReadOnlyList<IReadOnlyDictionary<string, string>> Properties
-        {
-            get { return _properties; }
-        }
+        public IReadOnlyList<IReadOnlyDictionary<string, string>> Properties => properties;
 
         public override string ToString()
         {
             var sb = new StringBuilder();
 
-            sb.AppendFormat("Service: {0} Port: {1}, PropertySets: {2}", Name, Port, _properties.Count);
+            sb.Append($"Service: {Name} Port: {Port}, TTL: {Ttl}, PropertySets: {properties.Count}");
 
-            if (_properties.Any())
+            if (properties.Any())
             {
                 sb.AppendLine();
-                for (var i = 0; i < _properties.Count; i++)
+                for (var i = 0; i < properties.Count; i++)
                 {
-                    sb.AppendFormat("Begin Property Set #{0}", i);
+                    sb.Append($"Begin Property Set #{i}");
                     sb.AppendLine();
                     sb.AppendLine("-------------------");
 
-                    foreach (var kvp in _properties[i])
+                    foreach (var kvp in properties[i])
                     {
-                        sb.AppendFormat("{0} = {1}", kvp.Key, kvp.Value);
+                        sb.Append($"{kvp.Key} = {kvp.Value}");
                         sb.AppendLine();
                     }
                     sb.AppendLine("-------------------");
@@ -188,7 +186,8 @@ namespace Zeroconf
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
 
-            _properties.Add(set);
+            properties.Add(set);
         }
+
     }
 }
