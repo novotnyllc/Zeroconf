@@ -105,6 +105,10 @@ finally
 }
 ```
 
+You'll also need to specify the correct permsision like this:
+```csharp
+[assembly: UsesPermission(Android.Manifest.Permission.ChangeWifiMulticastState)]
+```
 
 ## Credits
 
