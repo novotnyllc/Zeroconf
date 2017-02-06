@@ -105,6 +105,11 @@ finally
 }
 ```
 
+### UWP
+You'll need to have the following permissions on your manifest depending on what networks you're trying to scan:
+ - Private Networks (Client & Server)
+ - Internet (Client & Server)
+
 You'll also need to specify the correct permsision like this:
 ```csharp
 [assembly: UsesPermission(Android.Manifest.Permission.ChangeWifiMulticastState)]
