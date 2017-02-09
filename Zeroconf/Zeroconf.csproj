@@ -80,10 +80,4 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.2" />
   </ItemGroup>
-  <!-- Workaround for https://github.com/Microsoft/msbuild/issues/1474 -->
-  <Target Name="AdjustReferringTargetFrameworkForUAP" BeforeTargets="GetTargetFrameworkProperties">
-    <PropertyGroup Condition="'$(ReferringTargetFramework)' == '.NETCore,Version=v5.0'">
-      <ReferringTargetFramework>UAP,Version=v10.0</ReferringTargetFramework>
-    </PropertyGroup>
-  </Target>
 </Project>
