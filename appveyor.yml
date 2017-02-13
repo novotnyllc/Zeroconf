@@ -10,7 +10,6 @@ install:
     
 build_script:
   - cmd: msbuild Zeroconf\Zeroconf.csproj /t:restore /p:Configuration=Release
-  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:restore /p:Configuration=Release
   - cmd: msbuild Zeroconf\Zeroconf.csproj /t:pack /p:Configuration=Release
   
 after_build:
