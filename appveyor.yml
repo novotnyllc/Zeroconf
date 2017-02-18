@@ -9,8 +9,8 @@ install:
   - cmd: nuget install SignClient -Version 0.5.0-beta4 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
     
 build_script:
-  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:restore /p:Configuration=Release
-  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:pack /p:Configuration=Release
+  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:restore
+  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:pack /p:Configuration=Release /p:NuGetBuildTasksPackTargets="workaround"
   
 after_build:
   - cmd: move Zeroconf\bin\Release\*.nupkg .
