@@ -9,7 +9,4 @@
     <PackageReference Include="Xamarin.Forms" Version="2.3.0.49" />
     <ProjectReference Include="..\..\Zeroconf\Zeroconf.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
 </Project>

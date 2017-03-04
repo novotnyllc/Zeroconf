@@ -20,7 +20,7 @@ namespace Zeroconf
 
         static INetworkInterface LoadPlatformNetworkInterface()
         {
-#if PCL
+#if NETSTANDARD1_0
             throw new NotSupportedException("This PCL assembly must not be used at runtime. Make sure to add the Zeroconf Nuget reference to your main project.");
 #else
             return new NetworkInterface();
