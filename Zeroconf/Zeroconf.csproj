@@ -18,6 +18,9 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
     <DefineConstants>$(DefineConstants);PCL</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
+    <DefineConstants>$(DefineConstants);WINDOWS_UWP</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Platforms\**\*.*" />
     <None Include="Platforms\**\*.*" />
@@ -36,9 +39,8 @@
     <Compile Include="Platforms\netstandard1.3\*.cs" />
     <PackageReference Include="System.Net.NetworkInformation" Version="4.3.0" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' "> 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">    
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.2" /> 
   </ItemGroup> 
-  
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>
