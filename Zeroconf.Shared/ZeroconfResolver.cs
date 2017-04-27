@@ -100,26 +100,21 @@ namespace Zeroconf
 
         static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress)
         {
-            var z = new ZeroconfHost();
-
-            // Get the Id and IP address from the A record
-            var aRecord = response.Answers
-                                  .Select(r => r.RECORD)
-                                  .OfType<RecordA>()
-                                  .FirstOrDefault();
-
-            if (aRecord != null)
+            var z = new ZeroconfHost
             {
-                z.Id = aRecord.RR.NAME.Split('.')[0];
-                z.IPAddress = aRecord.Address;
-            }
-            else
-            {
-                // Is this valid?
-                z.Id = remoteAddress;
-                z.IPAddress = remoteAddress;
-            }
+                IPAddresses = response.Answers
+                                      .Select(r => r.RECORD)
+                                      .OfType<RecordA>()
+                                      .Concat(response.Additionals
+                                                      .Select(r => r.RECORD)
+                                                      .OfType<RecordA>())
+                                      .Select(aRecord => aRecord.Address)
+                                      .Distinct()
+                                      .ToList()
+            };
 
+            z.Id = z.IPAddresses.FirstOrDefault() ?? remoteAddress;
+            
             var dispNameSet = false;
            
             foreach (var ptrRec in response.RecordsPTR)
