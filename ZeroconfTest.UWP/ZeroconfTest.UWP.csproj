@@ -130,9 +130,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Zeroconf.UWP\Zeroconf.UWP.csproj">
-      <Project>{a748d857-e221-42a2-9dc6-c2599d351e90}</Project>
-      <Name>Zeroconf.UWP</Name>
+    <ProjectReference Include="..\Zeroconf.DotNetCore\Zeroconf.DotNetCore.csproj">
+      <Project>{982a1ee8-900e-435a-b27e-5a779a693651}</Project>
+      <Name>Zeroconf.DotNetCore</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
