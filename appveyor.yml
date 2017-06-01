@@ -6,7 +6,7 @@ environment:
      
 install: 
   - cmd: nuget install gitlink -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
-  - cmd: nuget install SignClient -Version 0.5.0-beta4 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
+  - cmd: nuget install SignClient -Version 0.7.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
     
 build_script:
   - cmd: msbuild Zeroconf\Zeroconf.csproj /t:restore
@@ -14,7 +14,7 @@ build_script:
   
 after_build:
   - cmd: move Zeroconf\bin\Release\*.nupkg .
-  - ps: '.\SignClient\SignPackage.ps1'
+  - ps: '.\SignClient\Sign-Package.ps1'
 
 artifacts:
   - path: '*.nupkg'
