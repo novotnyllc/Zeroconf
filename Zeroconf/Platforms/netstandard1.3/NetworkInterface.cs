@@ -83,6 +83,8 @@ namespace Zeroconf
                     {
                         var socket = client.Client;
 
+                        if (socket.IsBound) continue;
+
                         socket.SetSocketOption(SocketOptionLevel.IP,
                                                      SocketOptionName.MulticastInterface,
                                                      IPAddress.HostToNetworkOrder(ifaceIndex));
