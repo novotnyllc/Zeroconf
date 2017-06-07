@@ -5,6 +5,7 @@
     "^refs/heads/dev$", // we release out of develop
     "^refs/tags/v\\d+\\.\\d+" // we also release tags starting with vN.N
   ],
+  "packageSemVerLevel": "semVer2",
   "cloudBuild": {
     "buildNumber": {
       "enabled": true,
