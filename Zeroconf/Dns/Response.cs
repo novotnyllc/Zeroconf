@@ -129,10 +129,9 @@ namespace Heijden.DNS
 				List<RecordTXT> list = new List<RecordTXT>();
 				foreach (AnswerRR answerRR in this.Answers)
 				{
-					RecordTXT record = answerRR.RECORD as RecordTXT;
-					if (record != null)
-						list.Add(record);
-				}
+                    if (answerRR.RECORD is RecordTXT record)
+                        list.Add(record);
+                }
 				return list.ToArray();
 			}
 		}
@@ -147,10 +146,9 @@ namespace Heijden.DNS
 				List<RecordA> list = new List<RecordA>();
 				foreach (AnswerRR answerRR in this.Answers)
 				{
-					RecordA record = answerRR.RECORD as RecordA;
-					if (record != null)
-						list.Add(record);
-				}
+                    if (answerRR.RECORD is RecordA record)
+                        list.Add(record);
+                }
 				return list.ToArray();
 			}
 		}
@@ -165,10 +163,9 @@ namespace Heijden.DNS
 				List<RecordPTR> list = new List<RecordPTR>();
 				foreach (AnswerRR answerRR in this.Answers)
 				{
-					RecordPTR record = answerRR.RECORD as RecordPTR;
-					if (record != null)
-						list.Add(record);
-				}
+                    if (answerRR.RECORD is RecordPTR record)
+                        list.Add(record);
+                }
 				return list.ToArray();
 			}
 		}
@@ -201,10 +198,9 @@ namespace Heijden.DNS
 				List<RecordAAAA> list = new List<RecordAAAA>();
 				foreach (AnswerRR answerRR in this.Answers)
 				{
-					RecordAAAA record = answerRR.RECORD as RecordAAAA;
-					if (record != null)
-						list.Add(record);
-				}
+                    if (answerRR.RECORD is RecordAAAA record)
+                        list.Add(record);
+                }
 				return list.ToArray();
 			}
 		}

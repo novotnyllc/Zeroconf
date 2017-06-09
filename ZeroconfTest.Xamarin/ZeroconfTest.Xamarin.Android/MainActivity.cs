@@ -28,8 +28,10 @@ namespace ZeroconfTest.Xamarin.Droid
             wifi = (WifiManager)ApplicationContext.GetSystemService(Context.WifiService);
             mlock = wifi.CreateMulticastLock("Zeroconf lock");
             mlock.Acquire();
-            SetPage (App.GetMainPage ());
-		}
+#pragma warning disable CS0618 // Type or member is obsolete
+            SetPage(App.GetMainPage ());
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
 
 	    protected override void OnDestroy()
 	    {

@@ -40,9 +40,8 @@ namespace Zeroconf
 
         public ServiceAnnouncement(AdapterInformation adapterInformation, IZeroconfHost host)
         {
-            if (host == null) throw new ArgumentNullException(nameof(host));
             AdapterInformation = adapterInformation;
-            Host = host;
+            Host = host ?? throw new ArgumentNullException(nameof(host));
         }
     }
 }

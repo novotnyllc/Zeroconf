@@ -12,11 +12,13 @@ namespace Heijden.DNS
 
 		public Request()
 		{
-			header = new Header();
-			header.OPCODE = OPCode.Query;
-			header.QDCOUNT = 0;
+            header = new Header
+            {
+                OPCODE = OPCode.Query,
+                QDCOUNT = 0
+            };
 
-			questions = new List<Question>();
+            questions = new List<Question>();
 		}
 
 		public void AddQuestion(Question question)

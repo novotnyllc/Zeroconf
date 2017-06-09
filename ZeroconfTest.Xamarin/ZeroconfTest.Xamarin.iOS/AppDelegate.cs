@@ -31,9 +31,10 @@ namespace ZeroconfTest.Xamarin.iOS
         {
             Forms.Init();
 
-            window = new UIWindow((RectangleF)UIScreen.MainScreen.Bounds);
-
-            window.RootViewController = App.GetMainPage().CreateViewController();
+            window = new UIWindow((RectangleF)UIScreen.MainScreen.Bounds)
+            {
+                RootViewController = App.GetMainPage().CreateViewController()
+            };
 
             window.MakeKeyAndVisible();
 
