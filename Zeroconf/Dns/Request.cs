@@ -7,10 +7,9 @@ namespace Heijden.DNS
     class Request
 	{
 		public Header header;
+        readonly List<Question> questions;
 
-        List<Question> questions;
-
-		public Request()
+        public Request()
 		{
             header = new Header
             {
@@ -30,10 +29,10 @@ namespace Heijden.DNS
 		{
 			get
 			{
-				List<byte> data = new List<byte>();
+				var data = new List<byte>();
 				header.QDCOUNT = (ushort)questions.Count;
 				data.AddRange(header.Data);
-				foreach (Question q in questions)
+				foreach (var q in questions)
 					data.AddRange(q.Data);
 				return data.ToArray();
 			}

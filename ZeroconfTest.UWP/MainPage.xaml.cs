@@ -53,26 +53,23 @@ namespace ZeroconfTest.UWP
         IDisposable listenSubscription;
         IObservable<ServiceAnnouncement> subscription;
 
-        private void ListenClick(object sender, RoutedEventArgs e)
+        void ListenClick(object sender, RoutedEventArgs e)
         {
-            try
+            if (listenSubscription != null)
             {
-                if (listenSubscription != null)
-                {
-                    listenSubscription.Dispose();
-                    listenSubscription = null;
-                }
-                else
-                {
-                    subscription = ZeroconfResolver.ListenForAnnouncementsAsync();
-                    listenSubscription = subscription.Subscribe(OnAnnouncement);
-                }
-
+                listenSubscription.Dispose();
+                listenSubscription = null;
             }
-            finally { }
+            else
+            {
+                subscription = ZeroconfResolver.ListenForAnnouncementsAsync();
+                listenSubscription = subscription.Subscribe(OnAnnouncement);
+            }
         }
 
-        private async void WriteLogLine(string text, params object[] args)
+#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
+        async void WriteLogLine(string text, params object[] args)
+#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {

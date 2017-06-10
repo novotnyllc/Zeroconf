@@ -8,7 +8,9 @@ using Zeroconf;
 
 namespace ZeroconfTest.Xam  
 {
+#pragma warning disable RECS0014 // If all fields, properties and methods members are static, the class can be made static.
     public class App
+#pragma warning restore RECS0014 // If all fields, properties and methods members are static, the class can be made static.
     {
         public static Page GetMainPage()
         {
@@ -45,7 +47,9 @@ namespace ZeroconfTest.Xam
             };
         }
 
+#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
         static async void BrowseOnClicked(Label output)
+#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
         {
             ILookup<string, string> responses = null;
             //await Task.Run(async () =>
@@ -64,7 +68,9 @@ namespace ZeroconfTest.Xam
             }
         }
 
+#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
         static async void ResolveOnClicked(Label output)
+#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
         {
             IReadOnlyList<IZeroconfHost> responses = null;
             //await Task.Run(async () =>

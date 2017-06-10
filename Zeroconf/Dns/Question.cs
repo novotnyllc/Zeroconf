@@ -58,7 +58,7 @@ namespace Heijden.DNS
 			set
 			{
 				m_QName = value;
-				if (!m_QName.EndsWith("."))
+				if (!m_QName.EndsWith(".", StringComparison.Ordinal))
 					m_QName += ".";
 			}
 		}
@@ -81,13 +81,13 @@ namespace Heijden.DNS
 
         byte[] WriteName(string src)
 		{
-			if (!src.EndsWith("."))
+			if (!src.EndsWith(".", StringComparison.Ordinal))
 				src += ".";
 
 			if (src == ".")
 				return new byte[1];
 
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			int intI, intJ, intLen = src.Length;
 			sb.Append('\0');
 			for (intI = 0, intJ = 0; intI < intLen; intI++, intJ++)
@@ -100,14 +100,14 @@ namespace Heijden.DNS
 				}
 			}
 			sb[sb.Length - 1] = '\0';
-			return System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+			return Encoding.UTF8.GetBytes(sb.ToString());
 		}
 
 		public byte[] Data
 		{
 			get
 			{
-				List<byte> data = new List<byte>();
+				var data = new List<byte>();
 				data.AddRange(WriteName(QName));
 				data.AddRange(WriteShort((ushort)QType));
 				data.AddRange(WriteShort((ushort)QClass));

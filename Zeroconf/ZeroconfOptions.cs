@@ -10,12 +10,12 @@ namespace Zeroconf
     {
         int retries;
 
-        public ZeroconfOptions(string protocol) :
+        protected ZeroconfOptions(string protocol) :
             this(new[] {protocol})
         {
         }
 
-        public ZeroconfOptions(IEnumerable<string> protocols)
+        protected ZeroconfOptions(IEnumerable<string> protocols)
         {
             Protocols = new HashSet<string>(protocols ?? throw new ArgumentNullException(nameof(protocols)), StringComparer.OrdinalIgnoreCase);
 
