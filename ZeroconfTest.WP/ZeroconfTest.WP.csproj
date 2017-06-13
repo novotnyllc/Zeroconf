@@ -157,9 +157,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Zeroconf.WP\Zeroconf.WP.csproj">
-      <Project>{71071865-9DCE-472E-A8B3-D9D44C5CF23F}</Project>
-      <Name>Zeroconf.WP</Name>
+    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj">
+      <Project>{493b9f32-83fa-4b6e-ad59-c071bab47229}</Project>
+      <Name>Zeroconf</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
@@ -172,5 +172,5 @@
   </Target>
   -->
   <ProjectExtensions />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="GetPackagingOutputs" />  
 </Project>

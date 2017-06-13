@@ -1,32 +1,28 @@
-configuration: Release
+image: Visual Studio 2017
 
 environment:
   SignClientSecret:
     secure: S26+NphAhj/vo5ZdHd/N/4toty3ztdNGmuNdvAB57W1oIVQEHVKqAVuhTD8B9ATy
      
 install: 
-  - cmd: appveyor DownloadFile https://dist.nuget.org/win-x86-commandline/v3.5.0-rc1/NuGet.exe
-  - cmd: nuget install GitVersion.CommandLine -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
   - cmd: nuget install gitlink -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
-  - cmd: nuget install SignClient -Version 0.5.0-beta4 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
-     
-before_build:
-  - cmd: nuget restore Zeroconf.sln
-  - cmd: '.\packages\GitVersion.CommandLine\tools\GitVersion.exe /l console /output buildserver /updateAssemblyInfo'
-  
-build:
-  verbosity: normal
-  parallel: true
-  project: Zeroconf.sln
+  - cmd: nuget install SignClient -Version 0.7.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
+    
+build_script:
+  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:restore
+  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:pack /p:Configuration=Release /p:NuGetBuildTasksPackTargets="workaround"
   
 after_build:
-  - cmd: nuget pack nuget\Zeroconf.nuspec -version "%GitVersion_NuGetVersion%-bld%GitVersion_BuildMetaDataPadded%" -prop "target=%CONFIGURATION%" -NoPackageAnalysis
-  - ps: '.\SignClient\SignPackage.ps1'
-  - cmd: appveyor PushArtifact "Zeroconf.%GitVersion_NuGetVersion%-bld%GitVersion_BuildMetaDataPadded%.nupkg"  
+  - cmd: move Zeroconf\bin\Release\*.nupkg .
+  - ps: '.\SignClient\Sign-Package.ps1'
+
+artifacts:
+  - path: '*.nupkg'
   
 deploy:
   provider: NuGet
   server: https://www.myget.org/F/zeroconf/api/v2/package
+  symbol_server: https://www.myget.org/F/zeroconf/symbols/api/v2/package
   api_key:
     secure: bmqlJK8a5HYiUXOT99HXT1j7JiM5+fpR4kHhxIC30oaaEXbv94f0fKdiKlU1QC/l
   artifact: /.*\.nupkg/

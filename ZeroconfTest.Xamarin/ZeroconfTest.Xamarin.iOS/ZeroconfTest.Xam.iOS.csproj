@@ -62,7 +62,7 @@
     <CodesignEntitlements />
     <CodesignResourceRules />
     <CodesignExtraArgs />
-    <MtouchSdkVersion>9.3</MtouchSdkVersion>
+    <MtouchSdkVersion>10.2</MtouchSdkVersion>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchProfiling>False</MtouchProfiling>
     <MtouchFastDev>False</MtouchFastDev>
@@ -79,6 +79,9 @@
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchFloat32>False</MtouchFloat32>
     <DeviceSpecificBuild>False</DeviceSpecificBuild>
+    <MtouchNoSymbolStrip>False</MtouchNoSymbolStrip>
+    <IOSDebugOverWiFi>False</IOSDebugOverWiFi>
+    <IOSDebuggerPort>10000</IOSDebuggerPort>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>pdbonly</DebugType>
@@ -128,25 +131,23 @@
     <Compile Include="AppDelegate.cs" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Zeroconf.DotNetCore\Zeroconf.DotNetCore.csproj">
-      <Project>{982a1ee8-900e-435a-b27e-5a779a693651}</Project>
-      <Name>Zeroconf.DotNetCore</Name>
+    <ProjectReference Include="..\..\Zeroconf\Zeroconf.csproj">
+      <Project>{493b9f32-83fa-4b6e-ad59-c071bab47229}</Project>
+      <Name>Zeroconf</Name>
     </ProjectReference>
     <ProjectReference Include="..\ZeroconfTest.Xamarin\ZeroconfTest.Xam.csproj">
+      <Project>{2c61e999-cc6d-4181-86ca-2c037653cb93}</Project>
       <Name>ZeroconfTest.Xam</Name>
-      <Project>{A279A26E-E98C-432F-AE6A-CDCD57FE188D}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
+    <PackageReference Include="Legacy2CPSWorkaround" Version="1.0.0" PrivateAssets="all" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

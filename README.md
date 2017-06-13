@@ -3,9 +3,9 @@ Zeroconf
 
 # Bonjour/mDNS discovery support for .NET 4.5, Windows Phone 8, Windows Store apps and Portable Class Libraries
 
-The core logic is implemented as a PCL, but due to networking APIs being 
-platform-specific, a platform-specific helper library is required. Just make
-sure that you also install the NuGet to your main app and you'll be all set.
+The core logic is implemented primarily .NET Standard 1.3 but with a .NET Standard 1.0 reference assembly.
+Due to networking APIs being platform-specific on earlier platforms, a platform-specific version is required. Just make
+sure that you also install the NuGet to your main app (or use project.json/PackageReferences) and you'll be all set.
 
 ## Installation
 
@@ -13,8 +13,12 @@ The easiest way to get started is to use the NuGet package.
 
 > Install-Package [Zeroconf](http://www.nuget.org/packages/Zeroconf)
 
-Current Build Status:
-[![Build status](https://ci.appveyor.com/api/projects/status/52nr1dgg9ftrxeh9/branch/master?svg=true)](https://ci.appveyor.com/project/onovotny/zeroconf/branch/master)
+Current Build Status: 
+
+| Branch | Status |
+|----- | ------| 
+| Master | [![Build status](https://ci.appveyor.com/api/projects/status/52nr1dgg9ftrxeh9/branch/master?svg=true)](https://ci.appveyor.com/project/onovotny/zeroconf/branch/master) |
+| Dev | [![Build status](https://ci.appveyor.com/api/projects/status/52nr1dgg9ftrxeh9/branch/dev?svg=true)](https://ci.appveyor.com/project/onovotny/zeroconf/branch/dev) |
 
 ## Usage
 
@@ -101,6 +105,15 @@ finally
 }
 ```
 
+You'll also need to specify the correct permsision like this:
+```csharp
+[assembly: UsesPermission(Android.Manifest.Permission.ChangeWifiMulticastState)]
+```
+
+### UWP
+You'll need to have the following permissions on your manifest depending on what networks you're trying to scan:
+ - Private Networks (Client & Server)
+ - Internet (Client & Server)
 
 ## Credits
 

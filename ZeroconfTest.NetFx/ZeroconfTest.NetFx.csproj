@@ -15,6 +15,7 @@
     <WarningLevel>4</WarningLevel>
     <CopyNuGetImplementations>true</CopyNuGetImplementations>
     <TargetFrameworkProfile />
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -86,7 +87,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="project.json" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -97,10 +97,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Zeroconf.NetFx\Zeroconf.NetFx.csproj">
-      <Project>{23079f74-51a5-4441-af92-559780095aa4}</Project>
-      <Name>Zeroconf.NetFx</Name>
+    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj">
+      <Project>{493b9f32-83fa-4b6e-ad59-c071bab47229}</Project>
+      <Name>Zeroconf</Name>
     </ProjectReference>
+    <PackageReference Include="Legacy2CPSWorkaround" Version="1.0.0" PrivateAssets="all" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
