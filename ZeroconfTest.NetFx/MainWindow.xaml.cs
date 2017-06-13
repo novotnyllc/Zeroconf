@@ -60,7 +60,7 @@ namespace ZeroconfTest.NetFx
             }
         }
 
-        private void WriteLogLine(string text, params object[] args)
+        void WriteLogLine(string text, params object[] args)
         {
             if (Log.Dispatcher.CheckAccess())
             {
@@ -73,7 +73,7 @@ namespace ZeroconfTest.NetFx
             }
         }
 
-        private void OnAnnouncement(ServiceAnnouncement sa)
+        void OnAnnouncement(ServiceAnnouncement sa)
         {
             Log.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
             {
@@ -82,7 +82,7 @@ namespace ZeroconfTest.NetFx
             }));
         }
 
-        private void OnWindowClosed(object sender, EventArgs e)
+        void OnWindowClosed(object sender, EventArgs e)
         {
             if (listenSubscription != null)
             {

@@ -120,7 +120,9 @@ namespace Zeroconf
 #if WINDOWS_UWP
              return ListenForAnnouncementsAsync(NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter, callback, cancellationToken);
 #else
+#pragma warning disable RECS0083 // Shows NotImplementedException throws in the quick task bar
             throw new NotImplementedException("Windows RT does not support socket address reuse, which makes listening virtually impossible, as most users have browsers and Apple Bonjour running which already listens to 5353");
+#pragma warning restore RECS0083 // Shows NotImplementedException throws in the quick task bar
 #endif
         }
 

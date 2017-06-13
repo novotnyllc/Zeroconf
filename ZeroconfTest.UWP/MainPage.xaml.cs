@@ -30,7 +30,7 @@ namespace ZeroconfTest.UWP
                 WriteLogLine(resp.ToString());
         }
 
-        private async void BrowseClick(object sender, RoutedEventArgs e)
+        async void BrowseClick(object sender, RoutedEventArgs e)
         {
             var responses = await ZeroconfResolver.BrowseDomainsAsync();
 
@@ -44,7 +44,7 @@ namespace ZeroconfTest.UWP
             }
         }
 
-        private void OnAnnouncement(ServiceAnnouncement sa)
+        void OnAnnouncement(ServiceAnnouncement sa)
         {
             WriteLogLine("---- Announced on {0} ({1}) ----", sa.AdapterInformation.Name, sa.AdapterInformation.Address);
             WriteLogLine(sa.Host.ToString());

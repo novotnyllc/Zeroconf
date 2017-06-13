@@ -29,17 +29,17 @@ namespace Zeroconf
 
 		public class ResolverListener : IDisposable
 		{
-            private IEnumerable<string> protocols;
-            private TimeSpan scanTime;
-            private int retries;
-            private int retryDelayMilliseconds;
+            IEnumerable<string> protocols;
+            TimeSpan scanTime;
+            int retries;
+            int retryDelayMilliseconds;
 
 #if (!NETSTANDARD1_0 && !WINDOWS_PHONE && !NETFX_CORE) || WINDOWS_UWP
-            Timer timer;
+		    readonly Timer timer;
 #endif
 
-            private int queryInterval;
-            private int pingsUntilRemove;
+            int queryInterval;
+            int pingsUntilRemove;
 
             HashSet<Tuple<string, string>> discoveredHosts = new HashSet<Tuple<string, string>>();
             IDictionary<Tuple<string, string>, int> toRemove = new Dictionary<Tuple<string, string>, int>();
@@ -66,12 +66,13 @@ namespace Zeroconf
 
             public event EventHandler<Exception> Error;
 
-            private async void DiscoverHosts(object state)
+#pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
+            async void DiscoverHosts(object state)
             {
                 try
                 {
                     var instance = state as ResolverListener;
-                    var hosts = await ZeroconfResolver.ResolveAsync(protocols, scanTime, retries, retryDelayMilliseconds);
+                    var hosts = await ResolveAsync(protocols, scanTime, retries, retryDelayMilliseconds).ConfigureAwait(false);
                     instance.OnResolved(hosts);
                 }
                 catch (Exception ex)
@@ -79,8 +80,9 @@ namespace Zeroconf
                     Error?.Invoke(this, ex);
                 }
             }
+#pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
 
-            private void OnResolved(IReadOnlyList<IZeroconfHost> hosts)
+            void OnResolved(IReadOnlyList<IZeroconfHost> hosts)
             {
                 lock (discoveredHosts)
                 {
@@ -115,7 +117,7 @@ namespace Zeroconf
                             {
                                 toRemove.Remove(service);
                                 newHosts.Remove(service);
-                                ServiceLost?.Invoke(this, new ZeroconfHost{ DisplayName = service.Item1, Id = service.Item2 });
+                                ServiceLost?.Invoke(this, new ZeroconfHost { DisplayName = service.Item1, Id = service.Item2 });
                             }
                         }
                         else
@@ -139,7 +141,7 @@ namespace Zeroconf
                 if (disposing)
                 {
 #if (!NETSTANDARD1_0 && !WINDOWS_PHONE && !NETFX_CORE) || WINDOWS_UWP
-                    if (timer != null) timer.Dispose();
+                    timer?.Dispose();
 #endif
                 }
             }
