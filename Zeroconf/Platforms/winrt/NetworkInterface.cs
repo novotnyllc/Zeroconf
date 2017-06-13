@@ -81,18 +81,16 @@ namespace Zeroconf
                     await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
                     Debug.WriteLine("Done Scanning");
                 }
-#if WINDOWS_UWP
+
                 socket.MessageReceived -= handler;
-#endif
             }
         }
 
         static async Task BindToSocketAndWriteQuery(DatagramSocket socket, byte[] bytes, CancellationToken cancellationToken)
         {
-#if WINDOWS_UWP
             // Set control option for multicast. This enables re-use of the port, which is always in use under Windows 10 otherwise.
             socket.Control.MulticastOnly = true;
-#endif
+
             await socket.BindServiceNameAsync("5353") // binds to the local IP addresses of all network interfaces on the local computer if no adapter is specified
                         .AsTask(cancellationToken)
                         .ConfigureAwait(false);
@@ -117,16 +115,9 @@ namespace Zeroconf
 
         public Task ListenForAnnouncementsAsync(Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
         {
-#if WINDOWS_UWP
              return ListenForAnnouncementsAsync(NetworkInformation.GetInternetConnectionProfile()?.NetworkAdapter, callback, cancellationToken);
-#else
-#pragma warning disable RECS0083 // Shows NotImplementedException throws in the quick task bar
-            throw new NotImplementedException("Windows RT does not support socket address reuse, which makes listening virtually impossible, as most users have browsers and Apple Bonjour running which already listens to 5353");
-#pragma warning restore RECS0083 // Shows NotImplementedException throws in the quick task bar
-#endif
         }
-
-#if WINDOWS_UWP
+        
         // listen for announcements on a given adapter
         Task ListenForAnnouncementsAsync(NetworkAdapter adapter, Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken)
         {
@@ -174,8 +165,6 @@ namespace Zeroconf
 
             }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
         }
-#endif
-
     }
 }
 

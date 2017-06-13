@@ -16,26 +16,12 @@ namespace Zeroconf
     {
         static readonly AsyncLock ResolverLock = new AsyncLock();
 
-        static readonly INetworkInterface NetworkInterface = LoadPlatformNetworkInterface();
-
-        static INetworkInterface LoadPlatformNetworkInterface()
-        {
-#if NETSTANDARD1_0
-            throw new NotSupportedException("This PCL assembly must not be used at runtime. Make sure to add the Zeroconf Nuget reference to your main project.");
-#else
-            return new NetworkInterface();
-#endif
-        }
-
-
-
-
+        static readonly INetworkInterface NetworkInterface = new NetworkInterface();
 
         static IEnumerable<string> BrowseResponseParser(Response response)
         {
             return response.RecordsPTR.Select(ptr => ptr.PTRDNAME);
         }
-
 
         static async Task<IDictionary<string, Response>> ResolveInternal(ZeroconfOptions options,
                                                                          Action<string, Response> callback,

@@ -33,10 +33,8 @@ namespace Zeroconf
             TimeSpan scanTime;
             int retries;
             int retryDelayMilliseconds;
-
-#if (!NETSTANDARD1_0 && !WINDOWS_PHONE && !NETFX_CORE) || WINDOWS_UWP
 		    readonly Timer timer;
-#endif
+
 
             int queryInterval;
             int pingsUntilRemove;
@@ -54,10 +52,8 @@ namespace Zeroconf
 
                 this.queryInterval = queryInterval;
                 this.pingsUntilRemove = pingsUntilRemove;
-
-#if (!NETSTANDARD1_0 && !WINDOWS_PHONE && !NETFX_CORE) || WINDOWS_UWP
+                
                 timer = new Timer(DiscoverHosts, this, 0, queryInterval);
-#endif
             }
 
             public event EventHandler<IZeroconfHost> ServiceFound;
@@ -140,9 +136,7 @@ namespace Zeroconf
             {
                 if (disposing)
                 {
-#if (!NETSTANDARD1_0 && !WINDOWS_PHONE && !NETFX_CORE) || WINDOWS_UWP
                     timer?.Dispose();
-#endif
                 }
             }
         }
