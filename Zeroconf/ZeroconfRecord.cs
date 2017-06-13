@@ -23,9 +23,14 @@ namespace Zeroconf
         string Id { get; }
 
         /// <summary>
-        ///     IP Address
+        ///     IP Address (alias for IPAddresses.First())
         /// </summary>
         string IPAddress { get; }
+
+        /// <summary>
+        ///     IP Addresses
+        /// </summary>
+        IReadOnlyList<string> IPAddresses { get; }
 
 
         /// <summary>
@@ -86,9 +91,17 @@ namespace Zeroconf
         public string Id { get; set; }
 
         /// <summary>
-        ///     IP Address
+        ///     IP Address (alias for IPAddresses.First())
         /// </summary>
-        public string IPAddress { get; set; }
+        public string IPAddress
+        {
+            get { return IPAddresses?.FirstOrDefault(); }
+        }
+
+        /// <summary>
+        ///     IP Addresses
+        /// </summary>
+        public IReadOnlyList<string> IPAddresses { get; set; }
 
         /// <summary>
         ///     Collection of services provided by the host
@@ -113,7 +126,8 @@ namespace Zeroconf
         {
             unchecked
             {
-                return ((Id?.GetHashCode() ?? 0)*397) ^ (IPAddress?.GetHashCode() ?? 0);
+                var addressesHash = IPAddresses?.Aggregate(0, (current, address) => (current * 397) ^ address.GetHashCode()) ?? 0;
+                return ((Id != null ? Id.GetHashCode() : 0)*397) ^ addressesHash;
             }
         }
 
@@ -124,7 +138,7 @@ namespace Zeroconf
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append($"Id: {Id}, DisplayName: {DisplayName}, IP: {IPAddress}, Services: {services.Count}");
+            sb.Append($"Id: {Id}, DisplayName: {DisplayName}, IPs: {string.Join(", ", IPAddresses)}, Services: {services.Count}");
 
             if (services.Any())
             {
