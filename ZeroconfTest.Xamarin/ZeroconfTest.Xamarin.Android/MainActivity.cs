@@ -19,11 +19,11 @@ namespace ZeroconfTest.Xamarin.Droid
 	{
         WifiManager wifi;
         WifiManager.MulticastLock mlock;
-        protected override void OnCreate (Bundle bundle)
+        protected override void OnCreate (Bundle savedInstanceState)
 		{
-			base.OnCreate (bundle);
+			base.OnCreate (savedInstanceState);
 
-			global::Xamarin.Forms.Forms.Init (this, bundle);
+			global::Xamarin.Forms.Forms.Init (this, savedInstanceState);
 
             wifi = (WifiManager)ApplicationContext.GetSystemService(Context.WifiService);
             mlock = wifi.CreateMulticastLock("Zeroconf lock");
