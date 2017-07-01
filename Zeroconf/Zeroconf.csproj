@@ -14,6 +14,8 @@
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
     <DebugType>full</DebugType>
     <CodeAnalysisRuleSet>Zeroconf.ruleset</CodeAnalysisRuleSet>
+    <TargetPlatformVersion Condition="'$(TargetFramework)' == 'uap10.0'">10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion Condition="'$(TargetFramework)' == 'uap10.0'">10.0.10586.0</TargetPlatformMinVersion>
   </PropertyGroup>
 
   <ItemGroup>
