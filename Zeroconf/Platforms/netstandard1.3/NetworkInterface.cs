@@ -50,12 +50,16 @@ namespace Zeroconf
             // Xamarin doesn't support this
             //if (!adapter.GetIPProperties().MulticastAddresses.Any())
             //    return; // most of VPN adapters will be skipped
-
+#if __ANDROID_24__
+            var prova = "";
+#else
             if (!adapter.SupportsMulticast)
                 return; // multicast is meaningless for this type of connection
 
             if (OperationalStatus.Up != adapter.OperationalStatus)
                 return; // this adapter is off or not connected
+#endif
+
 
             if (adapter.NetworkInterfaceType == NetworkInterfaceType.Loopback)
                 return; // strip out loopback addresses

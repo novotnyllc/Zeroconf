@@ -17,6 +17,9 @@
     <TargetPlatformVersion Condition="'$(TargetFramework)' == 'uap10.0'">10.0.14393.0</TargetPlatformVersion>
     <TargetPlatformMinVersion Condition="'$(TargetFramework)' == 'uap10.0'">10.0.10586.0</TargetPlatformMinVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.3|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NETSTANDARD1_3; __ANDROID_24__</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Platforms\**\*.*" />
