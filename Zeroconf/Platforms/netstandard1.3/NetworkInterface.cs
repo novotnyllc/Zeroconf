@@ -51,7 +51,7 @@ namespace Zeroconf
             //if (!adapter.GetIPProperties().MulticastAddresses.Any())
             //    return; // most of VPN adapters will be skipped
 #if __ANDROID_24__
-            var prova = "";
+            
 #else
             if (!adapter.SupportsMulticast)
                 return; // multicast is meaningless for this type of connection
