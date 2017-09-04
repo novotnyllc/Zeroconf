@@ -37,13 +37,15 @@ namespace Zeroconf
                     (address, buffer) =>
                     {
                         var resp = new Response(buffer);
-                        Debug.WriteLine($"IP: {address}, Bytes: {buffer.Length}, IsResponse: {resp.header.QR}");
+                        var firstPtr = resp.RecordsPTR.FirstOrDefault();
+                        var dn = firstPtr?.PTRDNAME.Split('.')[0] ?? "N/A";
+                        Debug.WriteLine($"IP: {address}, Name: {dn}, Bytes: {buffer.Length}, IsResponse: {resp.header.QR}");
 
                         if (resp.header.QR)
                         {
                             lock (dict)
                             {
-                                dict[address] = resp;
+                                dict[$"{address}:{dn}"] = resp;
                             }
 
                             callback?.Invoke(address, resp);
