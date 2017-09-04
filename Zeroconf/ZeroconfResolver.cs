@@ -38,14 +38,15 @@ namespace Zeroconf
                     {
                         var resp = new Response(buffer);
                         var firstPtr = resp.RecordsPTR.FirstOrDefault();
-                        var dn = firstPtr?.PTRDNAME.Split('.')[0] ?? "N/A";
-                        Debug.WriteLine($"IP: {address}, Name: {dn}, Bytes: {buffer.Length}, IsResponse: {resp.header.QR}");
+                        string name = firstPtr?.PTRDNAME.Split('.')[0] ?? "";
+                        string debugName = name == "" ? "" : "Name: " + name + ", ";
+                        Debug.WriteLine($"IP: {address}, {debugName}Bytes: {buffer.Length}, IsResponse: {resp.header.QR}");
 
                         if (resp.header.QR)
                         {
                             lock (dict)
                             {
-                                dict[$"{address}:{dn}"] = resp;
+                                dict[address + (name == "" ? "" : ":" + name)] = resp;
                             }
 
                             callback?.Invoke(address, resp);
