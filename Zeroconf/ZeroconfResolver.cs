@@ -37,16 +37,20 @@ namespace Zeroconf
                     (address, buffer) =>
                     {
                         var resp = new Response(buffer);
-                        Debug.WriteLine($"IP: {address}, Bytes: {buffer.Length}, IsResponse: {resp.header.QR}");
+                        var firstPtr = resp.RecordsPTR.FirstOrDefault();
+                        var name = firstPtr?.PTRDNAME.Split('.')[0] ?? string.Empty;
+
+                        Debug.WriteLine($"IP: {address}, {(string.IsNullOrEmpty(name) ? string.Empty : $"Name: {name}, ")}Bytes: {buffer.Length}, IsResponse: {resp.header.QR}");
 
                         if (resp.header.QR)
                         {
+                            var key = $"{address}{(string.IsNullOrEmpty(name) ? "" : $": {name}")}";
                             lock (dict)
                             {
-                                dict[address] = resp;
+                                dict[key] = resp;
                             }
 
-                            callback?.Invoke(address, resp);
+                            callback?.Invoke(key, resp);
                         }
                     };
 
@@ -121,7 +125,8 @@ namespace Zeroconf
                 {
                     Name = ptrRec.RR.NAME,
                     Port = srvRec.PORT,
-                    Ttl = (int)srvRec.RR.TTL
+                    Ttl = (int)srvRec.RR.TTL,
+
                 };
 
                 // There may be 0 or more text records - property sets
