@@ -7,7 +7,6 @@ environment:
     secure: 9nw9iBguE89m36udK51REeCIHSi5lAXmFIfS5LuAXio=
      
 install: 
-  - cmd: nuget install gitlink -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion -pre
   - cmd: nuget install SignClient -Version 0.9.0 -SolutionDir %APPVEYOR_BUILD_FOLDER% -Verbosity quiet -ExcludeVersion
     
 build_script:
