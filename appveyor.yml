@@ -11,10 +11,9 @@ install:
     
 build_script:
   - cmd: msbuild Zeroconf\Zeroconf.csproj /t:restore
-  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:pack /p:Configuration=Release 
+  - cmd: msbuild Zeroconf\Zeroconf.csproj /t:pack /p:Configuration=Release /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
   
-after_build:
-  - cmd: move Zeroconf\bin\Release\*.nupkg .
+after_build:  
   - ps: '.\SignClient\Sign-Package.ps1'
 
 artifacts:
