@@ -13,18 +13,16 @@
     <DebugType>embedded</DebugType>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>Zeroconf.ruleset</CodeAnalysisRuleSet>
-    <TargetPlatformVersion Condition="'$(TargetFramework)' == 'uap10.0'">10.0.14393.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion Condition="'$(TargetFramework)' == 'uap10.0'">10.0.10586.0</TargetPlatformMinVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Platforms\**\*.*" />
     <None Include="Platforms\**\*.*" />
     <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
-    <PackageReference Include="Nerdbank.GitVersioning" Version="2.0.41" PrivateAssets="all" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.2.1" PrivateAssets="all" />
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.1.0-preview.2.build.6" PrivateAssets="All" />
-    <PackageReference Include="RefactoringEssentials" Version="5.2.0" PrivateAssets="all" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.11" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.7.4" PrivateAssets="all" />
+    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.2.0" PrivateAssets="All" />
+    <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Reactive" Version="3.1.1" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
@@ -38,7 +36,7 @@
     <PackageReference Include="System.Net.NetworkInformation" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">    
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform " Version="5.2.3" /> 
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.0.5" /> 
   </ItemGroup> 
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>
