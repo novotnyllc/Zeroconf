@@ -7,17 +7,16 @@ if([string]::IsNullOrEmpty($env:SignClientSecret)){
 }
 
 # Setup Variables we need to pass into the sign client tool
+dotnet tool install --tool-path . SignClient
 
 $appSettings = "$currentDirectory\appsettings.json"
-
-$appPath = "$currentDirectory\..\packages\SignClient\tools\netcoreapp2.0\SignClient.dll"
 
 $nupgks = ls $currentDirectory\..\*.nupkg | Select -ExpandProperty FullName
 
 foreach ($nupkg in $nupgks){
 	Write-Host "Submitting $nupkg for signing"
 
-	dotnet $appPath 'sign' -c $appSettings -i $nupkg -r $env:SignClientUser -s $env:SignClientSecret -n 'Zeroconf' -d 'Zeroconf' -u 'https://github.com/onovotny/zeroconf' 
+	.\SignClient 'sign' -c $appSettings -i $nupkg -r $env:SignClientUser -s $env:SignClientSecret -n 'Zeroconf' -d 'Zeroconf' -u 'https://github.com/onovotny/zeroconf' 
 
 	Write-Host "Finished signing $nupkg"
 }
