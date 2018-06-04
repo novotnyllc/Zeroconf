@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras/1.5.4">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;uap10.0;uap10.0.16299</TargetFrameworks>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
@@ -19,11 +19,10 @@
     <Compile Remove="Platforms\**\*.*" />
     <None Include="Platforms\**\*.*" />
     <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
-    <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.11" PrivateAssets="all" />
-    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.7.4" PrivateAssets="all" />
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.2.0" PrivateAssets="All" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" PrivateAssets="all" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.1" PrivateAssets="all" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
-    <PackageReference Include="System.Reactive" Version="3.1.1" />
+    <PackageReference Include="System.Reactive" Version="4.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' or '$(TargetFramework)' == 'uap10.0.16299' ">
     <Compile Include="Platforms\netstandard\*.cs" />
@@ -31,8 +30,5 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
     <Compile Include="Platforms\winrt\*.cs" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' or '$(TargetFramework)' == 'uap10.0.16299'">    
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.0.5" /> 
-  </ItemGroup> 
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
+  
 </Project>
