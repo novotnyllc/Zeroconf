@@ -43,6 +43,8 @@ namespace Zeroconf
         public TimeSpan ScanTime { get; set; }
 
         public ScanQueryType ScanQueryType { get; set; }
+
+        public bool AllowOverlappedQueries { get; set; }
     }
 
     public enum ScanQueryType
