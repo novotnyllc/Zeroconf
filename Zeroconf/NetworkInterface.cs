@@ -21,7 +21,7 @@ namespace Zeroconf
                                               TimeSpan scanTime,
                                               int retries,
                                               int retryDelayMilliseconds,
-                                              Action<string, byte[]> onResponse,
+                                              Action<IPAddress, byte[]> onResponse,
                                               CancellationToken cancellationToken)
         {
 
@@ -41,7 +41,7 @@ namespace Zeroconf
                                               TimeSpan scanTime,
                                               int retries,
                                               int retryDelayMilliseconds,
-                                              Action<string, byte[]> onResponse,
+                                              Action<IPAddress, byte[]> onResponse,
                                               System.Net.NetworkInformation.NetworkInterface adapter,
                                               CancellationToken cancellationToken)
         {
@@ -127,7 +127,7 @@ namespace Zeroconf
                                                            var res = await client.ReceiveAsync()
                                                                                  .ConfigureAwait(false);
 
-                                                           onResponse(res.RemoteEndPoint.Address.ToString(), res.Buffer);
+                                                           onResponse(res.RemoteEndPoint.Address, res.Buffer);
                                                        }
                                                    }
                                                    catch when (Volatile.Read(ref shouldCancel))

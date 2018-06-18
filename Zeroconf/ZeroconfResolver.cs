@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Heijden.DNS;
+using Type = Heijden.DNS.Type;
 
 namespace Zeroconf
 {
@@ -34,22 +36,34 @@ namespace Zeroconf
                 cancellationToken.ThrowIfCancellationRequested();
                 var dict = new Dictionary<string, Response>();
 
-                Action<string, byte[]> converter =
-                    (address, buffer) =>
+                void Converter(IPAddress address, byte[] buffer)
+                {
+                    var resp = new Response(buffer);
+                    var firstPtr = resp.RecordsPTR.FirstOrDefault();
+                    var name = firstPtr?.PTRDNAME.Split('.')[0] ?? string.Empty;
+                    var addrString = address.ToString();
+
+                    Debug.WriteLine($"IP: {addrString}, {(string.IsNullOrEmpty(name) ? string.Empty : $"Name: {name}, ")}Bytes: {buffer.Length}, IsResponse: {resp.header.QR}");
+
+                    if (resp.header.QR)
                     {
-                        var resp = new Response(buffer);
-                        var firstPtr = resp.RecordsPTR.FirstOrDefault();
-                        var name = firstPtr?.PTRDNAME.Split('.')[0] ?? string.Empty;
+                        // see if the IP is the same as the A to filter out dups that might echo from other interfaces
 
-                        Debug.WriteLine($"IP: {address}, {(string.IsNullOrEmpty(name) ? string.Empty : $"Name: {name}, ")}Bytes: {buffer.Length}, IsResponse: {resp.header.QR}");
 
-                        if (resp.header.QR)
+                        var aRec = resp.RecordsA.FirstOrDefault();
+                        var additionalARec = resp.Additionals.FirstOrDefault(arr => arr.Type == Type.A)?.RECORD as RecordA;
+
+                        // if we have an aRec or additionalARec, check those
+                        bool? matches = null;
+                        if (aRec != null || additionalARec != null)
                         {
-                            var key = $"{address}{(string.IsNullOrEmpty(name) ? "" : $": {name}")}";
-                            
-                            // see if the IP is the same as the A to filter out dups that might echo from other interfaces
-
-
+                            matches = string.Equals(aRec?.Address, addrString, StringComparison.OrdinalIgnoreCase) ||
+                                      string.Equals(additionalARec?.Address, addrString, StringComparison.OrdinalIgnoreCase);
+                        }
+                        
+                        if (matches ?? true)
+                        {
+                            var key = $"{addrString}{(string.IsNullOrEmpty(name) ? "" : $": {name}")}";
                             lock (dict)
                             {
                                 dict[key] = resp;
@@ -57,7 +71,8 @@ namespace Zeroconf
 
                             callback?.Invoke(key, resp);
                         }
-                    };
+                    }
+                }
 
                 Debug.WriteLine($"Looking for {string.Join(", ", options.Protocols)} with scantime {options.ScanTime}");
 
@@ -65,7 +80,7 @@ namespace Zeroconf
                                                            options.ScanTime,
                                                            options.Retries,
                                                            (int)options.RetryDelay.TotalMilliseconds,
-                                                           converter,                                                           
+                                                           Converter,                                                           
                                                            cancellationToken)
                                       .ConfigureAwait(false);
 

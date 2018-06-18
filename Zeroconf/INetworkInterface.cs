@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@ namespace Zeroconf
                                  TimeSpan scanTime,
                                  int retries,
                                  int retryDelayMilliseconds,
-                                 Action<string, byte[]> onResponse,
+                                 Action<IPAddress, byte[]> onResponse,
                                  CancellationToken cancellationToken);
 
         Task ListenForAnnouncementsAsync(Action<AdapterInformation, string, byte[]> callback, CancellationToken cancellationToken);
