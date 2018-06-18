@@ -31,7 +31,7 @@ namespace ZeroconfTest.NetFx
             InitializeComponent();
         }
 
-        async void Button_Click(object sender, RoutedEventArgs e)
+        async void Resolve_Click(object sender, RoutedEventArgs e)
         {
 
             //Action<IZeroconfRecord> onMessage = record => Console.WriteLogLine("On Message: {0}", record);

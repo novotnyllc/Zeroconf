@@ -17,7 +17,7 @@
                     <Setter Property="Margin" Value="5,0,0,5"/>
                 </Style>
             </StackPanel.Resources>
-            <Button Content="Resolve" HorizontalAlignment="Stretch" VerticalAlignment="Top" Click="Button_Click"/>
+            <Button Content="Resolve" HorizontalAlignment="Stretch" VerticalAlignment="Top" Click="Resolve_Click"/>
             <Button Content="Browse" HorizontalAlignment="Stretch" VerticalAlignment="Top" Click="Browse_Click"/>
             <ToggleButton Content="Listen" x:Name="ListenButton" HorizontalAlignment="Stretch" VerticalAlignment="Top" Click="StartStopListener_Click"/>
 
