@@ -1,15 +1,13 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/1.5.4">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;uap10.0;uap10.0.16299</TargetFrameworks>
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Oren Novotny</Authors>
     <PackageLicenseUrl>http://opensource.org/licenses/ms-pl</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/onovotny/Zeroconf</PackageProjectUrl>
-    <MinClientVersion>2.12</MinClientVersion>
     <Description>Bonjour support for .NET Standard 2.0, .NET Core, .NET Framework, Xamarin, and UWP</Description>
     <Copyright>© Oren Novotny 2016-2018</Copyright>
     <PackageTags>zeroconf;bonjour;mdns;service;discovery;xamarin;netstandard;universal</PackageTags>
-    <Product>Zeroconf ($(TargetFramework))</Product>
+    <Product>Zeroconf</Product>
     <DebugType>embedded</DebugType>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>Zeroconf.ruleset</CodeAnalysisRuleSet>
@@ -18,19 +16,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Platforms\**\*.*" />
-    <None Include="Platforms\**\*.*" />
     <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62925-02" PrivateAssets="all" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Reactive" Version="4.0.0" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' or '$(TargetFramework)' == 'uap10.0.16299' ">
-    <Compile Include="Platforms\netstandard\*.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <Compile Include="Platforms\winrt\*.cs" />
   </ItemGroup>
   
   <Target Name="AddCommitHashToAssemblyAttributes" BeforeTargets="GetAssemblyAttributes">

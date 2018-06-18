@@ -46,6 +46,10 @@ namespace Zeroconf
                         if (resp.header.QR)
                         {
                             var key = $"{address}{(string.IsNullOrEmpty(name) ? "" : $": {name}")}";
+                            
+                            // see if the IP is the same as the A to filter out dups that might echo from other interfaces
+
+
                             lock (dict)
                             {
                                 dict[key] = resp;
