@@ -1,9 +1,9 @@
 Zeroconf
 ==========
 
-# Bonjour/mDNS discovery support for .NET v4.6.1, UWP, Xamarin & netstandard20
+# Bonjour/mDNS discovery support for .NET v4.6.1, UWP, Xamarin & .NET Standard 2.0
 
-The core logic is implemented primarily .NET Standard 20. Due to networking APIs being platform-specific on earlier platforms, a platform-specific version is required. Just make sure that you also install the NuGet to your main app and you'll be all set.
+The core logic is implemented primarily .NET Standard 2.0. Due to networking APIs being platform-specific on earlier platforms, a platform-specific version is required. Just make sure that you also install the NuGet to your main app and you'll be all set.
 
 ## Installation
 
@@ -11,12 +11,7 @@ The easiest way to get started is to use the NuGet package.
 
 > Install-Package [Zeroconf](http://www.nuget.org/packages/Zeroconf)
 
-Current Build Status: 
-
-| Branch | Status |
-|----- | ------| 
-| Master | [![Build status](https://ci.appveyor.com/api/projects/status/52nr1dgg9ftrxeh9/branch/master?svg=true)](https://ci.appveyor.com/project/onovotny/zeroconf/branch/master) |
-| Dev | [![Build status](https://ci.appveyor.com/api/projects/status/52nr1dgg9ftrxeh9/branch/dev?svg=true)](https://ci.appveyor.com/project/onovotny/zeroconf/branch/dev) |
+Current Build Status: [![Build Status](https://dev.azure.com/onovotny/GitBuilds/_apis/build/status/Zeroconf%20-%20CI?branchName=master)](https://dev.azure.com/onovotny/GitBuilds/_build/latest?definitionId=37)
 
 ## Usage
 
