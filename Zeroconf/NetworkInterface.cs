@@ -104,7 +104,7 @@ namespace Zeroconf
                         var localEp = new IPEndPoint(IPAddress.Any, 5353);
 
                         Debug.WriteLine($"Attempting to bind to {localEp} on adapter {adapter.Name}");
-                        socket.Bind(localEp);
+                        //socket.Bind(localEp);
                         Debug.WriteLine($"Bound to {localEp}");
 
                         var multicastAddress = IPAddress.Parse("224.0.0.251");
@@ -127,7 +127,8 @@ namespace Zeroconf
                                                            var res = await client.ReceiveAsync()
                                                                                  .ConfigureAwait(false);
 
-                                                           onResponse(res.RemoteEndPoint.Address, res.Buffer);
+                                                           if(res.RemoteEndPoint.Port == 5353)
+                                                               onResponse(res.RemoteEndPoint.Address, res.Buffer);
                                                        }
                                                    }
                                                    catch when (Volatile.Read(ref shouldCancel))
