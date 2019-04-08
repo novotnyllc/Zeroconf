@@ -127,6 +127,16 @@ namespace Zeroconf
                                                            var res = await client.ReceiveAsync()
                                                                                  .ConfigureAwait(false);
 
+                                                           if (Volatile.Read(ref shouldCancel))
+                                                           {
+                                                               break;
+                                                           }
+
+                                                           if (cancellationToken.IsCancellationRequested)
+                                                           {
+                                                               break;
+                                                           }
+
                                                            onResponse(res.RemoteEndPoint.Address, res.Buffer);
                                                        }
                                                    }
@@ -150,8 +160,6 @@ namespace Zeroconf
                                   .ConfigureAwait(false);
 
                         Volatile.Write(ref shouldCancel, true);
-
-                        ((IDisposable)client).Dispose();
 
                         Debug.WriteLine("Done Scanning");
 
@@ -225,18 +233,18 @@ namespace Zeroconf
                     socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
 
 
-                    cancellationToken.Register((() =>
-                                                {
-                                                    ((IDisposable)client).Dispose();
-                                                }));
-                        
-
                     while (!cancellationToken.IsCancellationRequested)
                     {
                         try
                         {
                             var packet = await client.ReceiveAsync()
                                                  .ConfigureAwait(false);
+
+                            if (cancellationToken.IsCancellationRequested)
+                            {
+                                break;
+                            }
+
                             try
                             {
                                 callback(new AdapterInformation(ipv4Address.ToString(), adapter.Name), packet.RemoteEndPoint.Address.ToString(), packet.Buffer);
