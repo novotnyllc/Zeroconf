@@ -7,12 +7,17 @@ pr:
 - rel/*
 
 pool:
-  vmImage: vs2017-win2016
+  vmImage: windows-latest
 
 variables: 
   BuildConfiguration: Release
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
 steps:
+- task: UseDotNet@2
+  inputs:
+    version: 3.0.x
+
 - task: DotNetCoreCLI@2  
   inputs:
     command: custom
@@ -23,12 +28,13 @@ steps:
 - script: nbgv cloud
   displayName: Set Version
 
-- task: VSBuild@1
-  inputs:    
-    solution: .\Zeroconf\Zeroconf.csproj
+- task: DotNetCoreCLI@2
+  inputs:
+    command: pack
+    packagesToPack: Zeroconf/Zeroconf.csproj
     configuration: $(BuildConfiguration)
-    msbuildArgs: '/restore /m /t:Pack /p:PackageOutputPath=$(Build.ArtifactStagingDirectory)\Packages'
-  displayName: Build
+    packDirectory: $(Build.ArtifactStagingDirectory)\Packages    
+  displayName: Build / Pack
 
 - task: PowerShell@2
   displayName: Authenticode Sign artifacts
