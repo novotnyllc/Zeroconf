@@ -77,7 +77,7 @@ namespace Zeroconf
 
             foreach (var protocol in options.Protocols)
             {
-                var question = new Question(protocol, queryType, QClass.ANY);
+                var question = new Question(protocol, queryType, QClass.IN);
 
                 req.AddQuestion(question);
             }
