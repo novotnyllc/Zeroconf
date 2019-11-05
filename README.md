@@ -35,12 +35,12 @@ There's are two methods with a few optional parameters:
 The `ResolveAsync` method has one required and several optional parameters. 
 The method signature is as follows:
 
-    Task<IReadOnlyList<IZeroconfHost>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfHost> callback = null, CancellationToken cancellationToken = default(CancellationToken));
+    Task<IReadOnlyList<IZeroconfHost>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfHost> callback = null, CancellationToken cancellationToken = default(CancellationToken), System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null);
 
 The `BrowseDomainsAsync` method has the same set of optional parameters.
 The method signature is:
    
-    Task<ILookup<string, string>> BrowseDomainsAsync(TimeSpan scanTime = default (TimeSpan), int retryDelayMilliseconds = 2000, Action<string, string> callback = null, CancellationToken cancellationToken = default (CancellationToken))
+    Task<ILookup<string, string>> BrowseDomainsAsync(TimeSpan scanTime = default (TimeSpan), int retryDelayMilliseconds = 2000, Action<string, string> callback = null, CancellationToken cancellationToken = default (CancellationToken), System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
 
 What you get back from the Browse is a lookup, by service name, of a group that contains every host
 offering that service. Thst most common use would be in the example above, passing in
@@ -62,6 +62,7 @@ are otherwise identical to the `*Async` versions but are more suitable for some 
 | retryDelayMilliseconds | 2000 | Delay between retries |
 | callback | null | If provided, called per `IZeroconfigHost` as they are processed. This can be used to stream data back prior to call completion. |
 | cancellationToken | CancellationToken.None | Optional use of task cancellation |
+| netInterfacesToSendRequestOn | null | Specify a list of network adapters to use. If null is specified, all adapters are used |
 
 
 ## Notes
