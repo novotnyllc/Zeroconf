@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26606.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29322.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroconfTest.NetFx", "ZeroconfTest.NetFx\ZeroconfTest.NetFx.csproj", "{E1424569-4A10-4164-A99B-A3EBC7AFD469}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroconfTest.NetCore", "ZeroconfTest.NetFx\ZeroconfTest.NetCore.csproj", "{E1424569-4A10-4164-A99B-A3EBC7AFD469}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{48990F96-480D-4AAF-BBC2-FF765251DABE}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		azure-pipelines.yml = azure-pipelines.yml
 		README.md = README.md
 		version.json = version.json
 	EndProjectSection

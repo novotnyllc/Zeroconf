@@ -6,43 +6,82 @@ pr:
 - master
 - rel/*
 
-pool:
-  vmImage: vs2017-win2016
 
-variables: 
-  BuildConfiguration: Release
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    pool:
+      vmImage: windows-latest
 
-steps:
-- task: DotNetCoreCLI@2  
-  inputs:
-    command: custom
-    custom: tool
-    arguments: install --tool-path . nbgv
-  displayName: Install NBGV tool
+    variables: 
+      BuildConfiguration: Release
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
-- script: nbgv cloud
-  displayName: Set Version
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        version: 3.0.x
 
-- task: VSBuild@1
-  inputs:    
-    solution: .\Zeroconf\Zeroconf.csproj
-    configuration: $(BuildConfiguration)
-    msbuildArgs: '/restore /m /t:Pack /p:PackageOutputPath=$(Build.ArtifactStagingDirectory)\Packages'
-  displayName: Build
+    - task: DotNetCoreCLI@2  
+      inputs:
+        command: custom
+        custom: tool
+        arguments: install --tool-path . nbgv
+      displayName: Install NBGV tool
 
-- task: PowerShell@2
-  displayName: Authenticode Sign artifacts
-  inputs:
-    filePath: scripts/Sign-Package.ps1
-  env:
-    SignClientUser: $(SignClientUser)
-    SignClientSecret: $(SignClientSecret)
-    ArtifactDirectory: $(Build.ArtifactStagingDirectory)\Packages
-  condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')))
+    - script: nbgv cloud
+      displayName: Set Version
 
-- task: PublishBuildArtifacts@1
-  displayName: Publish Package Artifacts
-  inputs:
-    pathToPublish: $(Build.ArtifactStagingDirectory)\Packages
-    artifactType: container
-    artifactName: Packages
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: pack
+        packagesToPack: Zeroconf/Zeroconf.csproj
+        configuration: $(BuildConfiguration)
+        packDirectory: $(Build.ArtifactStagingDirectory)\Packages    
+      displayName: Build / Pack
+
+    - publish: $(Build.ArtifactStagingDirectory)\Packages
+      displayName: Publish build packages
+      artifact: BuildPackages
+
+    - publish: config
+      displayName: Publish signing config
+      artifact: config
+
+- stage: CodeSign
+  condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
+  jobs:
+  - deployment: CodeSign
+    displayName: Code Signing
+    pool:
+      vmImage: windows-latest    
+    environment: Code Sign - CI
+    variables:
+    - group: Sign Client Credentials
+    strategy:
+      runOnce:
+        deploy:
+          steps: 
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: custom
+              custom: tool
+              arguments: install --tool-path . SignClient
+            displayName: Install SignTool tool
+
+          - pwsh: |
+              .\SignClient "Sign" `
+              --baseDirectory "$(Pipeline.Workspace)\BuildPackages" `
+              --input "**/*.nupkg" `
+              --config "$(Pipeline.Workspace)\config\signclient.json" `
+              --user "$(SignClientUser)" `
+              --secret "$(SignClientSecret)" `
+              --name "Zeroconf" `
+              --description "Zeroconf" `
+              --descriptionUrl "https://github.com/onovotny/Zeroconf"
+            displayName: Sign packages
+              
+          - publish: $(Pipeline.Workspace)/BuildPackages
+            displayName: Publish Signed Packages
+            artifact: SignedPackages

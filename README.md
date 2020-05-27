@@ -13,7 +13,7 @@ The easiest way to get started is to use the NuGet package.
 
 Current Build Status: [![Build Status](https://dev.azure.com/onovotny/GitBuilds/_apis/build/status/Zeroconf%20-%20CI?branchName=master)](https://dev.azure.com/onovotny/GitBuilds/_build/latest?definitionId=37)
 
-## Usage
+## Usage 
 
 There's are two methods with a few optional parameters:
 

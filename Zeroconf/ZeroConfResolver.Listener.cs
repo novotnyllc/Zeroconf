@@ -98,8 +98,9 @@ namespace Zeroconf
                             {
                                 ServiceFound?.Invoke(this, host);
                                 newHosts.Add(keyValue);
-                                if (toRemove.ContainsKey(keyValue)) toRemove.Remove(keyValue);
                             }
+                            if (toRemove.ContainsKey(keyValue))
+                                toRemove.Remove(keyValue);
                         }
                     }
 
