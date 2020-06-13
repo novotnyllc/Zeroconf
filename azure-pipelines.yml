@@ -1,9 +1,9 @@
 trigger:
-- master
+- main
 - rel/*
 
 pr:
-- master
+- main
 - rel/*
 
 
@@ -21,7 +21,7 @@ stages:
     steps:
     - task: UseDotNet@2
       inputs:
-        version: 3.0.x
+        version: 3.1.x
 
     - task: DotNetCoreCLI@2  
       inputs:
@@ -79,7 +79,7 @@ stages:
               --secret "$(SignClientSecret)" `
               --name "Zeroconf" `
               --description "Zeroconf" `
-              --descriptionUrl "https://github.com/onovotny/Zeroconf"
+              --descriptionUrl "https://github.com/novotnyllc/Zeroconf"
             displayName: Sign packages
               
           - publish: $(Pipeline.Workspace)/BuildPackages

@@ -11,7 +11,7 @@ The easiest way to get started is to use the NuGet package.
 
 > Install-Package [Zeroconf](http://www.nuget.org/packages/Zeroconf)
 
-Current Build Status: [![Build Status](https://dev.azure.com/onovotny/GitBuilds/_apis/build/status/Zeroconf%20-%20CI?branchName=master)](https://dev.azure.com/onovotny/GitBuilds/_build/latest?definitionId=37)
+Current Build Status: [![Build Status](https://dev.azure.com/clairernovotny/GitBuilds/_apis/build/status/Zeroconf%20-%20CI?branchName=master)](https://dev.azure.com/clairernovotny/GitBuilds/_build/latest?definitionId=37)
 
 ## Usage 
 
