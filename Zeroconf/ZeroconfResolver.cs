@@ -28,7 +28,8 @@ namespace Zeroconf
 
         static async Task<IDictionary<string, Response>> ResolveInternal(ZeroconfOptions options,
                                                                          Action<string, Response> callback,
-                                                                         CancellationToken cancellationToken)
+                                                                         CancellationToken cancellationToken,
+                                                                         System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
         {
             var requestBytes = GetRequestBytes(options);
             using (options.AllowOverlappedQueries ? Disposable.Empty : await ResolverLock.LockAsync())
@@ -63,7 +64,8 @@ namespace Zeroconf
                                                            options.Retries,
                                                            (int)options.RetryDelay.TotalMilliseconds,
                                                            Converter,                                                           
-                                                           cancellationToken)
+                                                           cancellationToken,
+                                                           netInterfacesToSendRequestOn)
                                       .ConfigureAwait(false);
 
                 return dict;
