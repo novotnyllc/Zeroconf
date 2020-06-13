@@ -23,10 +23,10 @@ namespace Zeroconf
                                               int retryDelayMilliseconds,
                                               Action<IPAddress, byte[]> onResponse,
                                               CancellationToken cancellationToken,
-                                              System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
+                                              IEnumerable<System.Net.NetworkInformation.NetworkInterface> netInterfacesToSendRequestOn = null)
         {
             // populate list with all adapters if none specified
-            if(netInterfacesToSendRequestOn == null)
+            if(netInterfacesToSendRequestOn == null || !netInterfacesToSendRequestOn.Any())
             {
                 netInterfacesToSendRequestOn = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces();
             }
