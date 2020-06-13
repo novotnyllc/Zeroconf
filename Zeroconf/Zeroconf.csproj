@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>Oren Novotny</Authors>
-    <PackageLicenseUrl>http://opensource.org/licenses/ms-pl</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/onovotny/Zeroconf</PackageProjectUrl>
+    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
+    <Authors>Claire Novotny</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/novotnyllc/Zeroconf</PackageProjectUrl>
     <Description>Bonjour support for .NET Standard 2.0, .NET Core, .NET Framework, Xamarin, and UWP</Description>
-    <Copyright>© Oren Novotny 2016-2018</Copyright>
+    <Copyright>© Claire Novotny 2016-2020</Copyright>
     <PackageTags>zeroconf;bonjour;mdns;service;discovery;xamarin;netstandard;universal</PackageTags>
     <Product>Zeroconf</Product>
     <DebugType>embedded</DebugType>
@@ -13,15 +13,20 @@
     <CodeAnalysisRuleSet>Zeroconf.ruleset</CodeAnalysisRuleSet>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
-    <PackageReference Include="Nerdbank.GitVersioning" Version="2.1.23" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-62925-02" PrivateAssets="all" />
-    <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
-    <PackageReference Include="System.Reactive" Version="4.0.0" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.1.91" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
+    <PackageReference Include="System.Reactive" Version="4.4.1" />
   </ItemGroup>
+  
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>  
   
   <Target Name="AddCommitHashToAssemblyAttributes" BeforeTargets="GetAssemblyAttributes">
     <ItemGroup>

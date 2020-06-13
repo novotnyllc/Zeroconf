@@ -28,7 +28,8 @@ namespace Zeroconf
 
         static async Task<IDictionary<string, Response>> ResolveInternal(ZeroconfOptions options,
                                                                          Action<string, Response> callback,
-                                                                         CancellationToken cancellationToken)
+                                                                         CancellationToken cancellationToken,
+                                                                         System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
         {
             var requestBytes = GetRequestBytes(options);
             using (options.AllowOverlappedQueries ? Disposable.Empty : await ResolverLock.LockAsync())
@@ -46,31 +47,13 @@ namespace Zeroconf
                     Debug.WriteLine($"IP: {addrString}, {(string.IsNullOrEmpty(name) ? string.Empty : $"Name: {name}, ")}Bytes: {buffer.Length}, IsResponse: {resp.header.QR}");
 
                     if (resp.header.QR)
-                    {
-                        // see if the IP is the same as the A to filter out dups that might echo from other interfaces
-
-
-                        var aRec = resp.RecordsA.FirstOrDefault();
-                        var additionalARec = resp.Additionals.FirstOrDefault(arr => arr.Type == Type.A)?.RECORD as RecordA;
-
-                        // if we have an aRec or additionalARec, check those
-                        bool? matches = null;
-                        if (aRec != null || additionalARec != null)
+                    {   var key = $"{addrString}{(string.IsNullOrEmpty(name) ? "" : $": {name}")}";
+                        lock (dict)
                         {
-                            matches = string.Equals(aRec?.Address, addrString, StringComparison.OrdinalIgnoreCase) ||
-                                      string.Equals(additionalARec?.Address, addrString, StringComparison.OrdinalIgnoreCase);
+                            dict[key] = resp;
                         }
-                        
-                        if (matches ?? true)
-                        {
-                            var key = $"{addrString}{(string.IsNullOrEmpty(name) ? "" : $": {name}")}";
-                            lock (dict)
-                            {
-                                dict[key] = resp;
-                            }
 
-                            callback?.Invoke(key, resp);
-                        }
+                        callback?.Invoke(key, resp);                        
                     }
                 }
 
@@ -81,7 +64,8 @@ namespace Zeroconf
                                                            options.Retries,
                                                            (int)options.RetryDelay.TotalMilliseconds,
                                                            Converter,                                                           
-                                                           cancellationToken)
+                                                           cancellationToken,
+                                                           netInterfacesToSendRequestOn)
                                       .ConfigureAwait(false);
 
                 return dict;
@@ -95,7 +79,7 @@ namespace Zeroconf
 
             foreach (var protocol in options.Protocols)
             {
-                var question = new Question(protocol, queryType, QClass.ANY);
+                var question = new Question(protocol, queryType, QClass.IN);
 
                 req.AddQuestion(question);
             }
@@ -103,7 +87,7 @@ namespace Zeroconf
             return req.Data;
         }
 
-        static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress)
+        static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress, ResolveOptions options)
         {
             var z = new ZeroconfHost
             {
@@ -125,7 +109,10 @@ namespace Zeroconf
             foreach (var ptrRec in response.RecordsPTR)
             {
                 // set the display name if needed
-                if (!dispNameSet)
+                if (!dispNameSet
+                    && (options == null
+                        || (options != null
+                            && options.Protocols.Contains(ptrRec.RR.NAME))))
                 {
                     z.DisplayName = ptrRec.PTRDNAME.Split('.')[0];
                     dispNameSet = true;

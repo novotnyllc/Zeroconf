@@ -22,11 +22,16 @@ namespace Zeroconf
                                               int retries,
                                               int retryDelayMilliseconds,
                                               Action<IPAddress, byte[]> onResponse,
-                                              CancellationToken cancellationToken)
+                                              CancellationToken cancellationToken,
+                                              IEnumerable<System.Net.NetworkInformation.NetworkInterface> netInterfacesToSendRequestOn = null)
         {
-
-
-            var tasks = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
+            // populate list with all adapters if none specified
+            if(netInterfacesToSendRequestOn == null || !netInterfacesToSendRequestOn.Any())
+            {
+                netInterfacesToSendRequestOn = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces();
+            }
+                                    
+            var tasks = netInterfacesToSendRequestOn
                               .Select(inter =>
                                       NetworkRequestAsync(requestBytes, scanTime, retries, retryDelayMilliseconds, onResponse, inter, cancellationToken))
                               .ToList();
