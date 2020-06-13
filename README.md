@@ -17,30 +17,36 @@ Current Build Status: [![Build Status](https://dev.azure.com/clairernovotny/GitB
 
 There's are two methods with a few optional parameters:
 
-    using Zeroconf;
-    public async Task ProbeForNetworkPrinters()
-    {
-        IReadOnlyList<IZeroconfHost> results = await
-            ZeroconfResolver.ResolveAsync("_printer._tcp.local.");
-    }
+```csharp
+using Zeroconf;
+public async Task ProbeForNetworkPrinters()
+{
+    IReadOnlyList<IZeroconfHost> results = await
+        ZeroconfResolver.ResolveAsync("_printer._tcp.local.");
+}
 
-    public async Task EnumerateAllServicesFromAllHosts()
-    {
-        ILookup<string, string> domains = await ZeroconfResolver.BrowseDomainsAsync();            
-        var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));            
-        foreach (var resp in responses)
-            Console.WriteLine(resp);
-    }
+public async Task EnumerateAllServicesFromAllHosts()
+{
+    ILookup<string, string> domains = await ZeroconfResolver.BrowseDomainsAsync();            
+    var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));            
+    foreach (var resp in responses)
+        Console.WriteLine(resp);
+}
+```
 
 The `ResolveAsync` method has one required and several optional parameters. 
 The method signature is as follows:
 
-    Task<IReadOnlyList<IZeroconfHost>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfHost> callback = null, CancellationToken cancellationToken = default(CancellationToken), System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null);
+```csharp
+Task<IReadOnlyList<IZeroconfHost>> ResolveAsync(string protocol, TimeSpan scanTime = default(TimeSpan), int retries = 2, int retryDelayMilliseconds = 2000, Action<IZeroconfHost> callback = null, CancellationToken cancellationToken = default(CancellationToken), System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null);
+```
 
 The `BrowseDomainsAsync` method has the same set of optional parameters.
 The method signature is:
-   
-    Task<ILookup<string, string>> BrowseDomainsAsync(TimeSpan scanTime = default (TimeSpan), int retryDelayMilliseconds = 2000, Action<string, string> callback = null, CancellationToken cancellationToken = default (CancellationToken), System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
+
+```csharp
+Task<ILookup<string, string>> BrowseDomainsAsync(TimeSpan scanTime = default (TimeSpan), int retryDelayMilliseconds = 2000, Action<string, string> callback = null, CancellationToken cancellationToken = default (CancellationToken), System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
+```
 
 What you get back from the Browse is a lookup, by service name, of a group that contains every host
 offering that service. Thst most common use would be in the example above, passing in
@@ -77,7 +83,8 @@ There is currently a [bug](https://bugzilla.xamarin.com/show_bug.cgi?id=21578) o
 You must call the WifiManager.MulticastLock manager Aquire and Release before/after you call the Zeroconf methods.
 Previous versions (prior to 2.7 did this internally, now it requires the caller to do it).
 
-Something like thisl
+Something like this:
+
 ```csharp
 
 // Somewhere early
