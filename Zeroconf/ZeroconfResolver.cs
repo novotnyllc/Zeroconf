@@ -85,7 +85,7 @@ namespace Zeroconf
             return req.Data;
         }
 
-        static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress)
+        static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress, ResolveOptions options)
         {
             var z = new ZeroconfHost
             {
@@ -107,7 +107,10 @@ namespace Zeroconf
             foreach (var ptrRec in response.RecordsPTR)
             {
                 // set the display name if needed
-                if (!dispNameSet)
+                if (!dispNameSet
+                    && (options == null
+                        || (options != null
+                            && options.Protocols.Contains(ptrRec.RR.NAME))))
                 {
                     z.DisplayName = ptrRec.PTRDNAME.Split('.')[0];
                     dispNameSet = true;

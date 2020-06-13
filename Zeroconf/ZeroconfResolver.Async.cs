@@ -87,7 +87,7 @@ namespace Zeroconf
             {
                 wrappedAction = (address, resp) =>
                 {
-                    var zc = ResponseToZeroconf(resp, address);
+                    var zc = ResponseToZeroconf(resp, address, options);
                     if (zc.Services.Any(s => options.Protocols.Contains(s.Key)))
                     {
                         callback(zc);
@@ -100,7 +100,7 @@ namespace Zeroconf
                                              cancellationToken)
                                  .ConfigureAwait(false);
 
-            return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key))
+            return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key, options))
                        .Where(zh => zh.Services.Any(s => options.Protocols.Contains(s.Key))) // Ensure we only return records that have matching services
                        .ToList();
         }
@@ -185,7 +185,7 @@ namespace Zeroconf
             {
                 var response = new Response(buffer);
                 if (response.IsQueryResponse)
-                    callback(new ServiceAnnouncement(adapter, ResponseToZeroconf(response, address)));
+                    callback(new ServiceAnnouncement(adapter, ResponseToZeroconf(response, address, null)));
             }, cancellationToken);
         }
     }
