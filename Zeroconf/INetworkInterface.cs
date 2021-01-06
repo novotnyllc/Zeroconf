@@ -12,7 +12,7 @@ namespace Zeroconf
                                  TimeSpan scanTime,
                                  int retries,
                                  int retryDelayMilliseconds,
-                                 Action<IPAddress, byte[]> onResponse,
+                                 Action<IPAddress, byte[], System.Net.NetworkInformation.NetworkInterface> onResponse,
                                  CancellationToken cancellationToken,
                                  IEnumerable<System.Net.NetworkInformation.NetworkInterface> netInterfacesToSendRequestOn);
 

@@ -26,8 +26,8 @@ namespace Zeroconf
             return response.RecordsPTR.Select(ptr => ptr.PTRDNAME);
         }
 
-        static async Task<IDictionary<string, Response>> ResolveInternal(ZeroconfOptions options,
-                                                                         Action<string, Response> callback,
+        static async Task<IDictionary<string, ValueTuple<Response, System.Net.NetworkInformation.NetworkInterface>>> ResolveInternal(ZeroconfOptions options,
+                                                                         Action<string, Response, System.Net.NetworkInformation.NetworkInterface> callback,
                                                                          CancellationToken cancellationToken,
                                                                          System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
         {
@@ -35,9 +35,9 @@ namespace Zeroconf
             using (options.AllowOverlappedQueries ? Disposable.Empty : await ResolverLock.LockAsync())
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var dict = new Dictionary<string, Response>();
+                var dict = new Dictionary<string, ValueTuple<Response, System.Net.NetworkInformation.NetworkInterface>>();
 
-                void Converter(IPAddress address, byte[] buffer)
+                void Converter(IPAddress address, byte[] buffer, System.Net.NetworkInformation.NetworkInterface netInterface)
                 {
                     var resp = new Response(buffer);
                     var firstPtr = resp.RecordsPTR.FirstOrDefault();
@@ -50,10 +50,10 @@ namespace Zeroconf
                     {   var key = $"{addrString}{(string.IsNullOrEmpty(name) ? "" : $": {name}")}";
                         lock (dict)
                         {
-                            dict[key] = resp;
+                            dict[key] = (resp, netInterface);
                         }
 
-                        callback?.Invoke(key, resp);                        
+                        callback?.Invoke(key, resp, netInterface);                        
                     }
                 }
 
@@ -87,7 +87,7 @@ namespace Zeroconf
             return req.Data;
         }
 
-        static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress, ResolveOptions options)
+        static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress, ResolveOptions options, System.Net.NetworkInformation.NetworkInterface netInterface)
         {
             var z = new ZeroconfHost
             {
@@ -99,7 +99,8 @@ namespace Zeroconf
                                                       .OfType<RecordA>())
                                       .Select(aRecord => aRecord.Address)
                                       .Distinct()
-                                      .ToList()
+                                      .ToList(),
+                NetworkInterface = netInterface
             };
 
             z.Id = z.IPAddresses.FirstOrDefault() ?? remoteAddress;

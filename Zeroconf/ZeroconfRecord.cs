@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,6 +38,12 @@ namespace Zeroconf
         ///     Services offered by this host (based on services queried for)
         /// </summary>
         IReadOnlyDictionary<string, IService> Services { get; }
+
+        /// <summary>
+        /// The network interface the response was received on.
+        /// </summary>
+        System.Net.NetworkInformation.NetworkInterface NetworkInterface { get; }
+
     }
 
     /// <summary>
@@ -113,6 +120,8 @@ namespace Zeroconf
         ///     Display Name
         /// </summary>
         public string DisplayName { get; set; }
+
+        public System.Net.NetworkInformation.NetworkInterface NetworkInterface { get; set; }
 
         public override bool Equals(object obj)
         {

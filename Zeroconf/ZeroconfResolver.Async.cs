@@ -87,13 +87,13 @@ namespace Zeroconf
                                                                             System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
-            Action<string, Response> wrappedAction = null;
+            Action<string, Response, System.Net.NetworkInformation.NetworkInterface> wrappedAction = null;
             
             if (callback != null)
             {
-                wrappedAction = (address, resp) =>
+                wrappedAction = (address, resp, netInterface) =>
                 {
-                    var zc = ResponseToZeroconf(resp, address, options);
+                    var zc = ResponseToZeroconf(resp, address, options, netInterface);
                     if (zc.Services.Any(s => options.Protocols.Contains(s.Key)))
                     {
                         callback(zc);
@@ -107,11 +107,10 @@ namespace Zeroconf
                                              netInterfacesToSendRequestOn)
                                  .ConfigureAwait(false);
 
-            return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key, options))
+            return dict.Select(pair => ResponseToZeroconf(pair.Value.Item1, pair.Key, options, pair.Value.Item2))
                        .Where(zh => zh.Services.Any(s => options.Protocols.Contains(s.Key))) // Ensure we only return records that have matching services
                        .ToList();
         }
-
         /// <summary>
         ///     Returns all available domains with services on them
         /// </summary>
@@ -160,10 +159,10 @@ namespace Zeroconf
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
        
-            Action<string, Response> wrappedAction = null;
+            Action<string, Response, System.Net.NetworkInformation.NetworkInterface> wrappedAction = null;
             if (callback != null)
             {
-                wrappedAction = (address, response) =>
+                wrappedAction = (address, response, netInterface) =>
                 {
                     foreach (var service in BrowseResponseParser(response))
                     {
@@ -179,7 +178,7 @@ namespace Zeroconf
                                  .ConfigureAwait(false);
 
             var r = from kvp in dict
-                    from service in BrowseResponseParser(kvp.Value)
+                    from service in BrowseResponseParser(kvp.Value.Item1)
                     select new { Service = service, Address = kvp.Key };
 
             return r.ToLookup(k => k.Service, k => k.Address);
@@ -197,7 +196,8 @@ namespace Zeroconf
             {
                 var response = new Response(buffer);
                 if (response.IsQueryResponse)
-                    callback(new ServiceAnnouncement(adapter, ResponseToZeroconf(response, address, null)));
+                    // TODO! Unmock out the netInterface call here
+                    callback(new ServiceAnnouncement(adapter, ResponseToZeroconf(response, address, null, null)));
             }, cancellationToken);
         }
     }
