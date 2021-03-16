@@ -156,12 +156,12 @@ namespace Zeroconf
 
                         Volatile.Write(ref shouldCancel, true);
 
-                        ((IDisposable)client).Dispose();
-
                         Debug.WriteLine("Done Scanning");
 
 
-                        await recTask.ConfigureAwait(false);
+                        await recTask.ConfigureAwait(true);
+                        
+                        ((IDisposable)client).Dispose();
 
                         return;
                     }
