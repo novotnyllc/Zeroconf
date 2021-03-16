@@ -159,7 +159,7 @@ namespace Zeroconf
                         Debug.WriteLine("Done Scanning");
 
 
-                        await recTask.ConfigureAwait(true);
+                        await recTask.ConfigureAwait(false);
                         
                         ((IDisposable)client).Dispose();
 
