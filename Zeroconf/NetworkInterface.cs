@@ -160,8 +160,6 @@ namespace Zeroconf
 
 
                         await recTask.ConfigureAwait(false);
-                        
-                        ((IDisposable)client).Dispose();
 
                         return;
                     }
