@@ -16,6 +16,8 @@ local.properties
 .settings/
 .loadpath
 
+*.binlog
+
 .vs/
 *.nuget.props
 *.nuget.targets
