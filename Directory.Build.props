@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="0.1.26" PrivateAssets="All"/>
+  </ItemGroup>
+</Project>
