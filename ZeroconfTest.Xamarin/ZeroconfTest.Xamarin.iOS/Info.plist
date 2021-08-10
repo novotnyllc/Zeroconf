@@ -20,6 +20,15 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>Looking for local mDNS/Bonjour services</string>
+  <key>NSBonjourServices</key>
+  <array>
+    <string>_audioplayer-discovery._tcp</string>
+    <string>_http._tcp</string>
+    <string>_printer._tcp</string>
+    <string>_apple-mobdev2._tcp</string>
+  </array>
 	<key>MinimumOSVersion</key>
 	<string>10.0</string>
 	<key>CFBundleDisplayName</key>

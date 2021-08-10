@@ -47,6 +47,16 @@ namespace ZeroconfTest.Xam
             };
         }
 
+        // See ZeroconfResolver.Async.cs
+        // Use the array of NSBonjourServices from Info.plist; however, in this list, append the domain and terminating period (usually ".local.")
+        static List<string> BrowseDomainProtocolList = new List<string>()
+        {
+            "_audioplayer-discovery._tcp.local.",
+            "_http._tcp.local.",
+            "_printer._tcp.local.",
+            "_apple-mobdev2._tcp.local.",
+        };
+
 #pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
         static async void BrowseOnClicked(Label output)
 #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
@@ -56,6 +66,9 @@ namespace ZeroconfTest.Xam
             //{
                
             //});
+
+            // Xamarin iOS on iOS 14.5+ only: BrowseDomainsAsync() is not usable without this initialization
+            ZeroconfResolver.SetBrowseDomainProtocols(BrowseDomainProtocolList);
 
             responses = await ZeroconfResolver.BrowseDomainsAsync();
             foreach (var service in responses)
@@ -78,6 +91,8 @@ namespace ZeroconfTest.Xam
 
             //});
 
+            // Xamarin.iOS on iOS 14.5+ only: BrowseDomainsAsync() is not usable without this initialization
+            ZeroconfResolver.SetBrowseDomainProtocols(BrowseDomainProtocolList);
 
             var domains = await ZeroconfResolver.BrowseDomainsAsync();
 
