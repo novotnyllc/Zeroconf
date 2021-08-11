@@ -92,6 +92,24 @@ namespace Zeroconf
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 #if !__IOS__
+            return await ResolveAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+#else
+            if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5))
+            {
+                return await ZeroconfNetServiceBrowser.ResolveAsync(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+            }
+            else
+            {
+                return await ResolveAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+            }
+#endif
+        }
+
+        internal static async Task<IReadOnlyList<IZeroconfHost>> ResolveAsyncOriginal(ResolveOptions options,
+                                                                                Action<IZeroconfHost> callback = null,
+                                                                                CancellationToken cancellationToken = default(CancellationToken),
+                                                                                System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
+        {
             Action<string, Response> wrappedAction = null;
             
             if (callback != null)
@@ -115,38 +133,6 @@ namespace Zeroconf
             return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key, options))
                        .Where(zh => zh.Services.Any(s => options.Protocols.Contains(s.Key))) // Ensure we only return records that have matching services
                        .ToList();
-#else
-            if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5))
-            {
-                return await ZeroconfNetServiceBrowser.ResolveAsync(options, callback, cancellationToken, netInterfacesToSendRequestOn);
-            }
-            else
-            {
-                Action<string, Response> wrappedAction = null;
-
-                if (callback != null)
-                {
-                    wrappedAction = (address, resp) =>
-                    {
-                        var zc = ResponseToZeroconf(resp, address, options);
-                        if (zc.Services.Any(s => options.Protocols.Contains(s.Key)))
-                        {
-                            callback(zc);
-                        }
-                    };
-                }
-
-                var dict = await ResolveInternal(options,
-                                                 wrappedAction,
-                                                 cancellationToken,
-                                                 netInterfacesToSendRequestOn)
-                                     .ConfigureAwait(false);
-
-                return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key, options))
-                           .Where(zh => zh.Services.Any(s => options.Protocols.Contains(s.Key))) // Ensure we only return records that have matching services
-                           .ToList();
-            }
-#endif
         }
 
         // Should be set to the list of allowed protocols from info.plist; entries must include domain including terminating dot (usually ".local.")
@@ -221,6 +207,24 @@ namespace Zeroconf
             if (options == null) throw new ArgumentNullException(nameof(options));
        
 #if !__IOS__
+            return await BrowseDomainsAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+#else
+            if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5))
+            {
+                return await ZeroconfNetServiceBrowser.BrowseDomainsAsync(browseDomainProtocolList, options, callback, cancellationToken, netInterfacesToSendRequestOn);
+            }
+            else
+            {
+                return await BrowseDomainsAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+            }
+#endif
+        }
+
+        internal static async Task<ILookup<string, string>> BrowseDomainsAsyncOriginal(BrowseDomainsOptions options,
+                                                                                Action<string, string> callback = null,
+                                                                                CancellationToken cancellationToken = default(CancellationToken),
+                                                                                System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
+        {
             Action<string, Response> wrappedAction = null;
             if (callback != null)
             {
@@ -244,38 +248,6 @@ namespace Zeroconf
                     select new { Service = service, Address = kvp.Key };
 
             return r.ToLookup(k => k.Service, k => k.Address);
-#else
-            if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5))
-            {
-                return await ZeroconfNetServiceBrowser.BrowseDomainsAsync(browseDomainProtocolList, options, callback, cancellationToken, netInterfacesToSendRequestOn);
-            }
-            else
-            {
-                Action<string, Response> wrappedAction = null;
-                if (callback != null)
-                {
-                    wrappedAction = (address, response) =>
-                    {
-                        foreach (var service in BrowseResponseParser(response))
-                        {
-                            callback(service, address);
-                        }
-                    };
-                }
-
-                var dict = await ResolveInternal(options,
-                                                 wrappedAction,
-                                                 cancellationToken,
-                                                 netInterfacesToSendRequestOn)
-                                     .ConfigureAwait(false);
-
-                var r = from kvp in dict
-                        from service in BrowseResponseParser(kvp.Value)
-                        select new { Service = service, Address = kvp.Key };
-
-                return r.ToLookup(k => k.Service, k => k.Address);
-            }
-#endif
         }
 
         /// <summary>
