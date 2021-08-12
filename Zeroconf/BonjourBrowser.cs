@@ -10,10 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Foundation;
-using UIKit;
-using Network;
-
-using ObjCRuntime;
+using CoreFoundation;
 
 namespace Zeroconf
 {
@@ -23,15 +20,15 @@ namespace Zeroconf
 
         Dictionary<string, NSNetService> discoveredServiceDict = new Dictionary<string, NSNetService>();
         Dictionary<string, ZeroconfHost> zeroconfHostDict = new Dictionary<string, ZeroconfHost>();
+        HashSet<string> domainHash = new HashSet<string>();
 
-        ResolveOptions _resolveOptions;
-        Action<IZeroconfHost> _resolveCallback = null;
-        CancellationToken _resolveCancellationToken;
-        System.Net.NetworkInformation.NetworkInterface[] _resolveNetInterfacesToSendRequestOn;
+        double netServiceResolveTimeout;
 
-        const double netServiceResolveTimeout = 5D;
-
-        public BonjourBrowser()
+        /// <summary>
+        /// Implements iOS mDNS browse and resolve
+        /// </summary>
+        /// <param name="resolveTimeout">Time limit for NSNetService.Resolve() operation</param>
+        public BonjourBrowser(TimeSpan resolveTimeout = default(TimeSpan))
         {
             netServiceBrowser.FoundDomain += Browser_FoundDomain;
             netServiceBrowser.DomainRemoved += Browser_DomainRemoved;
@@ -42,27 +39,26 @@ namespace Zeroconf
             netServiceBrowser.SearchStarted += Browser_SearchStarted;
             netServiceBrowser.NotSearched += Browser_NotSearched;
             netServiceBrowser.SearchStopped += Browser_SearchStopped;
-        }
 
-        public void SetResolveOptions(ResolveOptions resolveOptions,
-                                        Action<IZeroconfHost> callback = null,
-                                        CancellationToken cancellationToken = default(CancellationToken),
-                                        System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
-        {
-            _resolveOptions = resolveOptions;
-            _resolveCallback = callback;
-            _resolveCancellationToken = cancellationToken;
-            _resolveNetInterfacesToSendRequestOn = netInterfacesToSendRequestOn;
+            netServiceResolveTimeout = (resolveTimeout != default(TimeSpan)) ? resolveTimeout.TotalSeconds : 5D;
         }
 
         private void Browser_FoundDomain(object sender, NSNetDomainEventArgs e)
         {
             Debug.WriteLine($"{nameof(Browser_FoundDomain)}: Domain {e.Domain} MoreComing {e.MoreComing.ToString()}");
+            lock (domainHash)
+            {
+                domainHash.Add(e.Domain);
+            }
         }
 
         private void Browser_DomainRemoved(object sender, NSNetDomainEventArgs e)
         {
             Debug.WriteLine($"{nameof(Browser_FoundDomain)}: Domain {e.Domain} MoreComing {e.MoreComing.ToString()}");
+            lock (domainHash)
+            {
+                domainHash.Remove(e.Domain);
+            }
         }
 
         private void Browser_FoundService(object sender, NSNetServiceEventArgs e)
@@ -89,9 +85,7 @@ namespace Zeroconf
 
         private void NetService_AddressResolved(object sender, EventArgs e)
         {
-            NSNetService netService = null;
-
-            if (sender is NSNetService)
+            if (sender is NSNetService netService)
             {
                 netService = (NSNetService)sender;
 
@@ -135,51 +129,47 @@ namespace Zeroconf
 
         private void NetService_ResolveFailure(object sender, NSNetServiceErrorEventArgs e)
         {
-            NSNetService netService = null;
-
-            if (sender is NSNetService)
+            if (sender is NSNetService netService)
             {
                 netService = (NSNetService)sender;
-            }
 
-            Debug.WriteLine($"{nameof(NetService_ResolveFailure)}: Name {netService?.Name} Type {netService?.Type} Domain {netService?.Domain} " +
-                $"HostName {netService?.HostName} Port {netService?.Port}");
+                Debug.WriteLine($"{nameof(NetService_ResolveFailure)}: Name {netService?.Name} Type {netService?.Type} Domain {netService?.Domain} " +
+                    $"HostName {netService?.HostName} Port {netService?.Port}");
 
-            NSDictionary errors = e.Errors;
+                NSDictionary errors = e.Errors;
 
-            Debug.WriteLine($"{nameof(NetService_ResolveFailure)}: Errors {errors?.ToString()}");
+                Debug.WriteLine($"{nameof(NetService_ResolveFailure)}: Errors {errors?.ToString()}");
 
-            if (errors != null)
-            {
-                if (errors.Count > 0)
+                if (errors != null)
                 {
-                    foreach (var key in errors.Keys)
+                    if (errors.Count > 0)
                     {
-                        Debug.WriteLine($"{nameof(NetService_ResolveFailure)}: Key {key} Value {errors[key].ToString()}");
+                        foreach (var key in errors.Keys)
+                        {
+                            Debug.WriteLine($"{nameof(NetService_ResolveFailure)}: Key {key} Value {errors[key].ToString()}");
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"{nameof(NetService_ResolveFailure)}: errors has 0 entries");
                     }
                 }
                 else
                 {
-                    Debug.WriteLine($"{nameof(NetService_ResolveFailure)}: errors has 0 entries");
+                    Debug.WriteLine($"{nameof(NetService_ResolveFailure)}: errors is null");
                 }
-            }
-            else
-            {
-                Debug.WriteLine($"{nameof(NetService_ResolveFailure)}: errors is null");
             }
         }
 
         private void NetService_Stopped(object sender, EventArgs e)
         {
-            NSNetService netService = null;
-
-            if (sender is NSNetService)
+            if (sender is NSNetService netService)
             {
                 netService = (NSNetService)sender;
-            }
 
-            Debug.WriteLine($"{nameof(NetService_Stopped)}: Name {netService?.Name} Type {netService?.Type} Domain {netService?.Domain} " +
-                $"HostName {netService?.HostName} Port {netService?.Port}");
+                Debug.WriteLine($"{nameof(NetService_Stopped)}: Name {netService?.Name} Type {netService?.Type} Domain {netService?.Domain} " +
+                    $"HostName {netService?.HostName} Port {netService?.Port}");
+            }
         }
 
         private void Browser_ServiceRemoved(object sender, NSNetServiceEventArgs e)
@@ -236,7 +226,37 @@ namespace Zeroconf
         // Start/Stop search NSNetService search
         //
 
-        public void StartServiceSearch()
+        public void StartDomainSearch()
+        {
+            Debug.WriteLine($"{nameof(StartDomainSearch)}: {nameof(netServiceBrowser)}.SearchForBrowsableDomains()");
+
+            lock (domainHash)
+            {
+                domainHash.Clear();
+            }
+
+            netServiceBrowser.SearchForBrowsableDomains();
+        }
+
+        public void StopDomainSearch()
+        {
+            Debug.WriteLine($"{nameof(StopDomainSearch)}: {nameof(netServiceBrowser)}.Stop()");
+            netServiceBrowser.Stop();
+        }
+
+        public List<string> GetFoundDomainList()
+        {
+            List<string> results = new List<string>();
+
+            lock (domainHash)
+            {
+                results.AddRange(domainHash.ToList());
+            }
+
+            return results;
+        }
+
+        public void StartServiceSearch(string protocol)
         {
             const string localDomainForParse = ".local.";
             const string localDomain = "local.";
@@ -254,48 +274,45 @@ namespace Zeroconf
                 zeroconfHostDict.Clear();
             }
 
-            foreach (var protocol in _resolveOptions.Protocols)
+            string serviceType = string.Empty;
+            string domain = string.Empty;
+
+            if (protocol.ToLower().EndsWith(localDomainForParse))
             {
-                string serviceType = string.Empty;
-                string domain = string.Empty;
-
-                if (protocol.ToLower().EndsWith(localDomainForParse))
+                serviceType = protocol.Substring(0, protocol.Length - localDomainLength);
+                domain = protocol.Substring(serviceType.Length);
+            }
+            else
+            {
+                serviceType = BonjourBrowser.GetServiceType(protocol);
+                if (serviceType != null)
                 {
-                    serviceType = protocol.Substring(0, protocol.Length - localDomainLength);
-                    domain = protocol.Substring(serviceType.Length);
-                }
-                else
-                {
-                    serviceType = BonjourBrowser.GetServiceType(protocol);
-                    if (serviceType != null)
+                    if (protocol.Length > serviceType.Length)
                     {
-                        if (protocol.Length > serviceType.Length)
-                        {
-                            domain = protocol.Substring(serviceType.Length);
+                        domain = protocol.Substring(serviceType.Length);
 
-                            //           6 = delim.Length
-                            //          /----\ 
-                            // _foo._bar._tcp. example.com.
-                            // 012345678901234 567890123456 index = [0, 26]
-                            // 123456789012345 678901234567 length = 27
-                            //   serviceType      domain
-                        }
-                        else
-                        {
-                            domain = string.Empty;
-                        }
+                        //           6 = delim.Length
+                        //          /----\ 
+                        // _foo._bar._tcp. example.com.
+                        // 012345678901234 567890123456 index = [0, 26]
+                        // 123456789012345 678901234567 length = 27
+                        //   serviceType      domain
                     }
                     else
                     {
-                        serviceType = protocol;
                         domain = string.Empty;
                     }
                 }
-
-                Debug.WriteLine($"{nameof(StartServiceSearch)}: {nameof(netServiceBrowser)}.SearchForServices(Type {serviceType} Domain {domain})");
-
-                netServiceBrowser.SearchForServices(serviceType, domain);
+                else
+                {
+                    serviceType = protocol;
+                    domain = string.Empty;
+                }
             }
+
+            Debug.WriteLine($"{nameof(StartServiceSearch)}: {nameof(netServiceBrowser)}.SearchForServices(Type {serviceType} Domain {domain})");
+
+            netServiceBrowser.SearchForServices(serviceType, domain);
         }
 
         public void StopServiceSearch()
@@ -472,17 +489,69 @@ namespace Zeroconf
         {
             StringBuilder sb = new StringBuilder();
 
-            foreach (NSData address in service.Addresses)
+            if (service.Addresses != null)
             {
-                Sockaddr saddr = Sockaddr.CreateSockaddr(address.Bytes);
-                IPAddress ipAddr = Sockaddr.CreateIPAddress(saddr);
-                if (ipAddr != null)
+                foreach (NSData address in service.Addresses)
                 {
-                    sb.Append((sb.Length == 0 ? ipAddr.ToString() : $";{ipAddr.ToString()}"));
+                    if (address != null)
+                    {
+                        Sockaddr saddr = Sockaddr.CreateSockaddr(address.Bytes);
+                        IPAddress ipAddr = Sockaddr.CreateIPAddress(saddr);
+                        if (ipAddr != null)
+                        {
+                            sb.Append((sb.Length == 0 ? ipAddr.ToString() : $";{ipAddr.ToString()}"));
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{nameof(GetZeroconfHostKey)}: Got null entry in NSNetService.Addresses, Service {service?.Name}");
+                    }
                 }
+            }
+            else
+            {
+                Console.WriteLine($"{nameof(GetZeroconfHostKey)}: NSNetService.Addresses is null, Service {service?.Name}");
             }
 
             return sb.ToString();
+        }
+
+        public static List<string> GetNSBonjourServices(string domain = null)
+        {
+            List<string> browseServiceList = new List<string>();
+
+            var bundle = CFBundle.GetMain();
+            var infoPlistNsDict = bundle?.InfoDictionary;
+
+            const string infoPlistKey = "NSBonjourServices";
+            var nsBonjourServices = infoPlistNsDict?[infoPlistKey];
+            if (nsBonjourServices != null)
+            {
+                Console.WriteLine($"Found Info.plist key {infoPlistKey}");
+
+                if (nsBonjourServices is NSArray)
+                {
+                    var nsBonjourServiceArr = NSArray.ArrayFromHandle<NSString>(nsBonjourServices.Handle);
+                    foreach (var serviceItem in nsBonjourServiceArr)
+                    {
+                        var serviceItemStr = serviceItem.ToString();
+                        var browseService = (domain != null) ? $"{serviceItemStr}.{domain}" : serviceItemStr;
+
+                        Console.WriteLine($"  {infoPlistKey} PlistItem={serviceItemStr} BrowseService={browseService}");
+                        browseServiceList.Add(browseService);
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Info.plist contains {infoPlistKey} but the value is not an array");
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException($"Info.plist does not contain {infoPlistKey} array");
+            }
+
+            return browseServiceList;
         }
     }
 }

@@ -47,16 +47,6 @@ namespace ZeroconfTest.Xam
             };
         }
 
-        // See ZeroconfResolver.Async.cs
-        // Use the array of NSBonjourServices from Info.plist; however, in this list, append the domain and terminating period (usually ".local.")
-        static List<string> BrowseDomainProtocolList = new List<string>()
-        {
-            "_audioplayer-discovery._tcp.local.",
-            "_http._tcp.local.",
-            "_printer._tcp.local.",
-            "_apple-mobdev2._tcp.local.",
-        };
-
 #pragma warning disable RECS0165 // Asynchronous methods should return a Task instead of void
         static async void BrowseOnClicked(Label output)
 #pragma warning restore RECS0165 // Asynchronous methods should return a Task instead of void
@@ -67,8 +57,7 @@ namespace ZeroconfTest.Xam
                
             //});
 
-            // Xamarin iOS on iOS 14.5+ only: BrowseDomainsAsync() is not usable without this initialization
-            ZeroconfResolver.SetBrowseDomainProtocols(BrowseDomainProtocolList);
+            output.Text += Environment.NewLine;
 
             responses = await ZeroconfResolver.BrowseDomainsAsync();
             foreach (var service in responses)
@@ -91,13 +80,33 @@ namespace ZeroconfTest.Xam
 
             //});
 
-            // Xamarin.iOS on iOS 14.5+ only: BrowseDomainsAsync() is not usable without this initialization
-            ZeroconfResolver.SetBrowseDomainProtocols(BrowseDomainProtocolList);
+            output.Text += Environment.NewLine;
 
-            var domains = await ZeroconfResolver.BrowseDomainsAsync();
+            IReadOnlyList<string> domains;
+            if (ZeroconfResolver.IsiOSWorkaroundEnabled)
+            {
+                // Xamarin.iOS only, running on iOS 14.5+
+                //
+                // Demonstrates how using ZeroconfResolver.GetiOSInfoPlistServices() is much faster than ZeroconfResolver.BrowseDomainsAsync()
+                //
+                // In real life, you'd only query the domains if you were planning on presenting the user with a choice of domains to browse,
+                //  or the app knows in advance there will be a choice and what the domain names would be
+                //
+                // This code assumes there will only be one domain returned ("local.") In general, if you don't have a requirement to handle domains,
+                //  just call GetiOSInfoPlistServices() with zero arguments
 
-            responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));
-                
+                var iosDomains = await ZeroconfResolver.GetiOSDomains();
+                string selectedDomain = (iosDomains.Count > 0) ? iosDomains[0] : null;
+
+                domains = ZeroconfResolver.GetiOSInfoPlistServices(selectedDomain);
+            }
+            else
+            {
+                var browseDomains = await ZeroconfResolver.BrowseDomainsAsync();
+                domains = browseDomains.Select(g => g.Key).ToList();
+            }
+
+            responses = await ZeroconfResolver.ResolveAsync(domains);
 
             foreach (var resp in responses)
             {

@@ -25,21 +25,11 @@ namespace Zeroconf
 
             // Seems you must reuse the one BonjourBrowser (which is really an NSNetServiceBrowser)... multiple instances do not play well together
 
-            BonjourBrowser bonjourBrowser = new BonjourBrowser();
+            BonjourBrowser bonjourBrowser = new BonjourBrowser(options.ScanTime);
 
             foreach (var protocol in options.Protocols)
             {
-                ResolveOptions perProtocolBrowseOption = new ResolveOptions(protocol)
-                {
-                    AllowOverlappedQueries = options.AllowOverlappedQueries,
-                    Retries = options.Retries,
-                    RetryDelay = options.RetryDelay,
-                    ScanQueryType = options.ScanQueryType,
-                    ScanTime = options.ScanTime,
-                };
-                bonjourBrowser.SetResolveOptions(perProtocolBrowseOption, callback, cancellationToken, netInterfacesToSendRequestOn);
-
-                bonjourBrowser.StartServiceSearch();
+                bonjourBrowser.StartServiceSearch(protocol);
 
                 await Task.Delay(options.ScanTime, cancellationToken).ConfigureAwait(false);
 
@@ -61,7 +51,7 @@ namespace Zeroconf
             return combinedResultList;
         }
 
-        static internal async Task<ILookup<string, string>> BrowseDomainsAsync(List<string> browseDomainProtocolList, BrowseDomainsOptions options,
+        static internal async Task<ILookup<string, string>> BrowseDomainsAsync(BrowseDomainsOptions options,
                                                                      Action<string, string> callback = null,
                                                                      CancellationToken cancellationToken = default(CancellationToken),
                                                                      System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
@@ -71,6 +61,8 @@ namespace Zeroconf
             {
                 throw new NotImplementedException($"iOS NSNetServiceBrowser/NSNetService does not support per-network interface requests");
             }
+
+            var browseDomainProtocolList = BonjourBrowser.GetNSBonjourServices();
 
             ResolveOptions resolveOptions = new ResolveOptions(browseDomainProtocolList);
             var zeroconfResults = await ResolveAsync(resolveOptions, callback: null, cancellationToken, netInterfacesToSendRequestOn);
@@ -105,6 +97,20 @@ namespace Zeroconf
         {
             public string ServiceNameAndDomain;
             public string HostIPAndService;
+        }
+
+        static internal async Task<IReadOnlyList<string>> GetDomains(TimeSpan scanTime, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            BonjourBrowser bonjourBrowser = new BonjourBrowser(scanTime);
+
+            bonjourBrowser.StartDomainSearch();
+
+            await Task.Delay(scanTime, cancellationToken).ConfigureAwait(false);
+
+            bonjourBrowser.StopDomainSearch();
+
+            IReadOnlyList<string> domainList = bonjourBrowser.GetFoundDomainList();
+            return domainList;
         }
     }
 }
