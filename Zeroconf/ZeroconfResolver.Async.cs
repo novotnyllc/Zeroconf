@@ -6,6 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Heijden.DNS;
 
+#if __IOS__
+using UIKit;
+#endif
+
 namespace Zeroconf
 {
     static partial class ZeroconfResolver
@@ -87,6 +91,32 @@ namespace Zeroconf
                                                                             System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
+#if !__IOS__
+            return await ResolveAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+#else
+            if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5))
+            {
+                if (UseBSDSocketsZeroconfOniOS)
+                {
+                    return await ResolveAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+                }
+                else
+                {
+                    return await ZeroconfNetServiceBrowser.ResolveAsync(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+                }
+            }
+            else
+            {
+                return await ResolveAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+            }
+#endif
+        }
+
+        internal static async Task<IReadOnlyList<IZeroconfHost>> ResolveAsyncOriginal(ResolveOptions options,
+                                                                                Action<IZeroconfHost> callback = null,
+                                                                                CancellationToken cancellationToken = default(CancellationToken),
+                                                                                System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
+        {
             Action<string, Response> wrappedAction = null;
             
             if (callback != null)
@@ -111,6 +141,7 @@ namespace Zeroconf
                        .Where(zh => zh.Services.Any(s => options.Protocols.Contains(s.Key))) // Ensure we only return records that have matching services
                        .ToList();
         }
+
 
         /// <summary>
         ///     Returns all available domains with services on them
@@ -160,6 +191,32 @@ namespace Zeroconf
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
        
+#if !__IOS__
+            return await BrowseDomainsAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+#else
+            if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5))
+            {
+                if (UseBSDSocketsZeroconfOniOS)
+                {
+                    return await BrowseDomainsAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+                }
+                else
+                {
+                    return await ZeroconfNetServiceBrowser.BrowseDomainsAsync(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+                }
+            }
+            else
+            {
+                return await BrowseDomainsAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
+            }
+#endif
+        }
+
+        internal static async Task<ILookup<string, string>> BrowseDomainsAsyncOriginal(BrowseDomainsOptions options,
+                                                                                Action<string, string> callback = null,
+                                                                                CancellationToken cancellationToken = default(CancellationToken),
+                                                                                System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
+        {
             Action<string, Response> wrappedAction = null;
             if (callback != null)
             {
@@ -199,6 +256,77 @@ namespace Zeroconf
                 if (response.IsQueryResponse)
                     callback(new ServiceAnnouncement(adapter, ResponseToZeroconf(response, address, null)));
             }, cancellationToken);
+        }
+
+
+        /// <summary>
+        /// Forces Xamarin.iOS running on iOS 14.5 or greater to use original Zeroconf BSD Sockets API
+        /// 
+        /// This would be set to true only when the app possesses the com.apple.developer.networking.multicast entitlement.
+        /// Default value is false (which means use the NSNetServiceBrowser workaround when running on iOS 14.5 or greater)
+        /// Has no effect on platforms other than Xamarin.iOS
+        /// </summary>
+        public static bool UseBSDSocketsZeroconfOniOS { get; set; } = false;
+
+        /// <summary>
+        /// Returns true when iOS version of app is running on iOS 14.5+ and workaround has not been
+        /// suppressed with UseBSDSocketsZeroconfOniOS property. Returns false in all other cases
+        /// </summary>
+        public static bool IsiOSWorkaroundEnabled
+        {
+            get
+            {
+                bool result = false;
+
+#if __IOS__
+                if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5) && !UseBSDSocketsZeroconfOniOS)
+                {
+                    result = true;
+                }
+#endif
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Xamarin.iOS only: returns the list of NSBonjourServices from Info.plist
+        /// </summary>
+        /// <param name="domain">Optional domain (example: "local.") to append to each service; null = no domain appended; non-null must terminate with "."</param>
+        /// <returns></returns>
+        public static IReadOnlyList<string> GetiOSInfoPlistServices(string domain = null)
+        {
+            List<string> serviceList = new List<string>();
+
+#if __IOS__
+            if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5) && !UseBSDSocketsZeroconfOniOS)
+            {
+                serviceList.AddRange(BonjourBrowser.GetNSBonjourServices(domain));
+            }
+#endif
+
+            return serviceList;
+        }
+
+        /// <summary>
+        /// Xamarin.iOS only: returns the list of NSBonjourServices from Info.plist
+        /// </summary>
+        /// <param name="scanTime">How long NSNetServiceBrowser will scan for mDNS domains (default is 2 seconds)</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<IReadOnlyList<string>> GetiOSDomains(TimeSpan scanTime = default(TimeSpan),
+                                                                        CancellationToken cancellationToken = default(CancellationToken))
+        {
+            List<string> domainList = new List<string>();
+
+#if __IOS__
+            if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5) && !UseBSDSocketsZeroconfOniOS)
+            {
+                domainList.AddRange(await ZeroconfNetServiceBrowser.GetDomains((scanTime != default(TimeSpan)) ? scanTime : TimeSpan.FromSeconds(2), cancellationToken));
+            }
+#endif
+
+            return domainList;
         }
     }
 }
