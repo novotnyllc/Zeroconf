@@ -1,11 +1,11 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net46;xamarinios10</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net48;xamarinios10</TargetFrameworks>
     <Authors>Claire Novotny</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/novotnyllc/Zeroconf</PackageProjectUrl>
     <Description>Bonjour support for .NET Standard 2.0, .NET Core, .NET Framework, Xamarin, and UWP</Description>
-    <Copyright>© Claire Novotny 2016-2020</Copyright>
+    <Copyright>© Claire Novotny 2016-2021</Copyright>
     <PackageTags>zeroconf;bonjour;mdns;service;discovery;xamarin;netstandard;universal</PackageTags>
     <Product>Zeroconf</Product>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
@@ -17,7 +17,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.4.231" PrivateAssets="all" />
-    <PackageReference Include="System.Reactive" Version="4.4.1" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
   
   <Target Name="AddCommitHashToAssemblyAttributes" BeforeTargets="GetAssemblyAttributes">
