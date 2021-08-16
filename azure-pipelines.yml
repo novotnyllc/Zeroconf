@@ -33,12 +33,10 @@ stages:
     - script: nbgv cloud
       displayName: Set Version
 
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: pack
-        packagesToPack: Zeroconf/Zeroconf.csproj
-        configuration: $(BuildConfiguration)
-        packDirectory: $(Build.ArtifactStagingDirectory)\Packages    
+    - task: VSBuild@1
+      inputs:    
+        solution: .\Zeroconf\Zeroconf.csproj
+        msbuildArgs: '/restore /m /t:Pack /p:PackageOutputPath=$(Build.ArtifactStagingDirectory)\Packages'
       displayName: Build / Pack
 
     - publish: $(Build.ArtifactStagingDirectory)\Packages

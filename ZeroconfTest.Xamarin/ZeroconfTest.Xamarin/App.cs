@@ -57,6 +57,8 @@ namespace ZeroconfTest.Xam
                
             //});
 
+            output.Text += Environment.NewLine;
+
             responses = await ZeroconfResolver.BrowseDomainsAsync();
             foreach (var service in responses)
             {
@@ -78,11 +80,33 @@ namespace ZeroconfTest.Xam
 
             //});
 
+            output.Text += Environment.NewLine;
 
-            var domains = await ZeroconfResolver.BrowseDomainsAsync();
+            IReadOnlyList<string> domains;
+            if (ZeroconfResolver.IsiOSWorkaroundEnabled)
+            {
+                // Xamarin.iOS only, running on iOS 14.5+
+                //
+                // Demonstrates how using ZeroconfResolver.GetiOSInfoPlistServices() is much faster than ZeroconfResolver.BrowseDomainsAsync()
+                //
+                // In real life, you'd only query the domains if you were planning on presenting the user with a choice of domains to browse,
+                //  or the app knows in advance there will be a choice and what the domain names would be
+                //
+                // This code assumes there will only be one domain returned ("local.") In general, if you don't have a requirement to handle domains,
+                //  just call GetiOSInfoPlistServices() with zero arguments
 
-            responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));
-                
+                var iosDomains = await ZeroconfResolver.GetiOSDomains();
+                string selectedDomain = (iosDomains.Count > 0) ? iosDomains[0] : null;
+
+                domains = ZeroconfResolver.GetiOSInfoPlistServices(selectedDomain);
+            }
+            else
+            {
+                var browseDomains = await ZeroconfResolver.BrowseDomainsAsync();
+                domains = browseDomains.Select(g => g.Key).ToList();
+            }
+
+            responses = await ZeroconfResolver.ResolveAsync(domains);
 
             foreach (var resp in responses)
             {
