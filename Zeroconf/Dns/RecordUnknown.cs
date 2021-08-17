@@ -8,7 +8,7 @@ namespace Heijden.DNS
 		public RecordUnknown(RecordReader rr)
 		{
 			// re-read length
-			ushort RDLENGTH = rr.ReadUInt16(-2);
+			var RDLENGTH = rr.ReadUInt16(-2);
 			RDATA = rr.ReadBytes(RDLENGTH);
 		}
 	}

@@ -71,7 +71,7 @@ namespace Heijden.DNS
 		public string ReadDomainName()
 		{
 			var bytes = new List<byte>();
-			int length = 0;
+			var length = 0;
 
 			// get  the length of the first label
 			while ((length = ReadByte()) != 0)
@@ -80,7 +80,7 @@ namespace Heijden.DNS
 				if ((length & 0xc0) == 0xc0)
 				{
 					// work out the existing domain name, copy this pointer
-					RecordReader newRecordReader = new RecordReader(m_Data, (length & 0x3f) << 8 | ReadByte());
+					var newRecordReader = new RecordReader(m_Data, (length & 0x3f) << 8 | ReadByte());
 					if (bytes.Count > 0)
 					{
 						return Encoding.UTF8.GetString(bytes.ToArray(), 0, bytes.Count) + newRecordReader.ReadDomainName();
@@ -105,7 +105,7 @@ namespace Heijden.DNS
 		{
 			short length = ReadByte();
 			var bytes = new List<byte>();
-			for (int i=0;i<length;i++)
+			for (var i=0;i<length;i++)
 				bytes.Add(ReadByte());
 			return Encoding.UTF8.GetString(bytes.ToArray(), 0, bytes.Count);
 		}
@@ -113,8 +113,8 @@ namespace Heijden.DNS
 		// changed 28 augustus 2008
 		public byte[] ReadBytes(int intLength)
 		{
-			byte[] list = new byte[intLength];
-			for (int intI = 0; intI < intLength; intI++)
+			var list = new byte[intLength];
+			for (var intI = 0; intI < intLength; intI++)
 				list[intI] = ReadByte();
 			return list;
 		}

@@ -28,7 +28,7 @@ namespace Heijden.DNS
 
 		public RecordTXT(RecordReader rr, int Length)
 		{
-			int pos = rr.Position;
+			var pos = rr.Position;
 			TXT = new List<string>();
             while (
                 ((rr.Position - pos) < Length) &&
@@ -41,8 +41,8 @@ namespace Heijden.DNS
 
 		public override string ToString()
 		{
-			StringBuilder sb = new StringBuilder();
-			foreach (string txt in TXT)
+			var sb = new StringBuilder();
+			foreach (var txt in TXT)
 				sb.AppendFormat("\"{0}\" ", txt);
 			return sb.ToString().TrimEnd();
 		}

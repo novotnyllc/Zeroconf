@@ -89,7 +89,7 @@ namespace Zeroconf
 
         static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress, ResolveOptions options)
         {
-            List<string> ipv4Adresses = response.Answers
+            var ipv4Adresses = response.Answers
                                       .Select(r => r.RECORD)
                                       .OfType<RecordA>()
                                       .Concat(response.Additionals
@@ -99,7 +99,7 @@ namespace Zeroconf
                                       .Distinct()
                                       .ToList();
 
-            List<string> ipv6Adresses = response.Answers
+            var ipv6Adresses = response.Answers
                                       .Select(r => r.RECORD)
                                       .OfType<RecordAAAA>()
                                       .Concat(response.Additionals

@@ -68,7 +68,7 @@ namespace Heijden.DNS
 			//Server = iPEndPoint;
 			TimeStamp = DateTime.Now;
 			MessageSize = data.Length;
-			RecordReader rr = new RecordReader(data);
+			var rr = new RecordReader(data);
 
 			Questions = new List<Question>();
 			Answers = new List<AnswerRR>();
@@ -80,21 +80,21 @@ namespace Heijden.DNS
 			//if (header.RCODE != RCode.NoError)
 			//	Error = header.RCODE.ToString();
 
-			for (int intI = 0; intI < header.QDCOUNT; intI++)
+			for (var intI = 0; intI < header.QDCOUNT; intI++)
 			{
 				Questions.Add(new Question(rr));
 			}
 
-			for (int intI = 0; intI < header.ANCOUNT; intI++)
+			for (var intI = 0; intI < header.ANCOUNT; intI++)
 			{
 				Answers.Add(new AnswerRR(rr));
 			}
 
-			for (int intI = 0; intI < header.NSCOUNT; intI++)
+			for (var intI = 0; intI < header.NSCOUNT; intI++)
 			{
 				Authorities.Add(new AuthorityRR(rr));
 			}
-			for (int intI = 0; intI < header.ARCOUNT; intI++)
+			for (var intI = 0; intI < header.ARCOUNT; intI++)
 			{
 				Additionals.Add(new AdditionalRR(rr));
 			}
@@ -126,8 +126,8 @@ namespace Heijden.DNS
 		{
 			get
 			{
-				List<RecordTXT> list = new List<RecordTXT>();
-				foreach (AnswerRR answerRR in this.Answers)
+				var list = new List<RecordTXT>();
+				foreach (var answerRR in this.Answers)
 				{
                     if (answerRR.RECORD is RecordTXT record)
                         list.Add(record);
@@ -143,8 +143,8 @@ namespace Heijden.DNS
 		{
 			get
 			{
-				List<RecordA> list = new List<RecordA>();
-				foreach (AnswerRR answerRR in this.Answers)
+				var list = new List<RecordA>();
+				foreach (var answerRR in this.Answers)
 				{
                     if (answerRR.RECORD is RecordA record)
                         list.Add(record);
@@ -160,8 +160,8 @@ namespace Heijden.DNS
 		{
 			get
 			{
-				List<RecordPTR> list = new List<RecordPTR>();
-				foreach (AnswerRR answerRR in this.Answers)
+				var list = new List<RecordPTR>();
+				foreach (var answerRR in this.Answers)
 				{
                     if (answerRR.RECORD is RecordPTR record)
                         list.Add(record);
@@ -195,8 +195,8 @@ namespace Heijden.DNS
 		{
 			get
 			{
-				List<RecordAAAA> list = new List<RecordAAAA>();
-				foreach (AnswerRR answerRR in this.Answers)
+				var list = new List<RecordAAAA>();
+				foreach (var answerRR in this.Answers)
 				{
                     if (answerRR.RECORD is RecordAAAA record)
                         list.Add(record);
@@ -245,7 +245,7 @@ namespace Heijden.DNS
 		{
 			get
 			{
-				List<RR> list = new List<RR>();
+				var list = new List<RR>();
 				foreach (RR rr in this.Answers)
 				{
 					list.Add(rr);

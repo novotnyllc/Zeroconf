@@ -181,7 +181,7 @@ namespace Heijden.DNS
 				return oldValue;
 
 			// get some mask to put on
-			int mask = (2 << (length - 1)) - 1;
+			var mask = (2 << (length - 1)) - 1;
 
 			// clear out value
 			oldValue &= (ushort)~(mask << position);
@@ -198,7 +198,7 @@ namespace Heijden.DNS
 				return 0;
 
 			// get some mask to put on
-			int mask = (2 << (length - 1)) - 1;
+			var mask = (2 << (length - 1)) - 1;
 
 			// shift down to get some value and mask it
 			return (ushort)((oldValue >> position) & mask);
@@ -211,7 +211,7 @@ namespace Heijden.DNS
 		{
 			get
 			{
-				List<byte> data = new List<byte>();
+				var data = new List<byte>();
 				data.AddRange(WriteShort(ID));
 				data.AddRange(WriteShort(Flags));
 				data.AddRange(WriteShort(QDCOUNT));

@@ -276,7 +276,7 @@ namespace Zeroconf
         {
             get
             {
-                bool result = false;
+                var result = false;
 
 #if __IOS__
                 if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5) && !UseBSDSocketsZeroconfOniOS)
@@ -296,7 +296,7 @@ namespace Zeroconf
         /// <returns></returns>
         public static IReadOnlyList<string> GetiOSInfoPlistServices(string domain = null)
         {
-            List<string> serviceList = new List<string>();
+            var serviceList = new List<string>();
 
 #if __IOS__
             if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5) && !UseBSDSocketsZeroconfOniOS)
@@ -314,19 +314,25 @@ namespace Zeroconf
         /// <param name="scanTime">How long NSNetServiceBrowser will scan for mDNS domains (default is 2 seconds)</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task<IReadOnlyList<string>> GetiOSDomains(TimeSpan scanTime = default(TimeSpan),
+        public static
+#if __IOS__
+            async 
+#endif
+            Task<IReadOnlyList<string>> GetiOSDomains(TimeSpan scanTime = default(TimeSpan),
                                                                         CancellationToken cancellationToken = default(CancellationToken))
         {
-            List<string> domainList = new List<string>();
-
 #if __IOS__
+            var domainList = new List<string>();
+
             if (UIDevice.CurrentDevice.CheckSystemVersion(14, 5) && !UseBSDSocketsZeroconfOniOS)
             {
                 domainList.AddRange(await ZeroconfNetServiceBrowser.GetDomains((scanTime != default(TimeSpan)) ? scanTime : TimeSpan.FromSeconds(2), cancellationToken));
             }
+            return domainList;
+#else
+            return Task.FromResult((IReadOnlyList<string>)new List<string>());
 #endif
 
-            return domainList;
         }
     }
 }
