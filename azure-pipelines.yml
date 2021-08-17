@@ -36,7 +36,8 @@ stages:
     - task: VSBuild@1
       inputs:    
         solution: .\Zeroconf\Zeroconf.csproj
-        msbuildArgs: '/restore /m /t:Pack /p:PackageOutputPath=$(Build.ArtifactStagingDirectory)\Packages'
+        configuration: $(BuildConfiguration)
+        msbuildArgs: '/restore /m /t:Pack /p:PackageOutputPath=$(Build.ArtifactStagingDirectory)\Packages'        
       displayName: Build / Pack
 
     - publish: $(Build.ArtifactStagingDirectory)\Packages
