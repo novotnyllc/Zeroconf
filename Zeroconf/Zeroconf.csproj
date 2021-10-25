@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.4.231" PrivateAssets="all" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.4.244" PrivateAssets="all" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
   
