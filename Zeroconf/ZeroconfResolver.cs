@@ -142,7 +142,8 @@ namespace Zeroconf
 
                 var svc = new Service
                 {
-                    Name = srvRec.RR.NAME,
+                    Name = ptrRec.RR.NAME,
+                    SrvName = srvRec.RR.NAME,
                     Port = srvRec.PORT,
                     Ttl = (int)srvRec.RR.TTL,
 

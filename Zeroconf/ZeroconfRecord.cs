@@ -50,6 +50,11 @@ namespace Zeroconf
         string Name { get; }
 
         /// <summary>
+        ///     Name
+        /// </summary>
+        string SrvName { get; }
+
+        /// <summary>
         ///     Port
         /// </summary>
         int Port { get; }
@@ -154,7 +159,7 @@ namespace Zeroconf
 
         internal void AddService(IService service)
         {
-            services[service.Name] = service ?? throw new ArgumentNullException(nameof(service));
+            services[service.SrvName] = service ?? throw new ArgumentNullException(nameof(service));
         }
     }
 
@@ -163,6 +168,7 @@ namespace Zeroconf
         readonly List<IReadOnlyDictionary<string, string>> properties = new List<IReadOnlyDictionary<string, string>>();
 
         public string Name { get; set; }
+        public string SrvName { get; set; }
         public int Port { get; set; }
         public int Ttl { get; set; }
 
@@ -172,7 +178,7 @@ namespace Zeroconf
         {
             var sb = new StringBuilder();
 
-            sb.Append($"Service: {Name} Port: {Port}, TTL: {Ttl}, PropertySets: {properties.Count}");
+            sb.Append($"Service: {Name} SRVName: {SrvName} Port: {Port}, TTL: {Ttl}, PropertySets: {properties.Count}");
 
             if (properties.Any())
             {
