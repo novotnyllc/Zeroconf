@@ -46,12 +46,12 @@ namespace Zeroconf
     {
         /// <summary>
         ///     This is the name retrieved from the PTR record
-        /// e.g. _http._tcp.local
+        /// e.g. _http._tcp.local.
         /// </summary>
         string Name { get; }
 
         /// <summary>
-        ///     This is the name retrieved from the SRV record e.g. myserver._http._tcp.local
+        ///     This is the name retrieved from the SRV record e.g. myserver._http._tcp.local.
         /// </summary>
         string ServiceName { get; }
 
