@@ -89,7 +89,7 @@ namespace Zeroconf
                     {
                         foreach (var service in host.Services)
                         {
-                            var keyValue = new Tuple<string, string>(host.DisplayName, service.Key);
+                            var keyValue = new Tuple<string, string>(host.DisplayName, service.Value.Name);
                             if (discoveredHosts.Contains(keyValue))
                             {
                                 remainingHosts.Remove(keyValue);

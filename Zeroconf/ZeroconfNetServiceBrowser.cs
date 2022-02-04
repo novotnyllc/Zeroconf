@@ -1,4 +1,4 @@
-#if __IOS__
+﻿#if __IOS__
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -75,7 +75,7 @@ namespace Zeroconf
                     foreach (var ipAddr in host.IPAddresses)
                     {
                         IntermediateResult b = new IntermediateResult();
-                        b.ServiceNameAndDomain = service.Key;
+                        b.ServiceNameAndDomain = service.Value.Name;
                         b.HostIPAndService = $"{ipAddr}: {BonjourBrowser.GetServiceType(service.Value.Name, includeTcpUdpDelimiter: false)}";
 
                         resultsList.Add(b);
@@ -83,7 +83,7 @@ namespace Zeroconf
                         // Simpleminded callback implementation
                         if (callback != null)
                         {
-                            callback(service.Key, ipAddr);
+                            callback(service.Value.Name, ipAddr);
                         }
                     }
                 }

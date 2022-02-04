@@ -45,9 +45,15 @@ namespace Zeroconf
     public interface IService
     {
         /// <summary>
-        ///     Name
+        ///     This is the name retrieved from the PTR record
+        /// e.g. _http._tcp.local.
         /// </summary>
         string Name { get; }
+
+        /// <summary>
+        ///     This is the name retrieved from the SRV record e.g. myserver._http._tcp.local.
+        /// </summary>
+        string ServiceName { get; }
 
         /// <summary>
         ///     Port
@@ -69,9 +75,9 @@ namespace Zeroconf
     /// <summary>
     ///     A ZeroConf record response
     /// </summary>
-    class ZeroconfHost : IZeroconfHost, IEquatable<ZeroconfHost>, IEquatable<IZeroconfHost>
+    internal class ZeroconfHost : IZeroconfHost, IEquatable<ZeroconfHost>, IEquatable<IZeroconfHost>
     {
-        readonly Dictionary<string, IService> services = new Dictionary<string, IService>();
+        private readonly Dictionary<string, IService> services = new Dictionary<string, IService>();
 
         public bool Equals(IZeroconfHost other)
         {
@@ -80,8 +86,16 @@ namespace Zeroconf
 
         public bool Equals(ZeroconfHost other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             return string.Equals(Id, other.Id) && string.Equals(IPAddress, other.IPAddress);
         }
 
@@ -116,9 +130,21 @@ namespace Zeroconf
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
             return Equals((ZeroconfHost)obj);
         }
 
@@ -127,7 +153,7 @@ namespace Zeroconf
             unchecked
             {
                 var addressesHash = IPAddresses?.Aggregate(0, (current, address) => (current * 397) ^ address.GetHashCode()) ?? 0;
-                return ((Id != null ? Id.GetHashCode() : 0)*397) ^ addressesHash;
+                return ((Id != null ? Id.GetHashCode() : 0) * 397) ^ addressesHash;
             }
         }
 
@@ -138,31 +164,42 @@ namespace Zeroconf
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append($"Id: {Id}, DisplayName: {DisplayName}, IPs: {string.Join(", ", IPAddresses)}, Services: {services.Count}");
+            sb.AppendLine("| ----------------------------------------------");
+            sb.AppendLine("| HOST");
+            sb.AppendLine("| ----------------------------------------------");
+            sb.AppendLine($"| Id: {Id}\n| DisplayName: {DisplayName}\n| IPs: {string.Join(", ", IPAddresses)}\n| Services: {services.Count}");
 
             if (services.Any())
             {
-                sb.AppendLine();
-                foreach (var svc in services)
+                var i = 0;
+                foreach (var service in services)
                 {
-                    sb.AppendLine(svc.Value.ToString());
+                    sb.AppendLine("\t| -------------------");
+                    sb.AppendLine($"\t| Service #{i++}");
+                    sb.AppendLine("\t| -------------------");
+                    sb.AppendLine(service.Value.ToString());
+                    sb.AppendLine("\t| -------------------");
                 }
+
             }
+
+            sb.AppendLine("| ---------------------------------------------");
 
             return sb.ToString();
         }
 
         internal void AddService(IService service)
         {
-            services[service.Name] = service ?? throw new ArgumentNullException(nameof(service));
+            services[service.ServiceName] = service ?? throw new ArgumentNullException(nameof(service));
         }
     }
 
-    class Service : IService
+    internal class Service : IService
     {
-        readonly List<IReadOnlyDictionary<string, string>> properties = new List<IReadOnlyDictionary<string, string>>();
+        private readonly List<IReadOnlyDictionary<string, string>> properties = new List<IReadOnlyDictionary<string, string>>();
 
         public string Name { get; set; }
+        public string ServiceName { get; set; }
         public int Port { get; set; }
         public int Ttl { get; set; }
 
@@ -172,23 +209,23 @@ namespace Zeroconf
         {
             var sb = new StringBuilder();
 
-            sb.Append($"Service: {Name} Port: {Port}, TTL: {Ttl}, PropertySets: {properties.Count}");
+            sb.Append($"\t| Service: {Name}\n\t| ServiceName: {ServiceName}\n\t| Port: {Port}\n\t| TTL: {Ttl}\n\t| PropertySets: {properties.Count}");
 
             if (properties.Any())
             {
                 sb.AppendLine();
                 for (var i = 0; i < properties.Count; i++)
                 {
-                    sb.Append($"Begin Property Set #{i}");
+                    sb.AppendLine("\t\t| -------------------");
+                    sb.Append($"\t\t| Property Set #{i}");
                     sb.AppendLine();
-                    sb.AppendLine("-------------------");
+                    sb.AppendLine("\t\t| -------------------");
 
                     foreach (var kvp in properties[i])
                     {
-                        sb.Append($"{kvp.Key} = {kvp.Value}");
-                        sb.AppendLine();
+                        sb.AppendLine($"\t\t| {kvp.Key} = {kvp.Value}");
                     }
-                    sb.AppendLine("-------------------");
+                    sb.Append("\t\t| -------------------");
                 }
             }
 
@@ -198,7 +235,9 @@ namespace Zeroconf
         internal void AddPropertySet(IReadOnlyDictionary<string, string> set)
         {
             if (set == null)
+            {
                 throw new ArgumentNullException(nameof(set));
+            }
 
             properties.Add(set);
         }

@@ -124,7 +124,7 @@ namespace Zeroconf
                 wrappedAction = (address, resp) =>
                 {
                     var zc = ResponseToZeroconf(resp, address, options);
-                    if (zc.Services.Any(s => options.Protocols.Contains(s.Key)))
+                    if (zc.Services.Any(s => options.Protocols.Contains(s.Value.Name)))
                     {
                         callback(zc);
                     }
@@ -138,7 +138,7 @@ namespace Zeroconf
                                  .ConfigureAwait(false);
 
             return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key, options))
-                       .Where(zh => zh.Services.Any(s => options.Protocols.Contains(s.Key))) // Ensure we only return records that have matching services
+                       .Where(zh => zh.Services.Any(s => options.Protocols.Contains(s.Value.Name))) // Ensure we only return records that have matching services
                        .ToList();
         }
 

@@ -13,6 +13,12 @@ The easiest way to get started is to use the NuGet package.
 
 Current Build Status: [![Build Status](https://dev.azure.com/clairernovotny/GitBuilds/_apis/build/status/Zeroconf%20-%20CI?branchName=master)](https://dev.azure.com/clairernovotny/GitBuilds/_build/latest?definitionId=37)
 
+## Migration from <= v3.5.11 to >=v3.6
+
+The key of the dictionary `IZeroconfHost.Services` of type `IReadOnlyDictionary<string, IService>` that is returned by e.g. `ResolveAsync` changed.
+Instead of `IService.Name` which is the PTR record name, now the name from the SRV record is used which is called `ServiceName` in `IService`.
+This allows to return more than one service of the same type from the same host. If you used the key of this dictonary (e.g. `s.Key`) for iteration now use `s.Value.Name`.
+
 ## Usage 
 
 There's are two methods with a few optional parameters:
