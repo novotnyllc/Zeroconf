@@ -126,7 +126,7 @@ namespace Zeroconf
                         || (options != null
                             && options.Protocols.Contains(ptrRec.RR.NAME))))
                 {
-                    z.DisplayName = ptrRec.PTRDNAME.Split('.')[0];
+                    z.DisplayName = ptrRec.PTRDNAME.Replace($".{ptrRec.RR.NAME}","");
                     dispNameSet = true;
                 }
 
