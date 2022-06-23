@@ -399,6 +399,7 @@ namespace Zeroconf
                 Service svc = new Service();
                 svc.Name = GetNsNetServiceName(nsNetService);
                 svc.Port = (int)nsNetService.Port;
+                svc.ServiceName = $"{nsNetService.Name}{nsNetService.Type}";
                 // svc.Ttl = is not available
 
                 NSData txtRecordData = nsNetService.GetTxtRecordData();
