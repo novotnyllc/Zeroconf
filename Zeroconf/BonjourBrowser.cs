@@ -1,4 +1,4 @@
-﻿#if __IOS__
+#if __IOS__
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -399,6 +399,7 @@ namespace Zeroconf
                 Service svc = new Service();
                 svc.Name = GetNsNetServiceName(nsNetService);
                 svc.Port = (int)nsNetService.Port;
+                svc.ServiceName = GetNsNetServiceFullName(nsNetService);
                 // svc.Ttl = is not available
 
                 NSData txtRecordData = nsNetService.GetTxtRecordData();
@@ -483,6 +484,17 @@ namespace Zeroconf
         string GetNsNetServiceName(NSNetService service)
         {
             return $"{service.Type}{service.Domain}";
+        }
+
+        string GetNsNetServiceFullName(NSNetService service)
+        {
+            string serviceUniqueName = service.HostName;
+            // if the HostName includes the domain (usually does in the NSNetService)
+            if (serviceUniqueName.Contains(".")) { 
+                // remove the domain
+                serviceUniqueName = serviceUniqueName.Split(".")[0];
+            }
+            return $"{serviceUniqueName}.{service.Type}{service.Domain}";
         }
 
         string GetZeroconfHostKey(NSNetService service)

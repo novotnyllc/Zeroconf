@@ -190,7 +190,13 @@ namespace Zeroconf
 
         internal void AddService(IService service)
         {
-            services[service.ServiceName] = service ?? throw new ArgumentNullException(nameof(service));
+            if (service is null) {
+                throw new ArgumentNullException(nameof(service));
+            }
+            if (service.ServiceName is null) {
+                throw new ArgumentNullException(nameof(service.ServiceName));
+            }
+            services[service.ServiceName] = service;
         }
     }
 
