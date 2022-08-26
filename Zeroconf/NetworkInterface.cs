@@ -28,7 +28,8 @@ namespace Zeroconf
             // populate list with all adapters if none specified
             if(netInterfacesToSendRequestOn == null || !netInterfacesToSendRequestOn.Any())
             {
-                netInterfacesToSendRequestOn = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces();
+                netInterfacesToSendRequestOn = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
+                                                .Where(inter => inter.Supports(NetworkInterfaceComponent.IPv4));
             }
                                     
             var tasks = netInterfacesToSendRequestOn
