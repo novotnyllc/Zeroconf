@@ -8,9 +8,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Foundation;
 using CoreFoundation;
+using Foundation;
+using Network;
+
 
 namespace Zeroconf
 {
@@ -18,7 +19,6 @@ namespace Zeroconf
     {
         NSNetServiceBrowser netServiceBrowser = new NSNetServiceBrowser();
 
-        Dictionary<string, NSNetService> discoveredServiceDict = new Dictionary<string, NSNetService>();
         Dictionary<string, ZeroconfHost> zeroconfHostDict = new Dictionary<string, ZeroconfHost>();
         HashSet<string> domainHash = new HashSet<string>();
 
@@ -40,7 +40,7 @@ namespace Zeroconf
             netServiceBrowser.NotSearched += Browser_NotSearched;
             netServiceBrowser.SearchStopped += Browser_SearchStopped;
 
-            netServiceResolveTimeout = (resolveTimeout != default(TimeSpan)) ? resolveTimeout.TotalSeconds : 5D;
+            netServiceResolveTimeout = (resolveTimeout != default(TimeSpan)) ? resolveTimeout.TotalSeconds : 5d;
         }
 
         private void Browser_FoundDomain(object sender, NSNetDomainEventArgs e)
@@ -63,23 +63,17 @@ namespace Zeroconf
 
         private void Browser_FoundService(object sender, NSNetServiceEventArgs e)
         {
-            NSNetService netService = e.Service;
-
-            netService.AddressResolved += NetService_AddressResolved;
-            netService.Stopped += NetService_Stopped;
-            netService.ResolveFailure += NetService_ResolveFailure;
-
-            Debug.WriteLine($"{nameof(Browser_FoundService)}: Name {netService?.Name} Type {netService?.Type} Domain {netService?.Domain} " +
-                $"HostName {netService?.HostName} Port {netService?.Port} MoreComing {e.MoreComing.ToString()}");
-
-            if (netService != null)
+            if (e.Service is NSNetService netService)
             {
+                netService.AddressResolved += NetService_AddressResolved;
+                netService.Stopped += NetService_Stopped;
+                netService.ResolveFailure += NetService_ResolveFailure;
+
+                Debug.WriteLine($"{nameof(Browser_FoundService)}: Name {netService?.Name} Type {netService?.Type} Domain {netService?.Domain} " +
+                    $"HostName {netService?.HostName} Port {netService?.Port} MoreComing {e.MoreComing.ToString()}");
+
                 Debug.WriteLine($"{nameof(Browser_FoundService)}: {nameof(netService)}.Resolve({netServiceResolveTimeout.ToString()})");
                 netService.Resolve(netServiceResolveTimeout);
-            }
-            else
-            {
-                Debug.WriteLine($"{nameof(Browser_FoundService)}: service is null");
             }
         }
 
@@ -87,43 +81,10 @@ namespace Zeroconf
         {
             if (sender is NSNetService netService)
             {
-                netService = (NSNetService)sender;
-
                 Debug.WriteLine($"{nameof(NetService_AddressResolved)}: Name {netService?.Name} Type {netService?.Type} Domain {netService?.Domain} " +
                     $"HostName {netService?.HostName} Port {netService?.Port} Addresses {GetZeroconfHostKey(netService)}");
 
-                if (netService.TxtRecordData != null)
-                {
-                    NSDictionary dict = NSNetService.DictionaryFromTxtRecord(netService.TxtRecordData);
-                    if (dict != null)
-                    {
-                        if (dict.Count > 0)
-                        {
-                            foreach (var key in dict.Keys)
-                            {
-                                Debug.WriteLine($"{nameof(Browser_FoundService)}: Key {key} Value {dict[key].ToString()}");
-                            }
-                        }
-                        else
-                        {
-                            Debug.WriteLine($"{nameof(Browser_FoundService)}: Service.DictionaryFromTxtRecord has 0 entries");
-                        }
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"{nameof(Browser_FoundService)}: Service.DictionaryFromTxtRecord returned null");
-                    }
-                }
-                else
-                {
-                    Debug.WriteLine($"{nameof(Browser_FoundService)}: TxtRecordData is null");
-                }
-
-                string serviceKey = GetNsNetServiceKey(netService);
-                lock (discoveredServiceDict)
-                {
-                    discoveredServiceDict[serviceKey] = netService;
-                }
+                RefreshZeroconfHostDict(netService);
             }
         }
 
@@ -176,13 +137,17 @@ namespace Zeroconf
         {
             NSNetService service = e.Service;
 
-            Debug.WriteLine($"{nameof(Browser_ServiceRemoved)}: Name {service.Name} Type {service.Type} Domain {service.Domain} " + 
+            Debug.WriteLine($"{nameof(Browser_ServiceRemoved)}: Name {service.Name} Type {service.Type} Domain {service.Domain} " +
                 $"HostName {service.HostName} Port {service.Port} MoreComing {e.MoreComing.ToString()}");
 
-            string serviceKey = GetNsNetServiceKey(service);
-            lock (discoveredServiceDict)
+            string hostKey = GetZeroconfHostKey(service);
+            string serviceKey = GetNsNetServiceName(service);
+            lock (zeroconfHostDict)
             {
-                discoveredServiceDict.Remove(serviceKey);
+                if (zeroconfHostDict.TryGetValue(hostKey, out var zeroconfHost))
+                {
+                    zeroconfHost.RemoveService(serviceKey);
+                }
             }
         }
 
@@ -264,16 +229,6 @@ namespace Zeroconf
 
             // All previous service discovery results are discarded
 
-            lock (discoveredServiceDict)
-            {
-                discoveredServiceDict.Clear();
-            }
-
-            lock (zeroconfHostDict)
-            {
-                zeroconfHostDict.Clear();
-            }
-
             string serviceType = string.Empty;
             string domain = string.Empty;
 
@@ -315,6 +270,7 @@ namespace Zeroconf
             netServiceBrowser.SearchForServices(serviceType, domain);
         }
 
+
         public void StopServiceSearch()
         {
             Debug.WriteLine($"{nameof(StopServiceSearch)}: {nameof(netServiceBrowser)}.Stop()");
@@ -351,123 +307,65 @@ namespace Zeroconf
 
         public IReadOnlyList<IZeroconfHost> ReturnZeroconfHostResults()
         {
-            Debug.WriteLine($"{nameof(ReturnZeroconfHostResults)}");
-
             lock (zeroconfHostDict)
             {
-                zeroconfHostDict.Clear();
+                return zeroconfHostDict.Values.OfType<IZeroconfHost>().ToList();
             }
-
-            RefreshZeroconfHostDict();
-
-            List<IZeroconfHost> hostList = new List<IZeroconfHost>();
-
-            lock (zeroconfHostDict)
-            {
-                hostList.AddRange(zeroconfHostDict.Values);
-            }
-
-            Debug.WriteLine($"{nameof(ReturnZeroconfHostResults)}: Returning hostList.Count {hostList.Count}");
-
-            return hostList;
         }
 
-        void RefreshZeroconfHostDict()
+        void RefreshZeroconfHostDict(NSNetService nsNetService)
         {
-            // Do not walk discoveredServiceDict[] directly
-            // If a NSNetService is in discoveredServiceDict[], it was resolved successfully before it was added
-
-            List<NSNetService> nsNetServiceList = new List<NSNetService>();
-            lock (discoveredServiceDict)
-            {
-                nsNetServiceList.AddRange(discoveredServiceDict.Values);
-            }
-
-            // For each NSNetService, create a ZeroconfHost record
-
-            foreach (var nsNetService in nsNetServiceList)
-            {
-                Debug.WriteLine($"{nameof(ReturnZeroconfHostResults)}: Name {nsNetService.Name} Type {nsNetService.Type} Domain {nsNetService.Domain} " +
+            Debug.WriteLine($"{nameof(RefreshZeroconfHostDict)}: Name {nsNetService.Name} Type {nsNetService.Type} Domain {nsNetService.Domain} " +
                     $"HostName {nsNetService.HostName} Port {nsNetService.Port}");
 
-                // Obtain or create ZeroconfHost
+            // Obtain or create ZeroconfHost
 
-                ZeroconfHost host = GetOrCreateZeroconfHost(nsNetService);
+            ZeroconfHost host = GetOrCreateZeroconfHost(nsNetService);
 
-                // Add service to ZeroconfHost record
+            // Add service to ZeroconfHost record
 
-                Service svc = new Service();
-                svc.Name = GetNsNetServiceName(nsNetService);
-                svc.Port = (int)nsNetService.Port;
-                // svc.Ttl = is not available
+            Service svc = new Service();
+            svc.Name = GetNsNetServiceName(nsNetService);
+            svc.Port = (int)nsNetService.Port;
+            // svc.Ttl = is not available
 
-                NSData txtRecordData = nsNetService.GetTxtRecordData();
-                if (txtRecordData != null)
+            NSData txtRecordData = nsNetService.GetTxtRecordData();
+            if (txtRecordData is not null)
+            {
+                NSDictionary txtDict = NSNetService.DictionaryFromTxtRecord(txtRecordData);
+                if (txtDict?.Any() is true)
                 {
-                    NSDictionary txtDict = NSNetService.DictionaryFromTxtRecord(txtRecordData);
-                    if (txtDict != null)
-                    {
-                        if (txtDict.Count > 0)
-                        {
-                            foreach (var key in txtDict.Keys)
-                            {
-                                Debug.WriteLine($"{nameof(ReturnZeroconfHostResults)}: Key {key} Value {txtDict[key].ToString()}");
-                            }
+                    Debug.WriteLine($"{nameof(RefreshZeroconfHostDict)}: {string.Join(Environment.NewLine, txtDict.Select(r => $"Key {r.Key} Value {r.Value}"))}");
 
-                            Dictionary<string, string> propertyDict = new Dictionary<string, string>();
-
-                            foreach (var key in txtDict.Keys)
-                            {
-                                propertyDict[key.ToString()] = txtDict[key].ToString();
-                            }
-                            svc.AddPropertySet(propertyDict);
-                        }
-                        else
-                        {
-                            Debug.WriteLine($"{nameof(ReturnZeroconfHostResults)}: Service.DictionaryFromTxtRecord has 0 entries");
-                        }
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"{nameof(ReturnZeroconfHostResults)}: Service.DictionaryFromTxtRecord returned null");
-                    }
+                    Dictionary<string, string> propertyDict = txtDict.ToDictionary(r => r.Key.ToString(), r => r.Value.ToString());
+                    svc.AddPropertySet(propertyDict);
                 }
+            }
 
+            lock (zeroconfHostDict)
+            {
                 host.AddService(svc);
             }
         }
 
         ZeroconfHost GetOrCreateZeroconfHost(NSNetService service)
         {
-            ZeroconfHost host;
-            string hostKey = GetZeroconfHostKey(service);
+            var hostKey = GetZeroconfHostKey(service);
 
             lock (zeroconfHostDict)
             {
-                if (!zeroconfHostDict.TryGetValue(hostKey, out host))
+                if (!zeroconfHostDict.TryGetValue(hostKey, out var host))
                 {
-                    host = new ZeroconfHost();
-                    host.DisplayName = service.Name;
-
-                    List<string> ipAddrList = new List<string>();
-                    foreach (NSData address in service.Addresses)
+                    host = new()
                     {
-                        Sockaddr saddr = Sockaddr.CreateSockaddr(address.Bytes);
-                        IPAddress ipAddr = Sockaddr.CreateIPAddress(saddr);
-                        if (ipAddr != null)
-                        {
-                            ipAddrList.Add(ipAddr.ToString());
-                        }
-                    }
-                    host.IPAddresses = ipAddrList;
-
+                        DisplayName = service.Name,
+                        IPAddresses = service.Addresses?.Select(a => $@"{Sockaddr.CreateIPAddress(Sockaddr.CreateSockaddr(a.Bytes))}").ToList() ?? new(),
+                    };
                     host.Id = host.IPAddress;
-
                     zeroconfHostDict[hostKey] = host;
                 }
+                return host;
             }
-
-            return host;
         }
 
         //
@@ -487,33 +385,12 @@ namespace Zeroconf
 
         string GetZeroconfHostKey(NSNetService service)
         {
-            StringBuilder sb = new StringBuilder();
-
-            if (service.Addresses != null)
+            if (service.Addresses is null)
             {
-                foreach (NSData address in service.Addresses)
-                {
-                    if (address != null)
-                    {
-                        Sockaddr saddr = Sockaddr.CreateSockaddr(address.Bytes);
-                        IPAddress ipAddr = Sockaddr.CreateIPAddress(saddr);
-                        if (ipAddr != null)
-                        {
-                            sb.Append((sb.Length == 0 ? ipAddr.ToString() : $";{ipAddr.ToString()}"));
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"{nameof(GetZeroconfHostKey)}: Got null entry in NSNetService.Addresses, Service {service?.Name}");
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine($"{nameof(GetZeroconfHostKey)}: NSNetService.Addresses is null, Service {service?.Name}");
+                return string.Empty;
             }
 
-            return sb.ToString();
+            return string.Join(';', service.Addresses.Select(a => Sockaddr.CreateIPAddress(Sockaddr.CreateSockaddr(a.Bytes))));
         }
 
         public static List<string> GetNSBonjourServices(string domain = null)
