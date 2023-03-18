@@ -21,8 +21,6 @@ namespace Zeroconf
                 throw new NotImplementedException($"iOS NSNetServiceBrowser/NSNetService does not support per-network interface requests");
             }
 
-            List<IZeroconfHost> combinedResultList = new List<IZeroconfHost>();
-
             // Seems you must reuse the one BonjourBrowser (which is really an NSNetServiceBrowser)... multiple instances do not play well together
 
             BonjourBrowser bonjourBrowser = new BonjourBrowser(options.ScanTime);
@@ -37,18 +35,13 @@ namespace Zeroconf
 
                 // Simpleminded callback implementation
                 var results = bonjourBrowser.ReturnZeroconfHostResults();
-                foreach (var result in results)
+                foreach (var result in results.Where(r => r.Services.ContainsKey(protocol)))
                 {
-                    if (callback != null)
-                    {
-                        callback(result);
-                    }
+                    callback?.Invoke(result);
                 }
-
-                combinedResultList.AddRange(results);
             }
 
-            return combinedResultList;
+            return bonjourBrowser.ReturnZeroconfHostResults();
         }
 
         static internal async Task<ILookup<string, string>> BrowseDomainsAsync(BrowseDomainsOptions options,
