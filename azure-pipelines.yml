@@ -21,7 +21,9 @@ stages:
     steps:
     - task: UseDotNet@2
       inputs:
-        version: 6.x
+        version: |
+          6.x
+          8.x
 
     - task: DotNetCoreCLI@2  
       inputs:
