@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		azure-pipelines.yml = azure-pipelines.yml
 		README.md = README.md
 		version.json = version.json
+		global.json = global.json
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Apps", "Test Apps", "{3E523ACF-A6BA-4087-A736-5120415898BA}"
@@ -21,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroconfTest.Xam.Android", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroconfTest.UWP", "ZeroconfTest.UWP\ZeroconfTest.UWP.csproj", "{82EF02F7-621D-48F2-BEA8-59146AA081CA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zeroconf", "Zeroconf\Zeroconf.csproj", "{493B9F32-83FA-4B6E-AD59-C071BAB47229}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zeroconf", "Zeroconf\Zeroconf.csproj", "{493B9F32-83FA-4B6E-AD59-C071BAB47229}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZeroconfTest.Xam", "ZeroconfTest.Xamarin\ZeroconfTest.Xamarin\ZeroconfTest.Xam.csproj", "{2C61E999-CC6D-4181-86CA-2C037653CB93}"
 EndProject
