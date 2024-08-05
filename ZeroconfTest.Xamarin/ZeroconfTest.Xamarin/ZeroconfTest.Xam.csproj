@@ -2,9 +2,18 @@
   
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <BuildWithMSBuildOnMono>true</BuildWithMSBuildOnMono>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2662" />
     <ProjectReference Include="..\..\Zeroconf\Zeroconf.csproj" />
   </ItemGroup>
+
 </Project>
