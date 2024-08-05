@@ -1,12 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-
 using Foundation;
 using UIKit;
-
-using Xamarin.Forms;
 using ZeroconfTest.Xam;
 
 namespace ZeroconfTest.Xamarin.iOS
@@ -14,12 +7,9 @@ namespace ZeroconfTest.Xamarin.iOS
     // The UIApplicationDelegate for the application. This class is responsible for launching the 
     // User Interface of the application, as well as listening (and optionally responding) to 
     // application events from iOS.
-    [Foundation.Register("AppDelegate")]
-    public class AppDelegate : UIApplicationDelegate
+    [Register("AppDelegate")]
+    public class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
     {
-        // class-level declarations
-        UIWindow window;
-
         //
         // This method is invoked when the application has loaded and is ready to run. In this 
         // method you should instantiate the window, load the UI into it and then make the window
@@ -29,16 +19,11 @@ namespace ZeroconfTest.Xamarin.iOS
         //
         public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
-            Forms.Init();
+            global::Xamarin.Forms.Forms.Init();
+            LoadApplication(new App());
 
-            window = new UIWindow((RectangleF)UIScreen.MainScreen.Bounds)
-            {
-                RootViewController = App.GetMainPage().CreateViewController()
-            };
+            return base.FinishedLaunching(application, launchOptions);
 
-            window.MakeKeyAndVisible();
-
-            return true;
         }
     }
 }
