@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj" />
+    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
   </ItemGroup>
   
 </Project>
