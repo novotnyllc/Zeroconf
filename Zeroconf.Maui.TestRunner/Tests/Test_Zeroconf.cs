@@ -20,7 +20,6 @@ namespace Zeroconf.Maui.TestRunner.Tests
         /// </summary>
         List<string> mDNS_Services = new()
         {
-            // "_fcmd._udp.local.",
             "_printer._tcp.local.",
         };
 
