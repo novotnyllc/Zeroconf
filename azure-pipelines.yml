@@ -50,43 +50,52 @@ stages:
       displayName: Publish build packages
       artifact: BuildPackages
 
-    - publish: config
-      displayName: Publish signing config
-      artifact: config
-
 - stage: CodeSign
   condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
+  dependsOn: Build
+  variables: 
+    - group: Trusted Signing Config
   jobs:
   - deployment: CodeSign
     displayName: Code Signing
     pool:
       vmImage: windows-latest    
-    environment: Code Sign - CI
-    variables:
-    - group: Sign Client Credentials
-    strategy:
-      runOnce:
-        deploy:
-          steps: 
-          - task: DotNetCoreCLI@2
-            inputs:
-              command: custom
-              custom: tool
-              arguments: install --tool-path . SignClient
-            displayName: Install SignTool tool
 
-          - pwsh: |
-              .\SignClient "Sign" `
-              --baseDirectory "$(Pipeline.Workspace)\BuildPackages" `
-              --input "**/*.nupkg" `
-              --config "$(Pipeline.Workspace)\config\signclient.json" `
-              --user "$(SignClientUser)" `
-              --secret "$(SignClientSecret)" `
-              --name "Zeroconf" `
-              --description "Zeroconf" `
-              --descriptionUrl "https://github.com/novotnyllc/Zeroconf"
-            displayName: Sign packages
-              
-          - publish: $(Pipeline.Workspace)/BuildPackages
-            displayName: Publish Signed Packages
-            artifact: SignedPackages
+    steps: 
+
+    - download: current
+      artifact: BuildPackages
+
+    - task: UseDotNet@2
+      displayName: 'Use .NET SDK 9.x'
+      inputs:
+        version: 9.x
+
+    # Install the code signing tool
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: custom
+        custom: tool
+        arguments: install --tool-path . --prerelease sign
+      displayName: Install Sign CLI tool
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Azure - Claire Novotny LLC'
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
+          .\sign code trusted-signing `
+          "**/*.nupkg" `
+          --base-directory "$(Pipeline.Workspace)\BuildPackages" `
+          --publisher-name "Claire Novotny LLC" `
+          --description "Zeroconf" `
+          --description-url "https://github.com/novotnyllc/Zeroconf" `
+          --trusted-signing-endpoint "$(TrustedSigningEndpoint)" `
+          --trusted-signing-account "$(TrustedSigningAccount)" `
+          --trusted-signing-certificate-profile "$(TrustedSigningCertificateProfile)"
+      displayName: Sign artifacts
+
+    - publish: $(Pipeline.Workspace)/BuildPackages
+      displayName: Publish Signed Packages
+      artifact: SignedPackages
