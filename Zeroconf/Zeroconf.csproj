@@ -12,11 +12,12 @@
     <CodeAnalysisRuleSet>Zeroconf.ruleset</CodeAnalysisRuleSet>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Properties\Zeroconf.rd.xml" />
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.5.104" PrivateAssets="all" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.146" PrivateAssets="all" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
   
