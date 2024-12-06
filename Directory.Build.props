@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup>
     <ImplicitUsings>true</ImplicitUsings>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
   <ItemGroup>
