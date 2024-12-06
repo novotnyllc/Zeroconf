@@ -56,7 +56,7 @@ stages:
   variables: 
     - group: Trusted Signing Config
   jobs:
-  - deployment: CodeSign
+  - job: CodeSign
     displayName: Code Signing
     pool:
       vmImage: windows-latest    
