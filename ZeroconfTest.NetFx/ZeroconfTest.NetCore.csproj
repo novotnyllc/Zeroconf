@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0-windows;net8.0-windows</TargetFrameworks>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <UseWpf>true</UseWpf>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj" />
+    <ProjectReference Include="..\Zeroconf\Zeroconf.csproj">
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
   </ItemGroup>
   
 </Project>

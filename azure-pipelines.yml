@@ -20,9 +20,13 @@ stages:
 
     steps:
     - task: UseDotNet@2
-      displayName: Install .NET 8
+      displayName: Install .NET 9 SDK
       inputs:
-        version: 8.x
+        version: 9.x
+
+    - script: |
+        dotnet workload install maui-ios maui-maccatalyst
+      displayName: Install .NET Maui Workloads
 
     - task: DotNetCoreCLI@2  
       inputs:

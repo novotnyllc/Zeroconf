@@ -1,17 +1,28 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0;netstandard2.0;net48;xamarinios10</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0;netstandard2.0;net48;xamarinios10;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
+    <Copyright>© Claire Novotny 2016-2024</Copyright>
+    <PackageTags>zeroconf;bonjour;mdns;service;discovery;maui;xamarin;netstandard;universal</PackageTags>
     <Authors>Claire Novotny</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/novotnyllc/Zeroconf</PackageProjectUrl>
     <Description>Bonjour support for .NET 6, .NET 8, .NET Standard 2.0, .NET Framework, Xamarin, and UWP</Description>
-    <Copyright>© Claire Novotny 2016-2024</Copyright>
-    <PackageTags>zeroconf;bonjour;mdns;service;discovery;xamarin;netstandard;universal</PackageTags>
     <Product>Zeroconf</Product>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>Zeroconf.ruleset</CodeAnalysisRuleSet>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>latest</LangVersion>		
+    <ImplicitUsings>enable</ImplicitUsings>
+    <_mauiTfi>$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))</_mauiTfi>
+    <SupportedOSPlatformVersion Condition=" '$(_mauiTfi)' == 'ios'">12.2</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition=" '$(_mauiTfi)' == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" ('$(_mauiTfi)' == 'ios') or ('$(_mauiTfi)' == 'maccatalyst') ">
+    <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -29,5 +40,10 @@
       </AssemblyAttribute>
     </ItemGroup>
   </Target>
+  
+  <ItemGroup Condition=" '$(UseMaui)' == 'true' " >
+    <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.100" />
+    <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.100" />
+  </ItemGroup>
   
 </Project>

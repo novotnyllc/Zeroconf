@@ -1,0 +1,83 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM" />
+    <Platform Name="iPhone" />
+    <Platform Name="iPhoneSimulator" />
+    <Platform Name="Mixed Platforms" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="azure-pipelines.yml" />
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+    <File Path="version.json" />
+  </Folder>
+  <Folder Name="/Test Apps/">
+    <Project Path="Zeroconf.Maui.Test/Zeroconf.Maui.Test.csproj">
+      <Deploy />
+    </Project>
+    <Project Path="Zeroconf.Maui.TestRunner/Zeroconf.Maui.TestRunner.csproj">
+      <Deploy />
+    </Project>
+    <Project Path="ZeroconfTest.NetFx/ZeroconfTest.NetCore.csproj">
+      <Build Solution="*|ARM" Project="false" />
+      <Build Solution="*|iPhone" Project="false" />
+      <Build Solution="*|iPhoneSimulator" Project="false" />
+      <Build Solution="*|x64" Project="false" />
+      <Build Solution="*|x86" Project="false" />
+    </Project>
+    <Project Path="ZeroconfTest.UWP/ZeroconfTest.UWP.csproj" Id="82ef02f7-621d-48f2-bea8-59146aa081ca">
+      <Platform Solution="*|Any CPU" Project="x86" />
+      <Platform Solution="*|ARM" Project="ARM" />
+      <Platform Solution="*|iPhone" Project="x86" />
+      <Platform Solution="*|iPhoneSimulator" Project="x86" />
+      <Platform Solution="*|Mixed Platforms" Project="x86" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+      <Build Solution="*|Any CPU" Project="false" />
+      <Build Solution="*|iPhone" Project="false" />
+      <Build Solution="*|iPhoneSimulator" Project="false" />
+      <Deploy Solution="*|ARM" />
+      <Deploy Solution="*|Mixed Platforms" />
+      <Deploy Solution="*|x64" />
+      <Deploy Solution="*|x86" />
+    </Project>
+    <Project Path="ZeroconfTest.Xamarin/ZeroconfTest.Xamarin.Android/ZeroconfTest.Xam.Android.csproj" Id="e4f5ed14-322f-4d88-870c-1f5d3f4e0820">
+      <Build Solution="*|ARM" Project="false" />
+      <Build Solution="*|iPhone" Project="false" />
+      <Build Solution="*|iPhoneSimulator" Project="false" />
+      <Build Solution="*|x64" Project="false" />
+      <Build Solution="*|x86" Project="false" />
+      <Deploy Solution="*|Any CPU" />
+      <Deploy Solution="*|Mixed Platforms" />
+    </Project>
+    <Project Path="ZeroconfTest.Xamarin/ZeroconfTest.Xamarin.iOS/ZeroconfTest.Xam.iOS.csproj" Id="2cf5fa8c-4a53-4df2-bbb4-44003d8bf9cf">
+      <Platform Solution="*|Any CPU" Project="iPhone" />
+      <Platform Solution="*|ARM" Project="iPhone" />
+      <Platform Solution="*|iPhone" Project="iPhone" />
+      <Platform Solution="*|iPhoneSimulator" Project="iPhoneSimulator" />
+      <Platform Solution="*|Mixed Platforms" Project="iPhone" />
+      <Platform Solution="*|x64" Project="iPhone" />
+      <Platform Solution="*|x86" Project="iPhone" />
+      <Build Solution="*|Any CPU" Project="false" />
+      <Build Solution="*|ARM" Project="false" />
+      <Build Solution="*|x64" Project="false" />
+      <Build Solution="*|x86" Project="false" />
+      <Deploy Solution="*|iPhone" />
+      <Deploy Solution="*|iPhoneSimulator" />
+      <Deploy Solution="*|Mixed Platforms" />
+    </Project>
+    <Project Path="ZeroconfTest.Xamarin/ZeroconfTest.Xamarin/ZeroconfTest.Xam.csproj" />
+  </Folder>
+  <Project Path="Zeroconf/Zeroconf.csproj" />
+  <Properties Name="MonoDevelopProperties">
+    <Property Name="$0.DotNetNamingPolicy" Value="$1" />
+    <Property Name="$0.StandardHeader" Value="$2" />
+    <Property Name="$1.DirectoryNamespaceAssociation" Value="PrefixedHierarchical" />
+    <Property Name="Policies" Value="$0" />
+  </Properties>
+</Solution>
