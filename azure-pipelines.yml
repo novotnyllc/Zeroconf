@@ -81,6 +81,7 @@ stages:
     - task: AzureCLI@2
       inputs:
         azureSubscription: 'Azure - Claire Novotny LLC'
+        visibleAzLogin: false
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
