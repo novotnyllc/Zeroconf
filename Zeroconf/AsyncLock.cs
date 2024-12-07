@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Zeroconf
 {
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
     class AsyncLock
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
     {
         readonly SemaphoreSlim m_semaphore;
         readonly Task<Releaser> m_releaser;
-        
+
         public AsyncLock()
         {
             m_semaphore = new SemaphoreSlim(1);
