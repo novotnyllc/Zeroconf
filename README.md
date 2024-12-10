@@ -1,7 +1,7 @@
 Zeroconf
 ==========
 
-# Bonjour/mDNS discovery support for .NET v4.8, UWP, Xamarin & .NET Standard 2.0
+# Bonjour/mDNS discovery support for .NET 6, .NET 8, .NET Maui, .NET v4.8, UWP, , Xamarin & .NET Standard 2.0
 
 The core logic is implemented primarily .NET Standard 2.0. Due to networking APIs being platform-specific on earlier platforms, a platform-specific version is required. Just make sure that you also install the NuGet to your main app and you'll be all set.
 
