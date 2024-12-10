@@ -1,21 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using System.Windows.Threading;
+
 using Zeroconf;
 
 namespace ZeroconfTest.NetFx
@@ -38,10 +23,10 @@ namespace ZeroconfTest.NetFx
 
 
             var domains = await ZeroconfResolver.BrowseDomainsAsync();
-            
+
             var responses = await ZeroconfResolver.ResolveAsync(domains.Select(g => g.Key));
             // var responses = await ZeroconfResolver.ResolveAsync("_http._tcp.local.");
-            
+
             foreach (var resp in responses)
                 WriteLogLine(resp.ToString());
         }
@@ -49,7 +34,7 @@ namespace ZeroconfTest.NetFx
         async void Browse_Click(object sender, RoutedEventArgs e)
         {
             var responses = await ZeroconfResolver.BrowseDomainsAsync();
-            
+
             foreach (var service in responses)
             {
                 WriteLogLine(service.Key);
@@ -93,8 +78,8 @@ namespace ZeroconfTest.NetFx
 
         IDisposable listenSubscription;
         IObservable<ServiceAnnouncement> subscription;
-            
-        
+
+
         void StartStopListener_Click(object sender, RoutedEventArgs e)
         {
             try

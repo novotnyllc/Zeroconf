@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Net;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Heijden.DNS;
-using Type = Heijden.DNS.Type;
 
 namespace Zeroconf
 {
@@ -23,7 +18,7 @@ namespace Zeroconf
 
         static IEnumerable<string> BrowseResponseParser(Response response)
         {
-            return response.RecordsPTR.Select(ptr => ptr.PTRDNAME);
+            return response.RecordsPTR.Select(ptr => ptr.PTRDNAME.TrimEnd('.'));
         }
 
         static async Task<IDictionary<string, Response>> ResolveInternal(ZeroconfOptions options,
@@ -47,13 +42,14 @@ namespace Zeroconf
                     Debug.WriteLine($"IP: {addrString}, {(string.IsNullOrEmpty(name) ? string.Empty : $"Name: {name}, ")}Bytes: {buffer.Length}, IsResponse: {resp.header.QR}");
 
                     if (resp.header.QR)
-                    {   var key = $"{addrString}{(string.IsNullOrEmpty(name) ? "" : $": {name}")}";
+                    {
+                        var key = $"{addrString}{(string.IsNullOrEmpty(name) ? "" : $": {name}")}";
                         lock (dict)
                         {
                             dict[key] = resp;
                         }
 
-                        callback?.Invoke(key, resp);                        
+                        callback?.Invoke(key, resp);
                     }
                 }
 
@@ -63,7 +59,7 @@ namespace Zeroconf
                                                            options.ScanTime,
                                                            options.Retries,
                                                            (int)options.RetryDelay.TotalMilliseconds,
-                                                           Converter,                                                           
+                                                           Converter,
                                                            cancellationToken,
                                                            netInterfacesToSendRequestOn)
                                       .ConfigureAwait(false);
@@ -79,7 +75,7 @@ namespace Zeroconf
 
             foreach (var protocol in options.Protocols)
             {
-                var question = new Question(protocol, queryType, QClass.IN);
+                var question = new Question($"{protocol}.", queryType, QClass.IN);
 
                 req.AddQuestion(question);
             }
@@ -89,73 +85,66 @@ namespace Zeroconf
 
         static ZeroconfHost ResponseToZeroconf(Response response, string remoteAddress, ResolveOptions options)
         {
-            var ipv4Adresses = response.Answers
-                                      .Select(r => r.RECORD)
-                                      .OfType<RecordA>()
-                                      .Concat(response.Additionals
-                                                      .Select(r => r.RECORD)
-                                                      .OfType<RecordA>())
-                                      .Select(aRecord => aRecord.Address)
-                                      .Distinct()
-                                      .ToList();
 
-            var ipv6Adresses = response.Answers
-                                      .Select(r => r.RECORD)
-                                      .OfType<RecordAAAA>()
-                                      .Concat(response.Additionals
-                                                      .Select(r => r.RECORD)
-                                                      .OfType<RecordAAAA>())
-                                      .Select(aRecord => aRecord.Address)
-                                      .Distinct()
-                                      .ToList();
-                                      
-            var z = new ZeroconfHost
+
+
+
+            var host = new ZeroconfHost();
+            var services = new Dictionary<string, Service>(StringComparer.OrdinalIgnoreCase);
+
+            // 1. Process PTR records to discover service instances
+            foreach (var answer in response.Answers)
             {
-                IPAddresses = ipv4Adresses.Concat(ipv6Adresses).ToList()
-            };
-
-            z.Id = z.IPAddresses.FirstOrDefault() ?? remoteAddress;
-            
-            var dispNameSet = false;
-           
-            foreach (var ptrRec in response.RecordsPTR)
-            {
-                // set the display name if needed
-                if (!dispNameSet
-                    && (options == null
-                        || (options != null
-                            && options.Protocols.Contains(ptrRec.RR.NAME))))
+                if (answer.RECORD is RecordPTR ptr)
                 {
-                    z.DisplayName = ptrRec.PTRDNAME.Replace($".{ptrRec.RR.NAME}","");
-                    dispNameSet = true;
-                }
+                    // The PTR record gives us a full service instance name
+                    var fullName = ptr.PTRDNAME.TrimEnd('.');
+                    var labels = fullName.Split('.');
+                    if (labels.Length < 3)
+                        continue; // Not a valid service name
 
-                // Get the matching service records
-                var responseRecords = response.RecordsRR
-                                             .Where(r => r.NAME == ptrRec.PTRDNAME)
-                                             .Select(r => r.RECORD)
-                                             .ToList();
-
-                var srvRec = responseRecords.OfType<RecordSRV>().FirstOrDefault();
-                if (srvRec == null)
-                    continue; // Missing the SRV record, not valid
-
-                var svc = new Service
-                {
-                    Name = ptrRec.RR.NAME,
-                    ServiceName = srvRec.RR.NAME,
-                    Port = srvRec.PORT,
-                    Ttl = (int)srvRec.RR.TTL,
-
-                };
-
-                // There may be 0 or more text records - property sets
-                foreach (var txtRec in responseRecords.OfType<RecordTXT>())
-                {
-                    var set = new Dictionary<string, string>();
-                    foreach (var txt in txtRec.TXT)
+                    // The first label is the instance name
+                    var svc = new Service
                     {
-                        var split = txt.Split(new[] {'='}, 2);
+                        Name = labels[0],
+                        ServiceName = fullName
+                    };
+                    services[fullName] = svc;
+                }
+            }
+            // 2. Process SRV and TXT records to fill in details for each discovered service
+            // Note: DNS-SD records for a given service may appear in both Answers and Additionals.
+            var allRecords = response.Answers.Cast<RR>().Concat(response.Additionals.Cast<RR>()).ToList();
+
+            foreach (var record in allRecords)
+            {
+                if (record.RECORD is RecordSRV srv)
+                {
+                    var fullName = record.NAME.TrimEnd('.');
+                    if (!services.TryGetValue(fullName, out var svc))
+                        continue; // No PTR record for this service
+
+                    svc.Port = srv.PORT;
+                    svc.Ttl = (int)srv.RR.TTL;
+                    svc.Priority = srv.PRIORITY;
+                    svc.Weight = srv.WEIGHT;
+
+                    // Set the host's id if it hasn't already been set
+                    if (string.IsNullOrEmpty(host.Id))
+                    {
+                        host.Id = srv.TARGET.TrimEnd('.');
+                        host.DisplayName = srv.RR.NAME.Split('.')[0];
+                    }
+                }
+                else if (record.RECORD is RecordTXT txt)
+                {
+                    var fullName = record.NAME.TrimEnd('.');
+                    if (!services.TryGetValue(fullName, out var svc))
+                        continue; // No PTR record for this service
+                    var set = new Dictionary<string, string>();
+                    foreach (var txtRecord in txt.TXT)
+                    {
+                        var split = txtRecord.Split(new[] { '=' }, 2);
                         if (split.Length == 1)
                         {
                             if (!string.IsNullOrWhiteSpace(split[0]))
@@ -168,11 +157,35 @@ namespace Zeroconf
                     }
                     svc.AddPropertySet(set);
                 }
+            }
+            // 3. Process A and AAAA records to resolve IP addresses of the host
+            // The host's Id should have been set from an SRV record. Use that to match A/AAAA records.
 
-                z.AddService(svc);
+            var ipAddresses = new List<string>();
+            host.IPAddresses = ipAddresses;
+
+            foreach (var record in allRecords)
+            {
+                if (!string.IsNullOrEmpty(host.Id))
+                {
+                    if (record.RECORD is RecordA a && record.NAME.TrimEnd('.') == host.Id)
+                    {
+                        ipAddresses.Add(a.Address.ToString());
+                    }
+                    else if (record.RECORD is RecordAAAA aaaa && record.NAME.TrimEnd('.') == host.Id)
+                    {
+                        ipAddresses.Add(aaaa.Address.ToString());
+                    }
+                }
             }
 
-            return z;
+            // 4. Add all discovered services to the host
+            foreach (var service in services.Values)
+            {
+                host.AddService(service);
+            }
+
+            return host;
         }
 
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace Zeroconf
 {
@@ -64,6 +59,16 @@ namespace Zeroconf
         /// Time-to-live
         /// </summary>
         int Ttl { get; }
+
+        /// <summary>
+        /// Weight
+        /// </summary>
+        public int Weight { get; set; }
+
+        /// <summary>
+        /// Priority
+        /// </summary>
+        public int Priority { get; set; }
 
         /// <summary>
         ///     Properties of the object. Most services have a single set of properties, but some services
@@ -190,10 +195,12 @@ namespace Zeroconf
 
         internal void AddService(IService service)
         {
-            if (service is null) {
+            if (service is null)
+            {
                 throw new ArgumentNullException(nameof(service));
             }
-            if (service.ServiceName is null) {
+            if (service.ServiceName is null)
+            {
                 throw new ArgumentNullException(nameof(service.ServiceName));
             }
             services[service.ServiceName] = service;
@@ -208,6 +215,8 @@ namespace Zeroconf
         public string ServiceName { get; set; }
         public int Port { get; set; }
         public int Ttl { get; set; }
+        public int Weight { get; set; }
+        public int Priority { get; set; }
 
         public IReadOnlyList<IReadOnlyDictionary<string, string>> Properties => properties;
 
@@ -215,7 +224,7 @@ namespace Zeroconf
         {
             var sb = new StringBuilder();
 
-            sb.Append($"\t| Service: {Name}\n\t| ServiceName: {ServiceName}\n\t| Port: {Port}\n\t| TTL: {Ttl}\n\t| PropertySets: {properties.Count}");
+            sb.Append($"\t| Service: {Name}\n\t| ServiceName: {ServiceName}\n\t| Port: {Port}\n\t| Weight: {Weight}\n\t| Priority: {Priority}\n\t| TTL: {Ttl}\n\t| PropertySets: {properties.Count}");
 
             if (properties.Any())
             {

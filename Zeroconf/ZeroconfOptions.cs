@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Zeroconf
+﻿namespace Zeroconf
 {
     public abstract class ZeroconfOptions
     {
         int retries;
 
         protected ZeroconfOptions(string protocol) :
-            this(new[] {protocol})
+            this(new[] { protocol })
         {
         }
 
@@ -55,7 +49,7 @@ namespace Zeroconf
 
     public class BrowseDomainsOptions : ZeroconfOptions
     {
-        public BrowseDomainsOptions() : base("_services._dns-sd._udp.local.")
+        public BrowseDomainsOptions() : base("_services._dns-sd._udp.local")
         {
         }
     }

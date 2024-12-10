@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Heijden.DNS;
+﻿using Heijden.DNS;
 
 #if __IOS__
 using UIKit;
@@ -74,7 +68,7 @@ namespace Zeroconf
                 ScanTime = scanTime
             };
 
-            return await ResolveAsync(options, callback, cancellationToken, netInterfacesToSendRequestOn).ConfigureAwait(false);   
+            return await ResolveAsync(options, callback, cancellationToken, netInterfacesToSendRequestOn).ConfigureAwait(false);
         }
 
 
@@ -118,19 +112,19 @@ namespace Zeroconf
                                                                                 System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
         {
             Action<string, Response> wrappedAction = null;
-            
+
             if (callback != null)
             {
                 wrappedAction = (address, resp) =>
                 {
                     var zc = ResponseToZeroconf(resp, address, options);
-                    if (zc.Services.Any(s => options.Protocols.Contains(s.Value.Name)))
+                    if (options.Protocols.Any(p => zc.Services.Keys.Any(k => k.Contains(p))))
                     {
                         callback(zc);
                     }
                 };
             }
-            
+
             var dict = await ResolveInternal(options,
                                              wrappedAction,
                                              cancellationToken,
@@ -138,7 +132,7 @@ namespace Zeroconf
                                  .ConfigureAwait(false);
 
             return dict.Select(pair => ResponseToZeroconf(pair.Value, pair.Key, options))
-                       .Where(zh => zh.Services.Any(s => options.Protocols.Contains(s.Value.Name))) // Ensure we only return records that have matching services
+                       .Where(zh => options.Protocols.Any(p => zh.Services.Keys.Any(k => k.Contains(p)))) // Ensure we only return records that have matching services
                        .ToList();
         }
 
@@ -190,7 +184,7 @@ namespace Zeroconf
                                                                              System.Net.NetworkInformation.NetworkInterface[] netInterfacesToSendRequestOn = null)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
-       
+
 #if !__IOS__
             return await BrowseDomainsAsyncOriginal(options, callback, cancellationToken, netInterfacesToSendRequestOn);
 #else
@@ -228,7 +222,7 @@ namespace Zeroconf
                     }
                 };
             }
-            
+
             var dict = await ResolveInternal(options,
                                              wrappedAction,
                                              cancellationToken,
