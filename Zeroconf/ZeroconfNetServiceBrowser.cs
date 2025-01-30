@@ -23,7 +23,15 @@ namespace Zeroconf
 
             // Seems you must reuse the one BonjourBrowser (which is really an NSNetServiceBrowser)... multiple instances do not play well together
 
-            BonjourBrowser bonjourBrowser = new BonjourBrowser(options.ScanTime);
+            BonjourBrowser bonjourBrowser = new BonjourBrowser(options.ScanTime, 
+                callback != null ? (host) =>
+                {
+                    if (host.Services.Keys.Any(serviceKey => options.Protocols.Any(protocol => serviceKey.Contains(protocol))))
+                    {
+                        callback.Invoke(host);
+                    }
+                }
+            : null);
 
             foreach (var protocol in options.Protocols)
             {
@@ -34,11 +42,11 @@ namespace Zeroconf
                 bonjourBrowser.StopServiceSearch();
 
                 // Simpleminded callback implementation
-                var results = bonjourBrowser.ReturnZeroconfHostResults();
-                foreach (var result in results.Where(r => r.Services.ContainsKey(protocol)))
-                {
-                    callback?.Invoke(result);
-                }
+                //var results = bonjourBrowser.ReturnZeroconfHostResults();
+                //foreach (var result in results.Where(r => r.Services.Keys.Any(k => k.Contains(protocol))))
+                //{
+                //    callback?.Invoke(result);
+                //}
             }
 
             return bonjourBrowser.ReturnZeroconfHostResults();
