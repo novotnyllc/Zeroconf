@@ -40,13 +40,6 @@ namespace Zeroconf
                 await Task.Delay(options.ScanTime, cancellationToken).ConfigureAwait(false);
 
                 bonjourBrowser.StopServiceSearch();
-
-                // Simpleminded callback implementation
-                //var results = bonjourBrowser.ReturnZeroconfHostResults();
-                //foreach (var result in results.Where(r => r.Services.Keys.Any(k => k.Contains(protocol))))
-                //{
-                //    callback?.Invoke(result);
-                //}
             }
 
             return bonjourBrowser.ReturnZeroconfHostResults();

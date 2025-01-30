@@ -200,7 +200,7 @@ namespace Zeroconf
         }
     }
 
-    internal class Service : IService
+    internal class Service : IService, IEquatable<Service>, IEquatable<IService>
     {
         private readonly List<IReadOnlyDictionary<string, string>> properties = new List<IReadOnlyDictionary<string, string>>();
 
@@ -210,6 +210,40 @@ namespace Zeroconf
         public int Ttl { get; set; }
 
         public IReadOnlyList<IReadOnlyDictionary<string, string>> Properties => properties;
+
+        public bool Equals(IService other)
+        {
+            return Equals(other as Service);
+        }
+        public bool Equals(Service other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (!string.Equals(Name, other.Name) || !string.Equals(ServiceName, other.ServiceName) || Port != other.Port || Ttl != other.Ttl)
+            {
+                return false;
+            }
+            if (Properties.Count != other.Properties.Count)
+            {
+                return false;
+            }
+            for(int i=0; i<Properties.Count; i++)
+            {
+                if (!Properties[i].SequenceEqual(other.Properties[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         public override string ToString()
         {

@@ -29,13 +29,6 @@ namespace Zeroconf
         /// Implements iOS mDNS browse and resolve
         /// </summary>
         /// <param name="resolveTimeout">Time limit for NSNetService.Resolve() operation</param>
-        public BonjourBrowser(TimeSpan resolveTimeout = default(TimeSpan)) : this(resolveTimeout, null)
-        {
-        }
-        /// <summary>
-        /// Implements iOS mDNS browse and resolve
-        /// </summary>
-        /// <param name="resolveTimeout">Time limit for NSNetService.Resolve() operation</param>
         /// <param name="callback">Returns host information as it becomes available.</param>
         public BonjourBrowser(TimeSpan resolveTimeout = default(TimeSpan), Action<IZeroconfHost> callback = null)
         {
@@ -446,15 +439,10 @@ namespace Zeroconf
                 }
             }
             if (!host.Services.TryGetValue(svc.ServiceName, out var previousService)
-                || previousService.ToString() != svc.ToString()) // An explicit comparison would be more efficient but overkill here
+                || !svc.Equals(previousService))
             {
                 host.AddService(svc);
                 zeroConfHostCallback?.Invoke(host);
-            }
-            else
-            {
-                // Just in case the service data has changed and wasn't caught in the comparison
-                host.AddService(svc);
             }
         }
 
