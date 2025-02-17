@@ -66,9 +66,17 @@ namespace Zeroconf
             if (adapter.NetworkInterfaceType == NetworkInterfaceType.Loopback)
                 return; // strip out loopback addresses
 
-            var p = adapter.GetIPProperties().GetIPv4Properties();
-            if (null == p)
-                return; // IPv4 is not configured on this adapter
+            try
+            {
+                var p = adapter.GetIPProperties().GetIPv4Properties();
+                if (null == p)
+                    return; // IPv4 is not configured on this adapter
+            }
+            catch (NetworkInformationException e)
+            {
+                // IPv4 is not supported in this interface.
+                return;
+            }
 
             var ipv4Address = adapter.GetIPProperties().UnicastAddresses
                                     .FirstOrDefault(ua => ua.Address.AddressFamily == AddressFamily.InterNetwork)?.Address;
