@@ -66,6 +66,9 @@ namespace Zeroconf
             if (adapter.NetworkInterfaceType == NetworkInterfaceType.Loopback)
                 return; // strip out loopback addresses
 
+            if (!adapter.Supports(NetworkInterfaceComponent.IPv4))
+                return; // ignore interface does not support IPv4
+
             IPv4InterfaceProperties p = null;
             try
             {
@@ -75,7 +78,7 @@ namespace Zeroconf
             }
             catch (NetworkInformationException e)
             {
-                // IPv4 is not supported in this interface.
+                // Unable to get IPv4 Properties for other reason. 
                 return;
             }
 
