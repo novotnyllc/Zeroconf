@@ -130,7 +130,7 @@ namespace Zeroconf
                                                    {
                                                        while (!Volatile.Read(ref shouldCancel))
                                                        {
-                                                           var res = await client.ReceiveAsync()
+                                                           var res = await client.ReceiveAsync(cancellationToken)
                                                                                  .ConfigureAwait(false);
 
                                                            onResponse(res.RemoteEndPoint.Address, res.Buffer);
