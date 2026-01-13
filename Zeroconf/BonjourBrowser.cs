@@ -18,9 +18,9 @@ namespace Zeroconf
     {
         NSNetServiceBrowser netServiceBrowser = new NSNetServiceBrowser();
 
-        Dictionary<string, NSNetService> discoveredServiceDict = new Dictionary<string, NSNetService>();
-        Dictionary<string, ZeroconfHost> zeroconfHostDict = new Dictionary<string, ZeroconfHost>();
-        HashSet<string> domainHash = new HashSet<string>();
+        readonly Dictionary<string, NSNetService> discoveredServiceDict = new Dictionary<string, NSNetService>();
+        readonly Dictionary<string, ZeroconfHost> zeroconfHostDict = new Dictionary<string, ZeroconfHost>();
+        readonly HashSet<string> domainHash = new HashSet<string>();
 
         double netServiceResolveTimeout;
         private Action<IZeroconfHost> zeroConfHostCallback;
