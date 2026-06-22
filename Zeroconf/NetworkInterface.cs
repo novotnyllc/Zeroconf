@@ -31,7 +31,7 @@ namespace Zeroconf
                 netInterfacesToSendRequestOn = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
                                                 .Where(inter => inter.Supports(NetworkInterfaceComponent.IPv4));
             }
-                                    
+
             var tasks = netInterfacesToSendRequestOn
                               .Select(inter =>
                                       NetworkRequestAsync(requestBytes, scanTime, retries, retryDelayMilliseconds, onResponse, inter, cancellationToken))
@@ -91,9 +91,13 @@ namespace Zeroconf
 
                         if (socket.IsBound) continue;
 
+                        // Select the multicast interface by its local IPv4 address, not by index.
+                        // On macOS/Linux/BSD IP_MULTICAST_IF / IP_ADD_MEMBERSHIP use the interface's
+                        // in_addr, not an index, so the index form silently lands on the default
+                        // interface and the device on a secondary NIC is never received.
                         socket.SetSocketOption(SocketOptionLevel.IP,
                                                      SocketOptionName.MulticastInterface,
-                                                     IPAddress.HostToNetworkOrder(ifaceIndex));
+                                                     ipv4Address.GetAddressBytes());
 
 
 
@@ -114,7 +118,7 @@ namespace Zeroconf
                         Debug.WriteLine($"Bound to {localEp}");
 
                         var multicastAddress = IPAddress.Parse("224.0.0.251");
-                        var multOpt = new MulticastOption(multicastAddress, ifaceIndex);
+                        var multOpt = new MulticastOption(multicastAddress, ipv4Address);
                         socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
 
 
@@ -138,7 +142,7 @@ namespace Zeroconf
                                                    }
                                                    catch when (Volatile.Read(ref shouldCancel))
                                                    {
-                                                       // If we're canceling, eat any exceptions that come from here   
+                                                       // If we're canceling, eat any exceptions that come from here
                                                    }
                                                }, cancellationToken);
 
@@ -171,7 +175,7 @@ namespace Zeroconf
                         Debug.WriteLine($"Execption with network request, IP {ipv4Address}\n: {e}");
                         if (i + 1 >= retries) // last one, pass underlying out
                         {
-                            // Ensure all inner info is captured                            
+                            // Ensure all inner info is captured
                             ExceptionDispatchInfo.Capture(e).Throw();
                             throw;
                         }
@@ -213,9 +217,11 @@ namespace Zeroconf
                 using (var client = new UdpClient())
                 {
                     var socket = client.Client;
+                    // Select interface by its local IPv4 address, not the index (macOS/Linux/BSD-correct).
+                    // See comment in NetworkRequestAsync() for details.
                     socket.SetSocketOption(SocketOptionLevel.IP,
                                            SocketOptionName.MulticastInterface,
-                                           IPAddress.HostToNetworkOrder(ifaceIndex.Value));
+                                           ipv4Address.GetAddressBytes());
 
                     socket.SetSocketOption(SocketOptionLevel.Socket,
                                            SocketOptionName.ReuseAddress,
@@ -227,7 +233,7 @@ namespace Zeroconf
                     socket.Bind(localEp);
 
                     var multicastAddress = IPAddress.Parse("224.0.0.251");
-                    var multOpt = new MulticastOption(multicastAddress, ifaceIndex.Value);
+                    var multOpt = new MulticastOption(multicastAddress, ipv4Address);
                     socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, multOpt);
 
 
@@ -235,7 +241,7 @@ namespace Zeroconf
                                                 {
                                                     ((IDisposable)client).Dispose();
                                                 }));
-                        
+
 
                     while (!cancellationToken.IsCancellationRequested)
                     {
