@@ -79,6 +79,7 @@ namespace Heijden.DNS
 				// top 2 bits set denotes domain name compression and to reference elsewhere
 				if ((length & 0xc0) == 0xc0)
 				{
+					// Standard suffix compression (11xxxxxx)
 					// work out the existing domain name, copy this pointer
 					var newRecordReader = new RecordReader(m_Data, (length & 0x3f) << 8 | ReadByte());
 					if (bytes.Count > 0)
@@ -86,6 +87,37 @@ namespace Heijden.DNS
 						return Encoding.UTF8.GetString(bytes.ToArray(), 0, bytes.Count) + newRecordReader.ReadDomainName();
 					}
 					return newRecordReader.ReadDomainName();
+				}
+				// Check for 0x80 pattern (10xxxxxx) - prefix compression
+				else if ((length & 0xc0) == 0x80)
+				{
+					// Prefix compression (10xxxxxx)
+					// Read the pointer to the prefix
+					var offset = (length & 0x3f) << 8 | ReadByte();
+					var newRecordReader = new RecordReader(m_Data, offset);
+					var prefix = newRecordReader.ReadDomainName();
+					
+					// Continue reading suffix at current position
+					var suffix = ReadDomainName();
+					
+					// Build the result, handling empty suffix (just ".")
+					string result;
+					if (suffix == ".")
+					{
+						// No suffix, just return prefix
+						result = prefix;
+					}
+					else
+					{
+						// Combine prefix and suffix, removing the trailing dot from prefix
+						result = prefix.TrimEnd('.') + "." + suffix;
+					}
+					
+					if (bytes.Count > 0)
+					{
+						return Encoding.UTF8.GetString(bytes.ToArray(), 0, bytes.Count) + result;
+					}
+					return result;
 				}
 
 				// if not using compression, copy a char at a time to the domain name
