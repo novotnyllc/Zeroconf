@@ -211,8 +211,8 @@ ResolverListener()
 
 ### Implementation Details
 
-The callback functions are based on a simple-minded implementation: they will be called only after each ScanTime interval has expired for each distinct
-protocol/mDNS service.
+The callback functions are based on a somewhat simple-minded implementation: if multiple protocols/mDNS services are requested, 
+callbacks will be called only after the ScanTime interval for the previous protocol has expired.
 
 The more protocols/mDNS services you resolve, the longer it takes the library to return: minimumTotalDelayTime = (nServices * ScanTime).
 

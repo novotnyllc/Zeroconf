@@ -1,6 +1,6 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0;netstandard2.0;net48;xamarinios10;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0;netstandard2.0;net48;net10.0-ios;net10.0-maccatalyst;net10.0-android</TargetFrameworks>
     <Copyright>© Claire Novotny 2016-2024</Copyright>
     <PackageTags>zeroconf;bonjour;mdns;service;discovery;maui;xamarin;netstandard;universal</PackageTags>
     <Authors>Claire Novotny</Authors>
@@ -40,10 +40,5 @@
       </AssemblyAttribute>
     </ItemGroup>
   </Target>
-  
-  <ItemGroup Condition=" '$(UseMaui)' == 'true' " >
-    <PackageReference Update="Microsoft.Maui.Controls.Compatibility" Version="8.0.100" />
-    <PackageReference Update="Microsoft.Maui.Controls" Version="8.0.100" />
-  </ItemGroup>
   
 </Project>
