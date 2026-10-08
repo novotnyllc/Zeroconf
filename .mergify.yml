@@ -7,8 +7,9 @@
 # Only a maintainer can let a PR in: it must be authored by clairernovotny or
 # approved by someone with write access (Mergify ignores other approvals).
 # Pull requests from anyone else, bots included, wait for that approval, and
-# new commits pushed by anyone dismiss earlier approvals, so only reviewed
-# code can land. (Mergify's own branch updates only bring in main.)
+# a push of new commits by anyone but Mergify dismisses earlier approvals, so
+# only reviewed code can land. (Mergify's own update or rebase pushes, which
+# only bring in main, leave approvals in place.)
 # Checks are pinned to the app that posts them.
 
 shared:
