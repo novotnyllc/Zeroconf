@@ -146,7 +146,7 @@ namespace Zeroconf
                     ServiceName = srvRec.RR.NAME,
                     Port = srvRec.PORT,
                     Ttl = (int)srvRec.RR.TTL,
-
+                    Target = srvRec.TARGET,
                 };
 
                 // There may be 0 or more text records - property sets
