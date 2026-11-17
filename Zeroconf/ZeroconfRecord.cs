@@ -66,6 +66,11 @@ namespace Zeroconf
         int Ttl { get; }
 
         /// <summary>
+        /// Hostname from the SRV record's target, e.g. my-printer.local.
+        /// </summary>
+        string Target { get; }
+
+        /// <summary>
         ///     Properties of the object. Most services have a single set of properties, but some services
         ///     may return multiple sets of properties
         /// </summary>
@@ -208,6 +213,7 @@ namespace Zeroconf
         public string ServiceName { get; set; }
         public int Port { get; set; }
         public int Ttl { get; set; }
+        public string Target { get; set; }
 
         public IReadOnlyList<IReadOnlyDictionary<string, string>> Properties => properties;
 
@@ -215,7 +221,7 @@ namespace Zeroconf
         {
             var sb = new StringBuilder();
 
-            sb.Append($"\t| Service: {Name}\n\t| ServiceName: {ServiceName}\n\t| Port: {Port}\n\t| TTL: {Ttl}\n\t| PropertySets: {properties.Count}");
+            sb.Append($"\t| Service: {Name}\n\t| ServiceName: {ServiceName}\n\t| Port: {Port}\n\t| TTL: {Ttl}\n\t| Target: {Target}\n\t| PropertySets: {properties.Count}");
 
             if (properties.Any())
             {
